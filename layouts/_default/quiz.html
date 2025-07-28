@@ -1,271 +1,4 @@
 {{ define "main" }}
-<style>
-.quiz-page {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: white;
-  min-height: 100vh;
-}
-
-.quiz-header h1 {
-  margin: 0 0 10px 0;
-  color: #333;
-  font-size: 24px;
-  font-weight: 600;
-}
-
-.quiz-stats {
-  padding: 15px 30px;
-  margin-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 14px;
-  color: #666;
-}
-
-.quiz ol {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.question {
-  background: #f1f1f1;
-  padding: 25px 30px;
-  margin-bottom: 15px;
-  transition: all 0.3s ease;
-}
-
-.question.correct {
-  border-left: 4px solid #28a745;
-  background: #f8fff9;
-}
-
-.question.incorrect {
-  border-left: 4px solid #dc3545;
-  background: #fff5f5;
-}
-
-.question-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 15px;
-}
-
-.question-number {
-  font-size: 14px;
-  font-weight: 600;
-  color: #007bff;
-  background: #e3f2fd;
-  padding: 4px 8px;
-  border-radius: 4px;
-}
-
-.question-type {
-  font-size: 12px;
-  color: #666;
-  background: white;
-  padding: 2px 6px;
-  border-radius: 3px;
-  text-transform: uppercase;
-}
-
-.stem {
-  font-size: 16px;
-  font-weight: 500;
-  margin-bottom: 20px;
-  color: #333;
-  line-height: 1.5;
-}
-
-.hint-button {
-  background: #17a2b8;
-  color: white;
-  border: none;
-  padding: 4px 8px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 11px;
-  margin-left: 10px;
-  transition: background 0.3s;
-}
-
-.hint-button:hover {
-  background: #138496;
-}
-
-.hint {
-  background: #d1ecf1;
-  border: 1px solid #bee5eb;
-  border-radius: 4px;
-  padding: 12px;
-  margin: 10px 0 15px 0;
-  color: #0c5460;
-  font-size: 13px;
-  display: none;
-}
-
-.hint.show {
-  display: block;
-}
-
-.choices {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.choices li {
-  margin-bottom: 8px;
-}
-
-.choices label {
-  display: flex;
-  align-items: flex-start;
-  padding: 12px 15px;
-  border: 1.5px solid #e0e6ed;
-  cursor: pointer;
-  transition: all 0.2s;
-  background: white;
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-.choices label:hover {
-  background: #dde1e6;
-}
-
-.choices input[type="radio"]:checked + span,
-.choices input[type="checkbox"]:checked + span {
-  color: #007bff;
-  font-weight: 500;
-}
-
-.choices input[type="radio"],
-.choices input[type="checkbox"] {
-  margin-right: 12px;
-  margin-top: 2px;
-  transform: scale(1.1);
-  flex-shrink: 0;
-}
-
-.choices label span {
-  flex: 1;
-}
-
-.answer {
-  margin-top: 20px;
-  background: #f8f9fa;
-  padding: 15px 20px;
-  border-radius: 6px;
-  border-left: 3px solid #007bff;
-  display: none;
-  font-size: 14px;
-}
-
-.answer.show {
-  display: block;
-}
-
-.quiz-footer {
-  background: white;
-  padding: 25px 30px;
-  border-radius: 8px;
-  margin-top: 30px;
-  text-align: center;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.quiz-footer button {
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 12px 30px;
-  border-radius: 6px;
-  cursor: pointer;
-  margin: 0 8px;
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.3s;
-  min-width: 150px;
-}
-
-.quiz-footer button:hover {
-  background: #0056b3;
-  transform: translateY(-1px);
-}
-
-.quiz-footer button:disabled {
-  background: #6c757d;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.quiz-footer button.reset-btn {
-  background: #6c757d;
-}
-
-.quiz-footer button.reset-btn:hover {
-  background: #545b62;
-}
-
-.score-display {
-  font-size: 18px;
-  font-weight: 600;
-  margin-top: 20px;
-  padding: 20px;
-  background: white;
-  border-radius: 8px;
-  border: 2px solid #28a745;
-  display: none;
-}
-
-.score-breakdown {
-  display: flex;
-  justify-content: center;
-  gap: 30px;
-  margin-top: 10px;
-  font-size: 14px;
-  color: #666;
-}
-
-.result-icon {
-  font-size: 16px;
-  margin-right: 8px;
-}
-
-.result-message {
-  margin-top: 8px;
-  font-weight: 500;
-  font-size: 13px;
-}
-
-@media (max-width: 768px) {
-  .quiz-page {
-    padding: 15px;
-  }
-  
-  .question {
-    padding: 20px;
-  }
-  
-  .quiz-stats {
-    flex-direction: column;
-    gap: 10px;
-    text-align: center;
-  }
-  
-  .score-breakdown {
-    flex-direction: column;
-    gap: 10px;
-  }
-}
-</style>
-
 <article class="quiz-page">
   <div class="quiz-header">
     <h1>{{ .Title }}</h1>
@@ -274,7 +7,7 @@
 
   {{ $qs := .Params.questions }}
   {{ if not $qs }}
-     <p><em>No questions defined.</em></p>
+    <p><em>No questions defined.</em></p>
   {{ else }}
 
   <div class="quiz-stats">
@@ -282,86 +15,81 @@
     <span><strong>Time:</strong> Unlimited</span>
   </div>
 
-  <ol class="quiz">
+  <div class="quiz">
     {{ range $idx, $q := $qs }}
-      <li class="question question-{{ $q.type }}" data-question="{{ $idx }}" data-type="{{ $q.type }}" 
-          data-answer="{{ if eq $q.type "single" }}{{ $q.answer }}{{ else }}{{ delimit $q.answer "," }}{{ end }}"
-          data-points="{{ default 1 $q.points }}">
-        
-        <div class="question-header">
-          <span class="question-number">Question {{ add $idx 1 }}</span>
-          <span class="question-type">{{ if eq $q.type "single" }}Single Choice{{ else }}Multiple Choice{{ end }}</span>
-        </div>
+    <div class="question question-{{ $q.type }}"
+         data-question="{{ $idx }}"
+         data-type="{{ $q.type }}"
+         data-answer="{{ if eq $q.type "single" }}{{ $q.answer }}{{ else }}{{ delimit $q.answer "," }}{{ end }}"
+         data-points="{{ default 1 $q.points }}">
 
-        <div class="stem">
-          {{ $q.text | markdownify }}
-          {{ if $q.hint }}
-            <button class="hint-button" onclick="toggleHint({{ $idx }})">💡 Hint</button>
+      <div class="question-header">
+        <span class="question-type">
+          {{ if eq $q.type "single" }}Single Choice{{ else }}Multiple Choice{{ end }}
+        </span>
+      </div>
+
+      <div class="stem">
+        {{ $q.text | markdownify }}
+      </div>
+
+      {{ if eq $q.type "single" }}
+        <ul class="choices">
+          {{ range $i, $c := $q.choices }}
+          <li>
+            <label>
+              <input type="radio" name="q{{ $idx }}" value="{{ $i }}">
+              <span>{{ $c }}</span>
+            </label>
+          </li>
           {{ end }}
+        </ul>
+      {{ else if eq $q.type "multi" }}
+        <ul class="choices">
+          {{ range $i, $c := $q.choices }}
+          <li>
+            <label>
+              <input type="checkbox" name="q{{ $idx }}" value="{{ $i }}">
+              <span>{{ $c }}</span>
+            </label>
+          </li>
+          {{ end }}
+        </ul>
+      {{ else }}
+        <p><em>Invalid question type "{{ $q.type }}".</em></p>
+      {{ end }}
+
+      {{ if $q.hint }}
+        <button class="hint-button" onclick="toggleHint({{ $idx }})">Hint</button>
+        <div class="hint" id="hint{{ $idx }}">
+          <strong>💡 Hint:</strong> {{ $q.hint | markdownify }}
         </div>
+      {{ end }}
 
-        {{ if $q.hint }}
-          <div class="hint" id="hint{{ $idx }}">
-            <strong>💡 Hint:</strong> {{ $q.hint | markdownify }}
-          </div>
-        {{ end }}
-
-        {{/* ----- SINGLE CORRECT ANSWER ----- */}}
-        {{- if eq $q.type "single" -}}
-          <ul class="choices">
-            {{ range $i, $c := $q.choices }}
-              <li>
-                <label>
-                  <input type="radio" name="q{{ $idx }}" value="{{ $i }}">
-                  <span>{{ $c }}</span>
-                </label>
-              </li>
+      <div class="answer" id="answer{{ $idx }}">
+        {{ if eq $q.type "single" }}
+          <p><strong>✅ Correct answer:</strong> {{ index $q.choices $q.answer }}</p>
+        {{ else if eq $q.type "multi" }}
+          <p><strong>✅ Correct answers:</strong>
+            {{ range $i, $a := $q.answer }}
+              {{ index $q.choices $a }}{{ if ne $i (sub (len $q.answer) 1) }}, {{ end }}
             {{ end }}
-          </ul>
-
-        {{/* ----- MULTIPLE CORRECT ANSWERS ----- */}}
-        {{- else if eq $q.type "multi" -}}
-          <ul class="choices">
-            {{ range $i, $c := $q.choices }}
-              <li>
-                <label>
-                  <input type="checkbox" name="q{{ $idx }}" value="{{ $i }}">
-                  <span>{{ $c }}</span>
-                </label>
-              </li>
-            {{ end }}
-          </ul>
-
-        {{/* ----- Invalid question type ----- */}}
-        {{ else }}
-          <p><em>Invalid question type "{{ $q.type }}". Use "single" or "multi" only.</em></p>
+          </p>
         {{ end }}
-
-        <!-- answer display (hidden initially) -->
-        <div class="answer" id="answer{{ $idx }}">
-          {{- if eq $q.type "single" -}}
-              <p><strong>✅ Correct answer:</strong> {{ index $q.choices $q.answer }}</p>
-          {{- else if eq $q.type "multi" -}}
-              <p><strong>✅ Correct answers:</strong>
-                {{ range $i, $answerIdx := $q.answer }}
-                  {{ index $q.choices $answerIdx }}{{ if ne $i (sub (len $q.answer) 1) }}, {{ end }}
-                {{ end }}
-              </p>
-          {{- end }}
-          <div class="result-message" id="result{{ $idx }}"></div>
-        </div>
-      </li>
+        <div class="result-message" id="result{{ $idx }}"></div>
+      </div>
+    </div>
     {{ end }}
-  </ol>
+  </div>
+  <!-- QUESTIONS END -->
 
   <div class="quiz-footer">
-    <button onclick="submitAnswers()">📝 Submit Answers</button>
-    <button class="reset-btn" onclick="resetSelections()">🔄 Reset Selections</button>
-    
+    <button onclick="submitAnswers()">Submit</button>
+    <button class="reset-btn" onclick="resetSelections()">Reset</button>
+
     <div class="score-display" id="scoreDisplay">
       <div style="font-size: 24px; margin-bottom: 10px;">
-        Score: <span id="score">0</span> / <span id="total">0</span> 
-        (<span id="percentage">0</span>%)
+        Score: <span id="score">0</span> / <span id="total">0</span> (<span id="percentage">0</span>%)
       </div>
       <div class="score-breakdown">
         <span>Points Earned: <span id="scorePoints">0</span></span>
@@ -372,100 +100,69 @@
   </div>
 
   <script>
-    function toggleHint(questionIndex) {
-      const hint = document.getElementById(`hint${questionIndex}`);
-      hint.classList.toggle('show');
+    function toggleHint(i) {
+      document.getElementById(`hint${i}`).classList.toggle('show');
     }
 
-    function getSelectedAnswers(questionIndex) {
-      const inputs = document.querySelectorAll(`input[name="q${questionIndex}"]:checked`);
-      return Array.from(inputs).map(input => parseInt(input.value));
+    function getSelectedAnswers(i) {
+      return [...document.querySelectorAll(`input[name="q${i}"]:checked`)].map(el => +el.value);
     }
 
     function submitAnswers() {
       const questions = document.querySelectorAll('.question');
-      let totalScore = 0;
-      let maxScore = 0;
+      let score = 0,
+          max   = 0;
 
-      questions.forEach((question, index) => {
-        const type = question.dataset.type;
-        const correctAnswer = question.dataset.answer;
-        const points = parseInt(question.dataset.points);
-        const selectedAnswers = getSelectedAnswers(index);
-        
-        maxScore += points;
-        
-        let isCorrect = false;
-        
+      questions.forEach((q, i) => {
+        const type   = q.dataset.type;
+        const answer = q.dataset.answer;
+        const pts    = +q.dataset.points;
+        const sel    = getSelectedAnswers(i);
+
+        max += pts;
+
+        let correct = false;
         if (type === 'single') {
-          isCorrect = selectedAnswers.length === 1 && selectedAnswers[0] === parseInt(correctAnswer);
+          correct = sel.length === 1 && sel[0] === +answer;
         } else if (type === 'multi') {
-          const correctAnswers = correctAnswer.split(',').map(a => parseInt(a)).sort();
-          const selectedSorted = selectedAnswers.sort();
-          isCorrect = correctAnswers.length === selectedSorted.length && 
-                     correctAnswers.every((val, i) => val === selectedSorted[i]);
+          const right = answer.split(',').map(Number).sort();
+          const user  = sel.sort();
+          correct = right.length === user.length && right.every((v, j) => v === user[j]);
         }
-        
-        // Update question styling
-        question.classList.remove('correct', 'incorrect');
-        question.classList.add(isCorrect ? 'correct' : 'incorrect');
-        
-        // Show answer
-        const answerDiv = document.getElementById(`answer${index}`);
-        const resultDiv = document.getElementById(`result${index}`);
-        
-        answerDiv.classList.add('show');
-        
-        if (isCorrect) {
-          totalScore += points;
-          resultDiv.innerHTML = `<span class="result-icon" style="color: #28a745;">✓</span> Correct! (+${points} ${points === 1 ? 'point' : 'points'})`;
+
+        q.classList.toggle('correct',   correct);
+        q.classList.toggle('incorrect', !correct);
+
+        const ansBox = document.getElementById(`answer${i}`);
+        const res    = document.getElementById(`result${i}`);
+        ansBox.classList.add('show');
+
+        if (correct) {
+          score += pts;
+          res.innerHTML = `<span class="result-icon" style="color:#28a745;">✓</span> Correct! (+${pts} ${pts===1?'point':'points'})`;
         } else {
-          resultDiv.innerHTML = `<span class="result-icon" style="color: #dc3545;">✗</span> Incorrect (0 points)`;
+          res.innerHTML = `<span class="result-icon" style="color:#dc3545;">✗</span> Incorrect (0 points)`;
         }
       });
-      
-      // Update score display
-      const scoreDisplay = document.getElementById('scoreDisplay');
-      const percentage = Math.round((totalScore / maxScore) * 100);
-      
-      document.getElementById('score').textContent = totalScore;
-      document.getElementById('total').textContent = maxScore;
-      document.getElementById('percentage').textContent = percentage;
-      document.getElementById('scorePoints').textContent = totalScore;
-      document.getElementById('maxPoints').textContent = maxScore;
-      
-      scoreDisplay.style.display = 'block';
-      scoreDisplay.style.color = percentage >= 70 ? '#28a745' : percentage >= 50 ? '#ffc107' : '#dc3545';
 
-      // Scroll to results
-      scoreDisplay.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      const pct = Math.round(score / max * 100);
+      document.getElementById('score').textContent       = score;
+      document.getElementById('total').textContent       = max;
+      document.getElementById('percentage').textContent  = pct;
+      document.getElementById('scorePoints').textContent = score;
+      document.getElementById('maxPoints').textContent   = max;
+
+      const sd = document.getElementById('scoreDisplay');
+      sd.style.display = 'block';
+      sd.style.color   = pct >= 70 ? '#28a745' : pct >= 50 ? '#ffc107' : '#dc3545';
+      sd.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function resetSelections() {
-      // Clear all selections
-      document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(input => {
-        input.checked = false;
-      });
-      
-      // Hide all answers
-      document.querySelectorAll('.answer').forEach(answer => {
-        answer.classList.remove('show');
-      });
-      
-      // Hide all hints
-      document.querySelectorAll('.hint').forEach(hint => {
-        hint.classList.remove('show');
-      });
-      
-      // Remove question styling
-      document.querySelectorAll('.question').forEach(question => {
-        question.classList.remove('correct', 'incorrect');
-      });
-      
-      // Hide score
+      document.querySelectorAll('input[type="radio"], input[type="checkbox"]').forEach(el => el.checked = false);
+      document.querySelectorAll('.answer, .hint').forEach(el => el.classList.remove('show'));
+      document.querySelectorAll('.question').forEach(q => q.classList.remove('correct', 'incorrect'));
       document.getElementById('scoreDisplay').style.display = 'none';
-
-      // Scroll to top
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   </script>
