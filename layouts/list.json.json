@@ -17,38 +17,59 @@
         {{- $banner_url = printf "%s/%s" $uuid $p.Params.Banner | absURL -}}
       {{- end -}}
 
+
+      {{ $level := $p.Params.level }}
+      {{ if $level }}
+          {{- /* Validate the level parameter */ -}}
+          {{- if not (in (slice "beginner" "intermediate" "advanced") $level) }}
+            {{ warnf "Invalid value for 'level': %s. Expected one of 'beginner', 'intermediate', or 'advanced' in %s " $level $p.File.Path }}
+            {{ $level = "beginner" }}
+          {{ end }}
+      {{- end }}
+
+
       {
-        "title": {{ $p.Title | jsonify }},
-        "description": {{ $p.Description | jsonify }},
-        "banner": {{ $banner_url | jsonify }},
-        "slug": {{ or $p.Slug $p.File.ContentBaseName | jsonify }},
-        "permalink": {{ $p.Permalink | jsonify }},
-        "level": {{ $p.Params.level | jsonify }},
+
         "id": {{ or $p.Params.Id  (md5 $p.Permalink) | jsonify }},
-        "orgId": {{ $uuid | jsonify }},
+        "level": {{ or $level "beginner" | jsonify }},
+        "slug": {{ or $p.Slug $p.File.ContentBaseName | jsonify }},
+        "org_id": {{ $uuid | jsonify }},
         "type": {{ $p.Params.Type | jsonify }} ,
-        "courses": [
-          {{- range $j, $c := $children }}
-            {{- if $j }},{{ end }}
+        "visibility": {{ or $p.Params.Visibility "public" | jsonify }},
+        "status": {{ or $p.Params.Status "ready" | jsonify }},
 
-            {{- /* Prepend the orgId to the nested Course's banner path. */ -}}
-            {{- $course_banner_url := "" -}}
-            {{- if $c.Params.Banner -}}
-              {{- $course_banner_url = printf "%s/%s" $uuid $c.Params.Banner | absURL -}}
-            {{- end -}}
+        {{- /* Metadata for the Learning Path */ -}}
 
-            {
-              "title": {{ $c.Title | jsonify }},
-              "slug": {{ or $c.Slug $c.File.ContentBaseName | jsonify }},
-              "id": {{ or $c.Params.Id $c.Permalink | jsonify }},
-              "level": {{ $c.Params.level | jsonify }},
-              "description": {{ $c.Description | jsonify }},
-              "weight": {{ $c.Params.Order | jsonify}},
-              "banner": {{ $course_banner_url | jsonify }},
-              "permalink": {{ $c.Permalink | jsonify }}
-            }
-          {{- end }}
-        ]
+        "metadata": {
+            "title": {{ $p.Title | jsonify }},
+            "description": {{ $p.Description | jsonify }},
+            "banner": {{ $banner_url | jsonify }},
+            "permalink": {{ $p.Permalink | jsonify }},
+            "categories": {{ $p.Params.Categories | jsonify }},
+            "tags": {{ $p.Params.Tags | jsonify }},
+            "courses": [
+              {{- range $j, $c := $children }}
+                {{- if $j }},{{ end }}
+
+                {{- /* Prepend the orgId to the nested Course's banner path. */ -}}
+                {{- $course_banner_url := "" -}}
+                {{- if $c.Params.Banner -}}
+                  {{- $course_banner_url = printf "%s/%s" $uuid $c.Params.Banner | absURL -}}
+                {{- end -}}
+
+                {
+                  "title": {{ $c.Title | jsonify }},
+                  "slug": {{ or $c.Slug $c.File.ContentBaseName | jsonify }},
+                  "id": {{ or $c.Params.Id $c.Permalink | jsonify }},
+                  "level": {{ $c.Params.level | jsonify }},
+                  "description": {{ $c.Description | jsonify }},
+                  "weight": {{ $c.Params.Order | jsonify}},
+                  "banner": {{ $course_banner_url | jsonify }},
+                  "permalink": {{ $c.Permalink | jsonify }}
+                }
+              {{- end }}
+            ]
+        }
       }
     {{- end }}
   ]

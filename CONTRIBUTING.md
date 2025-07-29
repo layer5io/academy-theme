@@ -56,18 +56,21 @@ To ensure you have the latest version of the theme or to upgrade to a newer rele
     ```
     This command will fetch the latest version of the theme and update your `go.mod` and `go.sum` files accordingly.
 
-2.  **Clean Cache (Optional but Recommended)**
-    Sometimes, Hugo's cache might prevent the latest changes from being fully reflected. To clear the cache and ensure a fresh build:
-    ```bash
-    hugo mod clean
-    ```
 
-3.  **Rebuild Your Site**
+2.  **Rebuild Your Site**
     After updating the theme, rebuild your Hugo site to incorporate the changes:
 
     ```bash
     make site
     ```
 
+    Sometimes, Hugo's cache might prevent the latest changes from being fully reflected.Try to clear the cache then ensure a fresh build:
+
+    ```bash
+    make clean
+    ```
+
     Your site should now be running with the updated theme.
 
+    For detailed guide, check：
+    [Creating your learning path – ongoing maintenance and updates](https://docs.layer5.io/cloud/academy/creating-your-learning-path/#6-ongoing-maintenance-and-updates)

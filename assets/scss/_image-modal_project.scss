@@ -4,7 +4,7 @@
 }
 
 /* The Modal (background) */
-.modal {
+.academy-image-modal {
   display: none;
   position: fixed;
   z-index: 9999999;
@@ -18,7 +18,7 @@
 }
 
 /* Modal Content */
-.modal-cont {
+.academy-image-modal-cont {
   position: relative;
   margin: auto;
   padding: 0;
@@ -26,7 +26,7 @@
   max-width: 1400px;
 }
 
-.modal-pic {
+.academy-image-modal-pic {
   display: flex;
   align-content: center;
   cursor: pointer;
@@ -35,7 +35,7 @@
 /* The Close Button */
 /* Optimized for accessibility by using a button named close but 
   shifting the close text out of the button and only showing x */
-.modal-close {
+  .academy-image-modal-close {
   color: white;
   background-color: transparent;
   position: absolute;
@@ -50,7 +50,7 @@
   z-index: 99;
 } 
 
-.modal-close::after {
+.academy-image-modal-close::after {
   position: absolute;
   line-height: 0.5;
   top: 0.2em;
@@ -59,8 +59,8 @@
   content: "\00D7"
 }
 
-.modal-close:hover,
-.modal-close:focus {
+.academy-image-modal-close:hover,
+.academy-image-modal-close:focus {
   background-color: rgba(255, 255, 255, 0.1);
   text-decoration: none;
   cursor: pointer;
