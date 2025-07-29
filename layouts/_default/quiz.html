@@ -1,5 +1,5 @@
 {{ define "main" }}
-<article class="quiz-page">
+<div class="quiz-page">
   <div class="quiz-header">
     <h1>{{ .Title }}</h1>
     {{ .Content }}
@@ -102,5 +102,8 @@
   {{ $js := resources.Get "js/quiz.js" | js.Build | minify | fingerprint }}
   <script src="{{ $js.RelPermalink }}" defer></script>
   {{ end }}
-</article>
+
+   {{ partial "pager.html" . }}
+   {{ partial "page-meta-lastmod.html" . -}}
+</div>
 {{ end }}

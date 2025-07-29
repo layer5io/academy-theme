@@ -1,0 +1,59 @@
+{{ define "main" }}
+<div class="td-content">
+   <h1>{{ .Title }}</h1>
+   {{ with .Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
+   <header class="article-meta{{ if or .Params.categories .Params.tags }} article-meta-bg{{ end }}">
+      {{ partial "taxonomy_terms_article_wrapper.html" . -}}
+      {{ if (and (not .Params.hide_readingtime) (.Site.Params.ui.readingtime.enable)) -}}
+         {{ partial "reading-time.html" . -}}
+      {{ end -}}
+   </header>
+   
+   {{/* Exam Metadata Display */}}
+   {{ if eq .Type "exam" }}
+   <div class="exam-meta mb-4">
+      <div class="row">
+         {{ with .Params.price }}
+         <div class="col-md-3">
+            <strong>Price:</strong>
+            {{ if eq .display "free" }}Free{{ else if eq .display "amount" }}${{ .amount }}{{ else }}Contact for pricing{{ end }}
+         </div>
+         {{ end }}
+         
+         {{ with .Params.duration }}
+         <div class="col-md-3">
+            <strong>Duration:</strong> {{ . }}
+         </div>
+         {{ end }}
+         
+         {{ with .Params.attempts }}
+         <div class="col-md-3">
+            <strong>Attempts:</strong> {{ if eq . 0 }}Unlimited{{ else }}{{ . }} attempt(s){{ end }}
+         </div>
+         {{ end }}
+         
+         {{ if or .Params.badge .Params.certificate }}
+         <div class="col-md-3">
+            <strong>Rewards:</strong>
+            {{ with .Params.badge }}<span class="badge bg-primary">{{ . }}</span>{{ end }}
+            {{ with .Params.certificate }}{{ if . }}<span class="certificate-icon">📜</span>{{ end }}{{ end }}
+         </div>
+         {{ end }}
+      </div>
+   </div>
+   {{ end }}
+
+   {{ .Content }}
+   </div>
+   
+   {{ partial "section-index.html" . -}}
+
+   {{ if (.Site.Config.Services.Disqus.Shortname) -}}
+      <br />
+      {{- partial "disqus-comment.html" . -}}
+   {{ end -}}
+   
+   {{ partial "pager.html" . }}
+   {{ partial "page-meta-lastmod.html" . -}}
+</div>
+{{ end }}
