@@ -65,7 +65,8 @@
                   "description": {{ $c.Description | jsonify }},
                   "weight": {{ $c.Params.Order | jsonify}},
                   "banner": {{ $course_banner_url | jsonify }},
-                  "permalink": {{ $c.Permalink | jsonify }}
+                  "permalink": {{ $c.Permalink | jsonify }},
+                  "reading_time": {{ $c.ReadingTime | jsonify }},
                 }
               {{- end }}
             ]
