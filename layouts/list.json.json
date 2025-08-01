@@ -2,75 +2,9 @@
 {
   "total": {{ len .Pages }},
   "data": [
-    {{- $pages := .Pages -}}
-    {{- range $i, $p := $pages }}
+    {{- range $i, $p := .Pages }}
       {{- if $i }},{{ end }}
-
-      {{- $ctx := partial "resolve-tenant.html" $p -}}
-      {{- $uuid := $ctx.uuid -}}
-
-      {{- $children := $p.Pages }}
-
-      {{- /* Prepend the orgId to the parent Learning Path's banner path. */ -}}
-      {{- $banner_url := "" -}}
-      {{- if $p.Params.Banner -}}
-        {{- $banner_url = printf "%s/%s" $uuid $p.Params.Banner | absURL -}}
-      {{- end -}}
-
-
-      {{ $level := $p.Params.level }}
-      {{ if $level }}
-          {{- /* Validate the level parameter */ -}}
-          {{- if not (in (slice "beginner" "intermediate" "advanced") $level) }}
-            {{ warnf "Invalid value for 'level': %s. Expected one of 'beginner', 'intermediate', or 'advanced' in %s " $level $p.File.Path }}
-            {{ $level = "beginner" }}
-          {{ end }}
-      {{- end }}
-
-
-      {
-
-        "id": {{ partial "id.html" $p }},
-        "level": {{ or $level "beginner" | jsonify }},
-        "slug": {{ or $p.Slug $p.File.ContentBaseName | jsonify }},
-        "org_id": {{ $uuid | jsonify }},
-        "type": {{ $p.Params.Type | jsonify }} ,
-        "visibility": {{ or $p.Params.Visibility "public" | jsonify }},
-        "status": {{ or $p.Params.Status "ready" | jsonify }},
-
-        {{- /* Metadata for the Learning Path */ -}}
-
-        "metadata": {
-            "title": {{ $p.Title | jsonify }},
-            "description": {{ $p.Description | jsonify }},
-            "banner": {{ $banner_url | jsonify }},
-            "permalink": {{ $p.Permalink | jsonify }},
-            "categories": {{ $p.Params.Categories | jsonify }},
-            "tags": {{ $p.Params.Tags | jsonify }},
-            "courses": [
-              {{- range $j, $c := $children }}
-                {{- if $j }},{{ end }}
-
-                {{- /* Prepend the orgId to the nested Course's banner path. */ -}}
-                {{- $course_banner_url := "" -}}
-                {{- if $c.Params.Banner -}}
-                  {{- $course_banner_url = printf "%s/%s" $uuid $c.Params.Banner | absURL -}}
-                {{- end -}}
-
-                {
-                  "title": {{ $c.Title | jsonify }},
-                  "slug": {{ or $c.Slug $c.File.ContentBaseName | jsonify }},
-                  "id": {{ partial "id.html" $c }},
-                  "level": {{ $c.Params.level | jsonify }},
-                  "description": {{ $c.Description | jsonify }},
-                  "weight": {{ $c.Params.Order | jsonify}},
-                  "banner": {{ $course_banner_url | jsonify }},
-                  "permalink": {{ $c.Permalink | jsonify }}
-                }
-              {{- end }}
-            ]
-        }
-      }
+      {{ partial "learning-path.json.html" $p }}
     {{- end }}
   ]
 }

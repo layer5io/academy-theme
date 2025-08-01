@@ -1,0 +1,10 @@
+
+{
+  {{ partial "common-curricula-properties.html" . }},
+  "pages": [
+    {{- range $l, $p := .page.Pages }}
+      {{- if $l }},{{ end }}
+      {{ partial "page.json.html" (dict "page" $p "uuid" $.uuid) }}
+    {{- end }}
+  ]
+}
