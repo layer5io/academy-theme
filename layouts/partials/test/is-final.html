@@ -1,0 +1,38 @@
+
+{{- $page := . -}}
+{{- $isFinal := false -}}
+
+{{/* ✅ Case 1: Explicitly marked as final in front matter */}}
+{{- if $page.Params.final -}}
+  {{- $isFinal = true -}}
+
+{{/* ✅ Case 2: Only one page in the section — assume it's final */}}
+{{- else if eq (len $page.Parent.Pages) 1 -}}
+  {{- $isFinal = true -}}
+
+{{/* ✅ Case 3: Determine based on siblings */}}
+{{- else -}}
+
+  {{- $testPages := where $page.Parent.Pages "Type" "test" -}}
+  {{- $lastPage := index $testPages (sub (len $testPages) 1) -}}
+
+  {{/* 🔍 Find sibling pages of type "test" that are explicitly marked as final */}}
+  {{- $finalTestPages := where $testPages "Params.final" true -}}
+
+  {{/* if some manually defined final pages then set as false */}}
+  {{- if gt (len $finalTestPages) 0 -}}
+    {{- $isFinal = false -}}
+
+  {{/* if no manually defined final pages then set as true */}}
+  {{- else if eq $page $lastPage -}}
+    {{- $isFinal = true -}}
+  {{- end -}}
+
+{{- end -}}
+
+{{/* ❌ Disallow optional final tests */}}
+{{- if and $isFinal (eq $page.Params.is_optional true) -}}
+  {{- errorf "Final test cannot be optional: %s" $page.RelPermalink -}}
+{{- end -}}
+
+{{- return $isFinal -}}

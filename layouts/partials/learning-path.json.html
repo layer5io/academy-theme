@@ -4,9 +4,15 @@
 {{- $uuid := $ctx.uuid -}}
 {{- $level := partial "validate-level.html" . -}}
 {{- $banner_url := partial "banner-url.html" (dict "uuid" $uuid "banner" .Params.Banner) -}}
+{{- $id := partial "id.html" . -}}
+
+{{/* 
+  This file is used to generate the JSON representation of a learning path.
+  It includes metadata such as title, description, banner, and courses.
+*/}}
 
 {
-  "id": {{ partial "id.html" . }},
+  "id": {{ $id | jsonify }},
   "level": {{ (trim  $level " \n\r\t") | jsonify }},
   "slug": {{ or .Slug .File.ContentBaseName | jsonify }},
   "org_id": {{ $uuid | jsonify }},
