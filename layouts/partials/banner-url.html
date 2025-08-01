@@ -1,0 +1,7 @@
+{{- $uuid := .uuid -}}
+{{- $banner := .banner -}}
+{{- if $banner -}}
+  {{ printf "%s/%s" $uuid $banner | absURL }}
+{{- else -}}
+  ""
+{{- end -}}

@@ -1,0 +1,15 @@
+
+{{- $page := .page -}}
+{{- $uuid := .uuid -}}
+{{- $type := or $page.Params.Type "default" -}}
+{{- $banner_url := partial "banner-url.html" (dict "uuid" $uuid "banner" $page.Params.Banner) -}}
+
+"title": {{ $page.Title | jsonify }},
+"slug": {{ or $page.Slug $page.File.ContentBaseName | jsonify }},
+"id": {{ partial "id.html" $page }},
+"level": {{ $page.Params.level | jsonify }},
+"description": {{ $page.Description | jsonify }},
+"weight": {{ $page.Params.Order | jsonify }},
+"banner": {{ $banner_url | jsonify }},
+"permalink": {{ $page.Permalink | jsonify }},
+"type": {{ $type | jsonify }}

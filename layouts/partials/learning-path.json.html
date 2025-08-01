@@ -1,0 +1,32 @@
+
+{{- /* learning-path.json.html */ -}}
+{{- $ctx := partial "resolve-tenant.html" . -}}
+{{- $uuid := $ctx.uuid -}}
+{{- $level := partial "validate-level.html" . -}}
+{{- $banner_url := partial "banner-url.html" (dict "uuid" $uuid "banner" .Params.Banner) -}}
+
+{
+  "id": {{ partial "id.html" . }},
+  "level": {{ (trim  $level " \n\r\t") | jsonify }},
+  "slug": {{ or .Slug .File.ContentBaseName | jsonify }},
+  "org_id": {{ $uuid | jsonify }},
+  "type": {{ .Params.Type | jsonify }},
+  "visibility": {{ or .Params.Visibility "public" | jsonify }},
+  "status": {{ or .Params.Status "ready" | jsonify }},
+  "metadata": {
+    "title": {{ .Title | jsonify }},
+    "description": {{ .Description | jsonify }},
+    "banner": {{ $banner_url | jsonify }},
+    "permalink": {{ .Permalink | jsonify }},
+    "categories": {{ .Params.Categories | jsonify }},
+    "tags": {{ .Params.Tags | jsonify }},
+    "total_courses": {{ len (where .Pages "Type" "course") }},
+
+    "courses": [
+      {{- range $j, $c := .Pages }}
+        {{- if $j }},{{ end }}
+        {{ partial "course.json.html" (dict "page" $c "uuid" $uuid) }}
+      {{- end }}
+    ]
+  }
+}

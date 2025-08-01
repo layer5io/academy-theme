@@ -1,0 +1,7 @@
+{{- $level := .Params.level -}}
+{{- if in (slice "beginner" "intermediate" "advanced") $level -}}
+  {{ $level }}
+{{- else -}}
+  {{ warnf "Invalid level: %s in %s. Defaulting to beginner." $level .File.Path }}
+  beginner
+{{- end -}}
