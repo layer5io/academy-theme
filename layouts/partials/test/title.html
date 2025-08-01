@@ -1,31 +1,35 @@
 {{- $title := "" -}}
 {{- $page := . -}}
-{{- $weight := or $page.Params.weight $page.Params.Order "" -}}
+{{- $index := add 1 (partial "index-of-page.html" $page) -}}
 {{- $parentType := "" -}}
+{{- $isFinal := partial "test/is-final.html" $page -}}
 
 {{- with $page.Parent -}}
   {{- $parentType = .Params.Type -}}
 {{- end -}}
 
-{{- if partial "test/is-final.html" $page -}}
-  {{- $title = printf "%sFinal " $title -}}
+{{- if $isFinal -}}
+  {{- $title = printf "%sFinal" $title -}}
 {{- end -}}
 
 {{- if $page.Params.is_optional -}}
-  {{- $title = printf "%sOptional " $title -}}
+  {{- $title = printf "%sOptional" $title -}}
 {{- end -}}
 
 {{- if eq $parentType "course" -}}
-  {{- $title = printf "%sTest %s" $title $weight -}}
+  {{- $title = printf "%s Test" $title -}}
 {{- end -}}
 
 {{- if eq $parentType "module" -}}
-  {{- $title = printf "%sQuiz %s" $title $weight -}}
+  {{- $title = printf "%s Quiz" $title  -}}
 {{- end -}}
 
 {{- if or (eq $parentType "learning-path") (eq $parentType "challenge") (eq $parentType "certification") -}}
-  {{- $title = printf "%sExam %s" $title $weight -}}
+  {{- $title = printf "%s Exam" $title  -}}
 {{- end -}}
 
+{{- if not $isFinal -}}
+  {{- $title = printf "%s - %d" $title $index -}}
+{{- end -}}
 
 {{- return $title  -}}
