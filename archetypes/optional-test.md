@@ -6,6 +6,7 @@ difficulty: "beginner" # Difficulty level of the quiz
 category: "Programming Languages" # Category of the quiz
 tags: ["golang", "basics", "syntax", "fundamentals"] # Tags for the quiz, useful for search and categorization
 type: "quiz" # Type of the content, in this case, a quiz ( required for the quiz to be recognized by the system )
+is_optional: true # Indicates that this quiz is optional and does not need to be completed to take the final exam
 
 questions:
   # Multiple Choice Question (Single Answer)
@@ -67,4 +68,4 @@ questions:
         is_correct: false
 ---
 
-This quiz will test your understanding of basic Go language features including syntax, type system, and key language constructs.
+
