@@ -1,11 +1,11 @@
 ---
-title: 'Quiz'
-pass_percentage: 70 # Minimum percentage required to pass the quiz
-time_limit: 15 # Duration of the quiz in minutes
-difficulty: "beginner" # Difficulty level of the quiz 
-category: "Programming Languages" # Category of the quiz
-tags: ["golang", "basics", "syntax", "fundamentals"] # Tags for the quiz, useful for search and categorization
-type: "quiz" # Type of the content, in this case, a quiz ( required for the quiz to be recognized by the system )
+title: 'test'
+pass_percentage: 70 # Minimum percentage required to pass the test
+time_limit: 15 # Duration of the test in minutes
+difficulty: "beginner" # Difficulty level of the test
+category: "Programming Languages" # Category of the test
+tags: ["golang", "basics", "syntax", "fundamentals"] # Tags for the test, useful for search and categorization
+type: "test" # Type of the content, in this case, a test ( required for the test to be recognized by the system )
 
 questions:
   # Multiple Choice Question (Single Answer)
@@ -66,5 +66,3 @@ questions:
         text: "To handle errors in a function"
         is_correct: false
 ---
-
-

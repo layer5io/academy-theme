@@ -5,7 +5,7 @@
 
 {{- with $page.Parent -}}
   {{- range .Pages -}}
-    {{- if eq .Params.Type "quiz" -}}
+    {{- if eq .Params.Type "test" -}}
       {{- $siblingWeight := or .Params.weight .Params.Order 0 -}}
       {{- if gt $siblingWeight $maxWeight -}}
         {{- $maxWeight = $siblingWeight -}}
@@ -14,7 +14,7 @@
   {{- end -}}
 {{- end -}}
 
-{{- if and (eq $page.Params.Type "quiz") (or (eq $currentWeight $maxWeight) (gt $maxWeight $currentWeight)) -}}
+{{- if and (eq $page.Params.Type "test") (or (eq $currentWeight $maxWeight) (gt $maxWeight $currentWeight)) -}}
   {{- $isFinal = true -}}
 {{- end -}}
 
