@@ -1,7 +1,7 @@
 
 {
   {{ partial "common-curricula-properties.html" . }},
-  "modules": [
+  "children": [
     {{- range $k, $m := .page.Pages }}
       {{- if $k }},{{ end }}
       {{ partial "module.json.html" (dict "page" $m "uuid" $.uuid) }}

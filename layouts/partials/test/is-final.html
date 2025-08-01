@@ -1,0 +1,29 @@
+{{- $isFinal := false -}}
+{{- $page := . -}}
+{{- $currentWeight := or $page.Params.weight $page.Params.Order 0 -}}
+{{- $maxWeight := 0 -}}
+
+{{- with $page.Parent -}}
+  {{- range .Pages -}}
+    {{- if eq .Params.Type "test" -}}
+      {{- $siblingWeight := or .Params.weight .Params.Order 0 -}}
+      {{- if gt $siblingWeight $maxWeight -}}
+        {{- $maxWeight = $siblingWeight -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if and (eq $page.Params.Type "test") (or (eq $currentWeight $maxWeight) (gt $maxWeight $currentWeight)) -}}
+  {{- $isFinal = true -}}
+{{- end -}}
+
+{{- if $page.Params.final -}}
+  {{- $isFinal = true -}}
+{{- end -}}
+
+{{- if and $isFinal  (eq $page.Params.is_optional true) -}}
+    {{- errorf "Final test cannot be optional: %s" $page.RelPermalink -}}
+{{- end -}}
+
+{{- return $isFinal -}}

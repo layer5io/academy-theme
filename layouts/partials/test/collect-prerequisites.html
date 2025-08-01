@@ -1,0 +1,36 @@
+{{/* 
+  Usage:
+    {{ partial "collect-prerequisites.html" . }}
+  Returns:
+    A slice of dictionaries, each with: id, type, permalink, title
+*/}}
+
+{{- $ctx := . -}}
+{{- $prerequisites := slice -}}
+
+{{/*
+ Prerequisites are collected only for final tests.
+*/}}
+
+{{- $isFinal := partial "test/is-final.html" $ctx -}}
+
+{{- if (eq $isFinal true) -}}
+
+    {{- range $ctx.Parent.Pages -}}
+      {{- if in (slice "course" "module" "test") .Type -}}
+        {{- if eq (.Params.is_optional | default false) false -}}
+          {{ $id := partial "id.html" . }}
+          {{- $item := dict
+              "id" $id
+              "type" .Type
+              "permalink" .RelPermalink
+              "title" .Title
+          -}}
+          {{- $prerequisites = $prerequisites | append $item -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+
+{{- end -}}
+
+{{- return $prerequisites -}}

@@ -233,14 +233,17 @@
     }
 </style>
 
+{{ $title := partial "test/title.html" . }}
+
+
 <div class="container">
     <div class="header">
         <div id="go-back">
             <i class="fas fa-arrow-left"></i>
             <p class="text-blue-600 hover:underline" id="go-back"> Back</a>
         </div>
-        <h1>{{ .Title }}</h1>
-        <p>Answer all questions below and submit to see your results</p>
+        <h1>{{ $title }}</h1>
+        <p>{{ .Content | default "Please answer the questions below to complete the quiz." }}</p>
     </div>
 
     <div class="form-container">
@@ -295,7 +298,12 @@
             body: JSON.stringify(payload)
         });
 
-        if (!res.ok) throw new Error("Failed to submit quiz");
+        console.log("Response status:", res);
+
+        if (!res.ok) {
+            const errorBody = await res.json(); // or res.json() if JSON error
+            throw new Error(`${errorBody.details || errorBody.message || "Unknown error"}`);
+        }
         const data = await res.json();
         return data;
     }
