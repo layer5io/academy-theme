@@ -49,6 +49,7 @@
   
       padding-left: 0;
     }
+    
   
     &__section-title {
       display: block;
@@ -56,10 +57,12 @@
   
       .active {
         font-weight: $font-weight-bold;
+        font-size: large;
       }
   
       a {
         color: $dark; 
+        text-decoration: none;
       }
     }
   
@@ -77,6 +80,7 @@
       &:focus,
       &:hover {
         color: $dark; 
+        text-decoration: none;
       }
   
       &.active {
@@ -114,7 +118,19 @@
       margin-bottom: 1rem;
     }
   }
-  
+.level-0.td-sidebar-nav__section-title a {
+  color: $dark;
+  &.active {
+    font-weight: $font-weight-bold;
+    color: $dark
+  }
+}
+
+
+.level-2.td-sidebar-nav__section-title a {
+  color: $gray-800;
+  font-weight: $font-weight-medium;
+}
   .td-sidebar {
     @include link-decoration;
   
