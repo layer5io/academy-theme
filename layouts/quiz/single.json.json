@@ -1,7 +1,12 @@
 {{ $p := .Params }}
+
+{{- $prerequisites := partial "test/collect-prerequisites.html" . -}}
+
+
 {
-  "id": {{ partial "id.html" . }},
-  "title": {{ $p.title | jsonify }},
+  "id": {{ partial "id.html" . | jsonify }},
+  "title": {{ partial "test/title.html" . | jsonify }},
+  "final": {{ partial "test/is-final.html" .  | jsonify }},
   "description": {{ .Content | plainify | jsonify }},
   "slug": {{ .Slug | jsonify }},
   "relPermalink": {{ .RelPermalink | jsonify }},
@@ -17,6 +22,7 @@
   "time_limit": {{ or $p.time_limit "infinite" | jsonify }},
   "questions": {{ $p.questions | jsonify }},
   "total_questions": {{ len $p.questions }},
+  "prerequisites": {{ $prerequisites | jsonify }},
   "total_marks": {{- $total := 0 -}}
     {{- range $p.questions }}
       {{- $total = add $total (or .marks 0) }}
@@ -24,7 +30,7 @@
     {{ $total }},
   "parent": {{- with .Parent -}}
     {
-      "id": {{ partial "id.html" . }},
+      "id": {{ partial "id.html" .  | jsonify }},
       "title": {{ .Title | jsonify }},
       "relPermalink": {{ .RelPermalink | jsonify }},
       "type": {{ .Type | jsonify }}

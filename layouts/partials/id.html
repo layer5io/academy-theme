@@ -1,6 +1,6 @@
 {{- $id := .Params.id -}}
 {{- if $id -}}
-  {{ $id | jsonify }}
+  {{- $id -}}
 {{- else -}}
-  {{ .RelPermalink | md5 | jsonify }}
+  {{- .RelPermalink | md5 -}}
 {{- end -}}
