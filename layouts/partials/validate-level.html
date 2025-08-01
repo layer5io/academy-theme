@@ -2,6 +2,8 @@
 {{- if in (slice "beginner" "intermediate" "advanced") $level -}}
   {{ $level }}
 {{- else -}}
-  {{ warnf "Invalid level: %s in %s. Defaulting to beginner." $level .File.Path }}
+  {{- if  and ( eq $level ""  (in (slice "learning-path"  "challenge" "exam") .Type) ) -}}
+    {{ warnf "Invalid level: %s in %s. Defaulting to beginner." $level .File.Path }}
+  {{- end -}}
   beginner
 {{- end -}}

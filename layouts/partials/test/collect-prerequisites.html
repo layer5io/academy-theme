@@ -1,4 +1,4 @@
-{{/* 
+{{/*
   Usage:
     {{ partial "collect-prerequisites.html" . }}
   Returns:
@@ -13,11 +13,12 @@
 */}}
 
 {{- $isFinal := partial "test/is-final.html" $ctx -}}
+{{- $currentId := partial "id.html" $ctx -}}
 
 {{- if (eq $isFinal true) -}}
 
     {{- range $ctx.Parent.Pages -}}
-      {{- if in (slice "course" "module" "test") .Type -}}
+      {{- if and (in (slice "course" "module" "test") .Type) (ne $ctx .) -}}
         {{- if eq (.Params.is_optional | default false) false -}}
           {{ $id := partial "id.html" . }}
           {{- $item := dict
