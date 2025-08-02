@@ -27,8 +27,11 @@
     "categories": {{ .Params.Categories | jsonify }},
     "tags": {{ .Params.Tags | jsonify }},
     "total_courses": {{ len (where .Pages "Type" "course") }},
+    "total_tests": {{ len (where .Pages "Type" "test") }},
+    "total_modules": {{ len (where .Pages "Type" "module") }},
+    "total_pages": {{ len (where .Pages "Type" "page") }},
 
-    "courses": [
+    "children": [
       {{- range $j, $c := .Pages }}
         {{- if $j }},{{ end }}
         {{ partial "course.json.html" (dict "page" $c "uuid" $uuid) }}
