@@ -1,0 +1,12 @@
+{{- $current := . -}}
+
+{{- $pages := where $current.Parent.Pages "Type" $current.Type -}}
+
+{{- $index := 1 -}}
+{{- range $i, $p := $pages -}}
+  {{- if eq $p.RelPermalink $current.RelPermalink -}}
+    {{- $index = $i -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $index -}}
