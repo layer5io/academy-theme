@@ -8,9 +8,7 @@
   {{- $parentType = .Params.Type -}}
 {{- end -}}
 
-{{- if $isFinal -}}
-  {{- $title = printf "%sFinal" $title -}}
-{{- end -}}
+
 
 {{- if $page.Params.is_optional -}}
   {{- $title = printf "%sOptional" $title -}}
@@ -28,8 +26,6 @@
   {{- $title = printf "%s Exam" $title  -}}
 {{- end -}}
 
-{{- if not $isFinal -}}
-  {{- $title = printf "%s - %d" $title $index -}}
-{{- end -}}
+{{- $title = printf "%s - %d" $title $index -}}
 
 {{- return $title  -}}
