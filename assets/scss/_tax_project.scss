@@ -265,21 +265,8 @@
   }
   
   .article-meta {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5em;
-  }
-
-  .article-taxonomies {
-    display: flex;
-  }
-
-  .article-reading-time {
-    align-self: flex-start;
-
-    .reading-time {
-      margin: 0;
-    }
+    display:flex;
+    margin-bottom: 1.5rem;
   }
 
   
