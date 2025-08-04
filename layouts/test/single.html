@@ -255,11 +255,11 @@
                 <div class="question-number">Question {{ add $index 1 }}</div>
                 <div class="question-text">{{ $question.text }}</div>
 
-                {{ if eq $question.type "mcq" }}
+                {{ if or ( eq $question.type "single_answer") ( eq $question.type "multiple_answers" ) }}
                 {{ range $optIndex, $option := $question.options }}
                 <div class="option">
                     <label>
-                        {{ if $question.multiple_answers }}
+                        {{ if eq $question.type "multiple_answers" }}
                         <input type="checkbox" name="selected_option_ids_{{ $question.id }}" value="{{ $option.id }}">
                         {{ else }}
                         <input type="radio" name="selected_option_ids_{{ $question.id }}" value="{{ $option.id }}">
@@ -410,7 +410,7 @@
             const answer = {question_id: questionID};
 
             if (selectedCheckboxes.length > 0) {
-                // Multiple choice with checkboxes (multiple_response = true)
+                // Multiple choice with checkboxes 
                 answer.selected_option_id = Array.from(selectedCheckboxes).reduce((acc, cb) => {
                     acc[cb.value] = true;
                     return acc;

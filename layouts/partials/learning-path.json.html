@@ -23,6 +23,8 @@
     "title": {{ .Title | jsonify }},
     "description": {{ .Description | jsonify }},
     "banner": {{ $banner_url | jsonify }},
+    "badge": {{ .Params.badge | jsonify }},
+    "certificate": {{ .Params.certificate | jsonify }},
     "permalink": {{ .Permalink | jsonify }},
     "categories": {{ .Params.Categories | jsonify }},
     "tags": {{ .Params.Tags | jsonify }},
