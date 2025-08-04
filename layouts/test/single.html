@@ -255,11 +255,11 @@
                 <div class="question-number">Question {{ add $index 1 }}</div>
                 <div class="question-text">{{ $question.text }}</div>
 
-                {{ if or ( eq $question.type "single_answer") ( eq $question.type "multiple_answers" ) }}
+                {{ if or ( eq $question.type "single-answer") ( eq $question.type "multiple-answers" ) }}
                 {{ range $optIndex, $option := $question.options }}
                 <div class="option">
                     <label>
-                        {{ if eq $question.type "multiple_answers" }}
+                        {{ if eq $question.type "multiple-answers" }}
                         <input type="checkbox" name="selected_option_ids_{{ $question.id }}" value="{{ $option.id }}">
                         {{ else }}
                         <input type="radio" name="selected_option_ids_{{ $question.id }}" value="{{ $option.id }}">
