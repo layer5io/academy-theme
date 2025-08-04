@@ -265,9 +265,23 @@
   }
   
   .article-meta {
-    display:flex;
-    margin-bottom: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
   }
+
+  .article-taxonomies {
+    display: flex;
+  }
+
+  .article-reading-time {
+    align-self: flex-start;
+
+    .reading-time {
+      margin: 0;
+    }
+  }
+
   
   .article-teaser.article-type-docs h3 a:before {
     display: inline-block;
