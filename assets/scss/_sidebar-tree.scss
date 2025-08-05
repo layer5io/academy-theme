@@ -116,16 +116,13 @@
       font-weight: $font-weight-bold;
       border-bottom: 1px solid $secondary; 
       margin-bottom: 1rem;
+      font-size:large;
+
     }
   }
 .level-0.td-sidebar-nav__section-title a {
   color: $dark;
-  &.active {
-    font-weight: $font-weight-bold;
-    color: $dark
-  }
 }
-
 
 .level-2.td-sidebar-nav__section-title a {
   color: $gray-800;
