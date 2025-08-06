@@ -23,7 +23,7 @@
     "title": {{ .Title | jsonify }},
     "description": {{ .Description | jsonify }},
     "banner": {{ $banner_url | jsonify }},
-    "badge": {{ .Params.badge | jsonify }},
+    "badge": {{ partial "badge.html" (dict "badge" .Params.badge "curriculaId" $id "orgId" $uuid ) | jsonify }},
     "certificate": {{ .Params.certificate | jsonify }},
     "permalink": {{ .Permalink | jsonify }},
     "categories": {{ .Params.Categories | jsonify }},
