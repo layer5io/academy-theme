@@ -5,6 +5,8 @@
 @import "variables_project.scss";
 @import "tax_project.scss";
 @import "search_project.scss";
+@import "summary.scss";
+@import "_nav.scss";
 
 
 // Page Layout Sections
@@ -574,7 +576,7 @@ a:not([href]):not([class]):hover {
   aspect-ratio: 1;
   top: 6px !important;
   right: 10px !important;
-  color: $secondary !important;
+  color: $lightslategray !important;
   background-color: transparent !important;
 
   &:hover {
@@ -604,61 +606,6 @@ a:not([href]):not([class]):hover {
 
 .csvtable {
   width: 100%;
-}
-// Only target the tabbed panels using ID naming convention
-
-[id^="tabs-"] {
-  border: 1px solid $border-color;;
-  border-radius: 0.5rem;
-  padding: .5rem;
-  margin-bottom: 1rem;
-  background-color: rgba($light, 0.02);
-  box-shadow: 0 0 8px rgba($dark, 0.2);
-
-  .nav-link {
-    color: $secondary;
-    background-color: transparent; // 🆕 consistent visible bg for inactive tabs
-    border: 2px solid transparent;
-    border-radius: 0.5rem 0.5rem 0 0;
-    margin: 2px;
-    padding: 0.5rem 1rem;
-    font-weight: 500;
-    line-height: 1.5rem;
-    display: inline-block;
-    transition: background-color 0.2s ease, color 0.2s ease;
-    white-space: nowrap;
-    box-shadow: 0 0 4px rgba($dark, 0.05); // 🆕 soft shadow for depth
-
-    &:hover {
-      background-color: rgba($primary, 0.1);
-      color: $dark;
-    }
-
-    &.active {
-      background-color: $primary;
-      color: #fff;
-      border-color: $primary $primary transparent;
-      font-weight: 600;
-      position: relative;
-      z-index: 2;
-      box-shadow: none; // remove shadow from active to flatten it into content
-    }
-  }
-
-   .nav-link.disabled {
-    background: transparent;
-    border: none;
-    color: #B1B9BC;
-    font-weight: 400;
-    cursor: default;
-    box-shadow: none;
-    pointer-events: none;
-    padding-left: 0;
-    padding-right: 0;
-    margin-right: 0.5rem;
-    margin-left: 0.25rem;
-    letter-spacing: 0.03em;
-  }
 }
 
 html {

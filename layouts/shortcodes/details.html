@@ -1,0 +1,15 @@
+{{/*
+  Shortcode to create a collapsible details/summary block.
+  Usage:
+  {{< details summary="Your Title Here" >}}
+    Your markdown content goes here.
+  {{< /details >}}
+*/}}
+<details class="details-shortcode" open="{{ .Get "open" | default false }}">
+    <summary>
+      <strong>{{ .Get "summary" | default "Click to expand" }}</strong>
+    </summary>
+    <div class="details-content">
+      {{ .Inner | .Page.RenderString }}
+    </div>
+  </details>
