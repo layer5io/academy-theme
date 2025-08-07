@@ -7,33 +7,9 @@
     }
 
     .header {
-        /* ... （position: sticky, top: 0 等其他属性保持不变） ... */
-        position: sticky;
-        top: 0;
-        z-index: 1000;
-        background-color: white; 
-        position: relative; 
-        border-bottom: var(--bs-border-width) solid var(--bs-border-color);
-    
-        /* * 关键修改 1: 
-         * 这是页面【未滚动时】的内边距，需要足够大。
-         * 假设蓝色导航栏高约 64px, 之前为按钮留的空间是 80px，所以初始值设为 144px。
-         * 你可以根据蓝色导航栏的实际高度微调这个 144px。
-         */
-        padding: 144px 2rem 1.5rem 2rem; 
-    
-        /* 关键修改 2: 增加一个平滑的过渡动画效果 */
-        transition: padding-top 0.3s ease-in-out;
-    }
-
-    .header.is-scrolled {
-        padding-top: 80px; /* 这个值和我们上一版一样，只为返回按钮和标题留出空间 */
-    }
-
-    /*  .header {
         border-bottom: var(--bs-border-width) solid var(--bs-border-color);
         padding: 2rem 2rem 1.5rem;
-    }  */
+    }
 
     .header h1 {
         font-size: 1.75rem;
@@ -244,7 +220,7 @@
             width: 38px;
             height: 38px;
             font-size: 0.9rem;
-            top: 15px;
+            top: 200px;
             left: 15px;
         }
 
@@ -530,22 +506,6 @@
     document.getElementById("go-back").addEventListener("click", HandleGoBack);
 
     document.getElementById("quiz-form").addEventListener("submit", HandleQuizSubmission);
-
-        // 动态调整 Header Padding 的功能
-        window.addEventListener('scroll', function() {
-            const header = document.querySelector('.header');
-            // 如果 header 元素存在
-            if (header) {
-                // 当页面垂直滚动超过 10px 时
-                if (window.scrollY > 10) {
-                    // 给 .header 添加 'is-scrolled' 类
-                    header.classList.add('is-scrolled');
-                } else {
-                    // 否则（滚回顶部时），移除 'is-scrolled' 类
-                    header.classList.remove('is-scrolled');
-                }
-            }
-        });
 
 </script>
 
