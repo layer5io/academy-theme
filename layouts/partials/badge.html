@@ -2,8 +2,8 @@
 {{- $contentId := .curriculaId -}}
 {{- $orgId := .orgId | default "" -}}
 
-{{- $svg := cond (partial "is-url.html" $b.svg) $b.svg (partial "resolve-local-resource.html" (dict "uuid" $orgId "banner" $b.svg )) -}}
-{{- $png := cond (partial "is-url.html" $b.png) $b.png (partial "resolve-local-resource.html" (dict "uuid" $orgId "banner" $b.svg )) -}}
+{{- $svg_url := cond (partial "is-url.html" $b.svg) $b.svg (partial "resolve-local-resource.html" (dict "page" $page_ctx "path" $b.svg)) -}}
+{{- $png_url := cond (partial "is-url.html" $b.png) $b.png (partial "resolve-local-resource.html" (dict "page" $page_ctx "path" $b.png)) -}}
 
 {{- $badge := "nil" -}}
 
