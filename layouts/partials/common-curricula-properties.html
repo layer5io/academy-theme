@@ -2,7 +2,7 @@
 {{- $page := .page -}}
 {{- $uuid := .uuid -}}
 {{- $type := or $page.Params.Type "default" -}}
-{{- $banner_url := partial "banner-url.html" (dict "uuid" $uuid "banner" $page.Params.Banner) -}}
+{{- $banner_url := partial "resolve-local-resource.html" (dict "page" .page "path" .page.Params.Banner) -}}
 {{- $id := partial "id.html" .page -}}
 
 
