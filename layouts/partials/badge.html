@@ -1,0 +1,21 @@
+{{- $b := .badge -}}
+{{- $contentId := .curriculaId -}}
+{{- $orgId := .orgId | default "" -}}
+
+{{- $svg := cond (partial "is-url.html" $b.svg) $b.svg (partial "banner-url.html" (dict "uuid" $orgId "banner" $b.svg )) -}}
+{{- $png := cond (partial "is-url.html" $b.png) $b.png (partial "banner-url.html" (dict "uuid" $orgId "banner" $b.svg )) -}}
+
+{{- $badge := "nil" -}}
+
+{{- if $b }}
+    {{- $badge =  dict
+      "title" $b.title
+      "description" $b.description
+      "label" $contentId
+      "svg" $svg
+      "png" $png
+    -}}
+{{- end -}}
+
+
+{{- return  $badge -}}
