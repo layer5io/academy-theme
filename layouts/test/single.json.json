@@ -25,7 +25,11 @@
   "prerequisites": {{ $prerequisites | jsonify }},
   "total_marks": {{- $total := 0 -}}
     {{- range $p.questions }}
-      {{- $total = add $total (or .marks 0) }}
+      {{- $marks := or .marks 0 }}
+      {{- if lt $marks 0 }}
+        {{- $marks = 0 }}
+      {{- end }}
+      {{- $total = add $total $marks }}
     {{- end }}
     {{ $total }},
   "parent": {{- with .Parent -}}
