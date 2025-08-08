@@ -3,7 +3,7 @@
 {{- $ctx := partial "resolve-tenant.html" . -}}
 {{- $uuid := $ctx.uuid -}}
 {{- $level := partial "validate-level.html" . -}}
-{{- $banner_url := partial "banner-url.html" (dict "uuid" $uuid "banner" .Params.Banner) -}}
+{{- $banner_url := partial "resolve-local-resource.html" (dict "page" . "path" .Params.Banner) -}}
 {{- $id := partial "id.html" . -}}
 
 {{/* 
@@ -23,7 +23,7 @@
     "title": {{ .Title | jsonify }},
     "description": {{ .Description | jsonify }},
     "banner": {{ $banner_url | jsonify }},
-    "badge": {{ partial "badge.html" (dict "badge" .Params.badge "curriculaId" $id "orgId" $uuid ) | jsonify }},
+    "badge": {{ partial "badge.html" (dict "page" . "badge" .Params.badge "curriculaId" $id ) | jsonify }},
     "certificate": {{ .Params.certificate | jsonify }},
     "permalink": {{ .Permalink | jsonify }},
     "categories": {{ .Params.Categories | jsonify }},
