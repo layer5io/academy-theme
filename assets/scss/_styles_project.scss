@@ -221,7 +221,7 @@ a:not([href]):not([class]):hover {
   a {
     &:hover {
       color: dark;
-      text-decoration: none;
+      text-decoration: underline;
     }
 
     &.active:not(.tree-root) {
