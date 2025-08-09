@@ -233,7 +233,7 @@
     }
 </style>
 
-{{ $title := partial "test/title.html" . }}
+{{ $title := .Title }}
 
 
 <div class="container">
@@ -243,7 +243,7 @@
             <p class="text-blue-600 hover:underline" id="go-back"> Back</a>
         </div>
         <h1>{{ $title }}</h1>
-        <p>{{ .Content | default "Please answer the questions below to complete the quiz." }}</p>
+        <p>{{ .Content | default "Please answer the questions below to complete the test." }}</p>
     </div>
 
     <div class="form-container">
