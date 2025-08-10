@@ -6,6 +6,10 @@
 {{- $banner_url := partial "resolve-local-resource.html" (dict "page" . "path" .Params.Banner) -}}
 {{- $id := partial "id.html" . -}}
 
+
+{{- $urlParts := split (trim .RelPermalink "/") "/" -}}
+{{- $slug := index $urlParts (sub (len $urlParts) 1) -}}
+
 {{/* 
   This file is used to generate the JSON representation of a learning path.
   It includes metadata such as title, description, banner, and courses.
@@ -14,7 +18,7 @@
 {
   "id": {{ $id | jsonify }},
   "level": {{ (trim  $level " \n\r\t") | jsonify }},
-  "slug": {{ or .Slug .File.ContentBaseName | jsonify }},
+  "slug": {{ $slug | jsonify }},
   "org_id": {{ $uuid | jsonify }},
   "type": {{ .Params.Type | jsonify }},
   "visibility": {{ or .Params.Visibility "public" | jsonify }},
