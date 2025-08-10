@@ -255,7 +255,7 @@
     }
 </style>
 
-{{ $title := partial "test/title.html" . }}
+{{ $title := .Title }}
 
 <div class="container">
     <div class="header">
@@ -263,7 +263,7 @@
         <i class="fas fa-arrow-left"></i>
     </div>
         <h1>{{ $title }}</h1>
-        <p>{{ .Content | default "Please answer the questions below to complete the quiz." }}</p>
+        <p>{{ .Content | default "Please answer the questions below to complete the test." }}</p>
     </div>
 
     <div class="form-container">
