@@ -23,16 +23,30 @@
         font-size: 0.95rem;
     }
 
-    .header #go-back {
-        display: inline-block;
-        margin-bottom: 1rem;
+    #go-back {
+        position: fixed; 
+        top: 160px;     
+        left: 25px;    
+        z-index: 1010; 
+        
+        width: 45px;      
+        height: 45px;      
+        background-color:white; 
+        border-radius: 50%;   
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        display: flex;      
+        justify-content: center;
+        align-items: center;    
         color: var(--bs-primary);
-        font-size: 1rem;
+        font-size: 1.1rem;   
         cursor: pointer;
-        transition: color 0.2s ease;
+        transition: all 0.2s ease-in-out; 
+        border: 1px solid var(--bs-border-color);
     }
 
-    .header #go-back:hover {
+    #go-back:hover {
+        transform: scale(1.1); 
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
         color: var(--bs-link-hover-color);
     }
 
@@ -202,6 +216,14 @@
     }
 
     @media (max-width: 768px) {
+        #go-back {
+            width: 38px;
+            height: 38px;
+            font-size: 0.9rem;
+            top: 200px;
+            left: 15px;
+        }
+
         .container {
             margin: 0;
         }
@@ -235,13 +257,11 @@
 
 {{ $title := .Title }}
 
-
 <div class="container">
     <div class="header">
-        <div id="go-back">
-            <i class="fas fa-arrow-left"></i>
-            <p class="text-blue-600 hover:underline" id="go-back"> Back</a>
-        </div>
+            <div id="go-back">
+        <i class="fas fa-arrow-left"></i>
+    </div>
         <h1>{{ $title }}</h1>
         <p>{{ .Content | default "Please answer the questions below to complete the test." }}</p>
     </div>
