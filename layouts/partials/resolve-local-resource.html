@@ -1,0 +1,18 @@
+{{/*
+  //revice a page and a path, return the final url of the resource in the page bundle.
+  @param {dict} . - A dictionary containing:
+  - "page" {page}: The current page context.
+  - "path" {string}: The filename of the resource.
+*/}}
+{{- $page_ctx := .page -}}
+{{- $resource_path := .path -}}
+
+{{- $resolved_url := "" -}}
+
+{{- if and $page_ctx $resource_path -}}
+  {{- with $page_ctx.Resources.GetMatch $resource_path -}}
+    {{- $resolved_url = .Permalink -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $resolved_url -}}
