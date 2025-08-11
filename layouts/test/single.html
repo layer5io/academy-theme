@@ -85,6 +85,13 @@
         line-height: 1.4;
     }
 
+    .question-instruction{
+        font: 0.2rem;
+        color: var(--bs-gray-500);
+        margin-bottom:1.25rem;
+        line-height: 0cqw;
+    }
+
     .option {
         margin-bottom: 0.75rem;
     }
@@ -274,6 +281,7 @@
             <div class="question" data-question-id="{{ $question.id }}" id="q-{{ $question.id }}">
                 <div class="question-number">Question {{ add $index 1 }}</div>
                 <div class="question-text">{{ $question.text }}</div>
+                <div class="question-instruction">{{ $question.instruction}}</div>
 
                 {{ if or ( eq $question.type "single-answer") ( eq $question.type "multiple-answers" ) }}
                 {{ range $optIndex, $option := $question.options }}
