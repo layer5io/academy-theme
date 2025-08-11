@@ -6,10 +6,10 @@
 
 {
   "id": {{ partial "id.html" . | jsonify }},
-  "title": {{ partial "test/title.html" . | jsonify }},
+  "title": {{ .Title | jsonify }},
   "org_id": {{ $orgId | jsonify }},
   "final": {{ partial "test/is-final.html" .  | jsonify }},
-  "description": {{ .Content | plainify | jsonify }},
+  "description": {{ .Content | safeHTML | jsonify }},
   "slug": {{ .Slug | jsonify }},
   "relPermalink": {{ .RelPermalink | jsonify }},
   "permalink": {{ .Permalink | jsonify }},
