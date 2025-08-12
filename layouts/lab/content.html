@@ -12,12 +12,7 @@
   {{ with .Params.plan }}
     {{ partial "plan-info.html" (dict "plan" .) }}
   {{ end }}
-{{/* --- End: Inherited Header --- */}}
 
-
-{{/* --- Start: Your Custom Lab Sections --- */}}
-
-  {{/* "Lab Workbench" Section is inserted here, after the header */}}
   {{ if $p.starter_catalog_link }}
     <div class="lab-action-card">
       <div class="lab-action-header">
@@ -39,7 +34,6 @@
 
   {{ .Content }}
 
-  {{/* "Reference Answer" Section is inserted here, before the pager */}}
   {{ if or $p.answer_embed_link $p.answer_catalog_link }}
     <div class="lab-action-card">
       <div class="lab-action-header">
@@ -61,10 +55,7 @@
       {{ end }}
     </div>
   {{ end }}
-{{/* --- End: Your Custom Lab Sections --- */}}
 
-
-{{/* --- Start: Inherited from default content.html --- */}}
   {{ if (.Site.Config.Services.Disqus.Shortname) -}}
     <br />
     {{- partial "disqus-comment.html" . -}}
@@ -72,4 +63,3 @@
   {{ partial "pager.html" . }}
   {{ partial "page-meta-lastmod.html" . }}
 </div>
-{{/* --- End: Inherited Footer --- */}}
