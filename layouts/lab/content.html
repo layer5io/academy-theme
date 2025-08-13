@@ -22,11 +22,11 @@
   {{ if $p.starter_catalog_link }}
     <div class="lab-action-card">
       <div class="lab-action-header">
-        <h2>Lab Workbench</h2>
+        <h2>Start Your Lab</h2>
       </div>
-      <p>Please click the main button below to start your lab in the Kanvas.</p>
+      <p>Get started with a pre-configured template in Kanvas.</p>
       <a href="{{ $p.starter_catalog_link }}" target="_blank" class="lab-action-btn primary mb-4">
-          Clone Starter Template to Start the Lab
+        Clone and Start Lab
       </a>
       
       {{ with $p.starter_embed_link }}
@@ -43,9 +43,9 @@
   {{ if or $p.answer_embed_link $p.answer_catalog_link }}
     <div class="lab-action-card">
       <div class="lab-action-header">
-        <h2>Reference Answer</h2>
+        <h2>Check Your Work</h2>
       </div>
-      <p>Congratulations on completing all the steps! Here is the final reference answer for this lab. Compare it with your own work.</p>
+      <p>Great job! Use the reference design below to compare with your work.</p>
       
       {{ if $p.answer_catalog_link }}
         <a href="{{ $p.answer_catalog_link }}" target="_blank" class="lab-action-btn secondary mb-4">
