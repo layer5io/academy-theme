@@ -4,8 +4,6 @@
   "title": {{ .Title | jsonify }},
   "description": {{ .Content | plainify | jsonify }},
   "type": "lab",
-  "difficulty": {{ $p.difficulty | jsonify }},
-  "duration_minutes": {{ $p.duration_minutes | int }},
   "starter_catalog_link": {{ $p.starter_catalog_link | jsonify }},
   "starter_embed_link": {
     "src": {{ $p.starter_embed_link.src | jsonify }},
