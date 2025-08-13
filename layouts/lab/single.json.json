@@ -3,6 +3,7 @@
   "id": {{ partial "id.html" . | jsonify }},
   "title": {{ .Title | jsonify }},
   "description": {{ .Content | plainify | jsonify }},
+  "weight": {{ $p.weight | jsonify }},
   "type": "lab",
   "starter_catalog_link": {{ $p.starter_catalog_link | jsonify }},
   "starter_embed_link": {
