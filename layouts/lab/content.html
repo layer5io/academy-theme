@@ -13,6 +13,12 @@
     {{ partial "plan-info.html" (dict "plan" .) }}
   {{ end }}
 
+  {{ $mainContent := .Content }}
+
+  {{ with .Page.Scratch.Get "lab_intro" }}
+    {{ . | markdownify }}
+  {{ end }}
+
   {{ if $p.starter_catalog_link }}
     <div class="lab-action-card">
       <div class="lab-action-header">
@@ -31,8 +37,8 @@
       {{ end }}
     </div>
   {{ end }}
-
-  {{ .Content }}
+  
+  {{ $mainContent }}
 
   {{ if or $p.answer_embed_link $p.answer_catalog_link }}
     <div class="lab-action-card">
