@@ -284,7 +284,17 @@
             <div class="question" data-question-id="{{ $question.id }}" id="q-{{ $question.id }}">
                 <div class="question-number">Question {{ add $index 1 }}</div>
                 <div class="question-text">{{ $question.text }}</div>
-                <div class="question-instruction">{{ $question.instruction}}</div>
+                {{ if $question.instruction }}
+                <div class="question-instruction">{{ $question.instruction }}</div>
+                {{ else }}
+                    {{ if eq $question.type "multiple-answers" }}
+                    <div class="question-instruction">Select all that apply</div>
+                    {{ else if eq $question.type "single-answer" }}
+                    <div class="question-instruction">Select one answer</div>
+                    {{ else if eq $question.type "short_answer" }}
+                    <div class="question-instruction">Type your answer below</div>
+                    {{ end }}
+                {{ end }}
 
                 {{ if or ( eq $question.type "single-answer") ( eq $question.type "multiple-answers" ) }}
                 {{ range $optIndex, $option := $question.options }}
