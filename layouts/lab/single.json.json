@@ -1,0 +1,18 @@
+{{- $p := .Params -}}
+{
+  "id": {{ partial "id.html" . | jsonify }},
+  "title": {{ .Title | jsonify }},
+  "description": {{ .Content | plainify | jsonify }},
+  "weight": {{ $p.weight | jsonify }},
+  "type": "lab",
+  "starter_catalog_link": {{ $p.starter_catalog_link | jsonify }},
+  "starter_embed_link": {
+    "src": {{ $p.starter_embed_link.src | jsonify }},
+    "id": {{ $p.starter_embed_link.id | jsonify }}
+  },
+  "answer_catalog_link": {{ $p.answer_catalog_link | jsonify }},
+  "answer_embed_link": {
+    "src": {{ $p.answer_embed_link.src | jsonify }},
+    "id": {{ $p.answer_embed_link.id | jsonify }}
+  }
+}
