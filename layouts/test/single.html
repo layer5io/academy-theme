@@ -85,6 +85,13 @@
         line-height: 1.4;
     }
 
+    .question-instructions{
+        font: 0.2rem;
+        color: var(--bs-gray-500);
+        margin-bottom:1.25rem;
+        line-height: 1;
+    }
+
     .option {
         margin-bottom: 0.75rem;
     }
@@ -247,6 +254,9 @@
         .question-text {
             font-size: 1rem;
         }
+        .question-instructions{
+        font: 0.15rem;
+        }
 
         .option label {
             padding: 0.625rem 0.75rem;
@@ -274,6 +284,17 @@
             <div class="question" data-question-id="{{ $question.id }}" id="q-{{ $question.id }}">
                 <div class="question-number">Question {{ add $index 1 }}</div>
                 <div class="question-text">{{ $question.text }}</div>
+                {{ if $question.instructions }}
+                <div class="question-instructions">{{ $question.instructions }}</div>
+                {{ else }}
+                    {{ if eq $question.type "multiple-answers" }}
+                    <div class="question-instructions">Select all that apply</div>
+                    {{ else if eq $question.type "single-answer" }}
+                    <div class="question-instructions">Select one answer</div>
+                    {{ else if eq $question.type "short_answer" }}
+                    <div class="question-instructions">Type your answer below</div>
+                    {{ end }}
+                {{ end }}
 
                 {{ if or ( eq $question.type "single-answer") ( eq $question.type "multiple-answers" ) }}
                 {{ range $optIndex, $option := $question.options }}
