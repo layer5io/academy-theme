@@ -36,6 +36,7 @@
     "total_tests": {{ len (where .Pages "Type" "test") }},
     "total_modules": {{ len (where .Pages "Type" "module") }},
     "total_pages": {{ len (where .Pages "Type" "page") }},
+    "total_reading_time": {{ partial "aggregate-reading-time.html" . }},
 
     "children": [
       {{- range $j, $c := .Pages }}
