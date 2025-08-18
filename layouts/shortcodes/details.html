@@ -5,9 +5,9 @@
     Your markdown content goes here.
   {{< /details >}}
 */}}
-<details class="details-shortcode" open="{{ .Get "open" | default false }}">
+<details class="details-shortcode" {{ if eq (.Get "open") "true" }}open{{ end }}>
     <summary>
-      <strong>{{ .Get "summary" | default "Click to expand" }}</strong>
+      <strong>{{ .Get "summary" }}</strong>
     </summary>
     <div class="details-content">
       {{ .Inner | .Page.RenderString }}
