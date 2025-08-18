@@ -7,7 +7,7 @@
 @import "search_project.scss";
 @import "summary.scss";
 @import "nav.scss";
-
+@import "lab.scss";
 
 // Page Layout Sections
 .td-home {
@@ -223,7 +223,7 @@ a:not([href]):not([class]):hover {
   a {
     &:hover {
       color: dark;
-      text-decoration: none;
+      text-decoration: underline;
     }
 
     &.active:not(.tree-root) {

@@ -1,13 +1,15 @@
 {{ $p := .Params }}
 
 {{- $prerequisites := partial "test/collect-prerequisites.html" . -}}
-
+{{- $ctx := partial "resolve-tenant.html" . -}}
+{{- $orgId := $ctx.uuid -}}
 
 {
   "id": {{ partial "id.html" . | jsonify }},
-  "title": {{ partial "test/title.html" . | jsonify }},
+  "title": {{ .Title | jsonify }},
+  "org_id": {{ $orgId | jsonify }},
   "final": {{ partial "test/is-final.html" .  | jsonify }},
-  "description": {{ .Content | plainify | jsonify }},
+  "description": {{ .Content | safeHTML | jsonify }},
   "slug": {{ .Slug | jsonify }},
   "relPermalink": {{ .RelPermalink | jsonify }},
   "permalink": {{ .Permalink | jsonify }},

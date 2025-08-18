@@ -1,13 +1,10 @@
 
 {{- $page := .page -}}
-{{- $uuid := .uuid -}}
 {{- $type := or $page.Params.Type "default" -}}
-{{- $banner_url := partial "banner-url.html" (dict "uuid" $uuid "banner" $page.Params.Banner) -}}
+{{- $banner_url := partial "resolve-local-resource.html" (dict "page" .page "path" .page.Params.Banner) -}}
 {{- $id := partial "id.html" .page -}}
 
-
-
-"title": {{ partial "title.html" $page | jsonify }},
+"title": {{ $page.Title | jsonify }},
 "slug": {{ or $page.Slug $page.File.ContentBaseName | jsonify }},
 "id": {{ $id | jsonify }},
 "level": {{ $page.Params.level | jsonify }},
@@ -16,4 +13,5 @@
 "banner": {{ $banner_url | jsonify }},
 "permalink": {{ $page.Permalink | jsonify }},
 "type": {{ $type | jsonify }},
-"prerequisites": {{ partial "test/collect-prerequisites.html" $page | jsonify }}
+"prerequisites": {{ partial "test/collect-prerequisites.html" $page | jsonify }},
+"reading_time": {{ $page.ReadingTime | jsonify }}

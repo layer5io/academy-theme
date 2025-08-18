@@ -1,0 +1,3 @@
+{{- $s := . -}}
+{{- $isUrl := or (strings.HasPrefix $s "http://") (strings.HasPrefix $s "https://") -}}
+{{- return $isUrl -}}
