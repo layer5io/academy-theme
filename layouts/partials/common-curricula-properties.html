@@ -13,4 +13,5 @@
 "banner": {{ $banner_url | jsonify }},
 "permalink": {{ $page.Permalink | jsonify }},
 "type": {{ $type | jsonify }},
-"prerequisites": {{ partial "test/collect-prerequisites.html" $page | jsonify }}
+"prerequisites": {{ partial "test/collect-prerequisites.html" $page | jsonify }},
+"reading_time": {{ $page.ReadingTime | jsonify }}

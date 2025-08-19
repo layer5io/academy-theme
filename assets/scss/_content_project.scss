@@ -123,7 +123,7 @@ h6 {
     padding: 0 0 0 1rem;
     margin-bottom: $spacer;
     color: $secondary;
-    border-left: 6px solid $secondary;
+    border-left: 6px solid $lightslategray;
   }
 
   ul li,
@@ -143,6 +143,7 @@ h6 {
   >.alert,
   >.highlight,
   >.lead,
+  >.lab-action-card,
   >.td-table,
   >blockquote,
   >dl dd,
@@ -151,6 +152,7 @@ h6 {
   >ol,
   >p,
   >pre,
+  >details,
   >ul {
     @extend .td-max-width-on-larger-screens;
   }

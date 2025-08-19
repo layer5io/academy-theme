@@ -1,0 +1,71 @@
+{{ $p := .Params }}
+
+<div class="td-content">
+  <h1>{{ .Title }}</h1>
+  {{ with .Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}
+  <header class="article-meta{{ if or .Params.categories .Params.tags }} article-meta-bg{{ end }}">
+    {{ partial "taxonomy_terms_article_wrapper.html" . -}}
+    {{ if (and (not .Params.hide_readingtime) (.Site.Params.ui.readingtime.enable)) -}}
+      {{ partial "reading-time.html" . -}}
+    {{ end -}}
+  </header>
+  {{ with .Params.plan }}
+    {{ partial "plan-info.html" (dict "plan" .) }}
+  {{ end }}
+
+  {{ $mainContent := .Content }}
+
+  {{ with .Page.Scratch.Get "lab_intro" }}
+    {{ . | markdownify }}
+  {{ end }}
+
+  {{ if $p.starter_catalog_link }}
+    <div class="lab-action-card">
+      <div class="lab-action-header">
+        <h2>Start Your Lab</h2>
+      </div>
+      <p>Get started with a pre-configured template in Kanvas.</p>
+      <a href="{{ $p.starter_catalog_link }}" target="_blank" class="lab-action-btn primary mb-4">
+        Clone and Start Lab
+      </a>
+      
+      {{ with $p.starter_embed_link }}
+        {{ if and .src .id }}
+          <div id="{{ .id }}" class="meshery-embed-container full"></div>
+          <script src="{{ .src }}" type="module"></script>
+        {{ end }}
+      {{ end }}
+    </div>
+  {{ end }}
+  
+  {{ $mainContent }}
+
+  {{ if or $p.answer_embed_link $p.answer_catalog_link }}
+    <div class="lab-action-card">
+      <div class="lab-action-header">
+        <h2>Check Your Work</h2>
+      </div>
+      <p>Great job! Use the reference design below to compare with your work.</p>
+      
+      {{ if $p.answer_catalog_link }}
+        <a href="{{ $p.answer_catalog_link }}" target="_blank" class="lab-action-btn secondary mb-4">
+          View Answer Design in Catalog
+        </a>
+      {{ end }}
+
+      {{ with $p.answer_embed_link }}
+        {{ if and .src .id }}
+          <div id="{{ .id }}" class="meshery-embed-container full"></div>
+          <script src="{{ .src }}" type="module"></script>
+        {{ end }}
+      {{ end }}
+    </div>
+  {{ end }}
+
+  {{ if (.Site.Config.Services.Disqus.Shortname) -}}
+    <br />
+    {{- partial "disqus-comment.html" . -}}
+  {{ end -}}
+  {{ partial "pager.html" . }}
+  {{ partial "page-meta-lastmod.html" . }}
+</div>
