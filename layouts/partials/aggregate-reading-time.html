@@ -2,4 +2,8 @@
 {{- range .RegularPagesRecursive -}}
   {{- $total = add $total .ReadingTime -}}
 {{- end -}}
-{{- $total -}}
+{{- if lt $total 1 -}}
+  less than 1 min
+{{- else -}}
+  {{ $total }} min
+{{- end -}}
