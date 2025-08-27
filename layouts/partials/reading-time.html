@@ -1,0 +1,44 @@
+{{- $totalReadingTime := 0 -}}
+{{- $isLPOrCourse := or (eq .Params.type "learning-path") -}}
+
+{{- if eq .Params.type "learning-path" -}}
+  {{- range .Pages -}}
+    {{- if eq .Params.type "course" -}}
+      {{- range .Pages -}}
+        {{- if eq .Params.type "module" -}}
+          {{- range .Pages -}}
+            {{- $totalReadingTime = add $totalReadingTime .ReadingTime -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if eq .Params.type "course" -}}
+  {{- range .Pages -}}
+    {{- if eq .Params.type "module" -}}
+      {{- range .Pages -}}
+        {{- $totalReadingTime = add $totalReadingTime .ReadingTime -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if eq .Params.type "module" -}}
+  {{- range .Pages -}}
+    {{- $totalReadingTime = add $totalReadingTime .ReadingTime -}}
+  {{- end -}}
+  {{- $totalReadingTime = mul (div (add $totalReadingTime 5) 10) 10 -}}
+{{- else -}}
+  {{- $totalReadingTime = .ReadingTime -}}
+{{- end -}}
+
+{{- if gt $totalReadingTime 0 -}}
+<div class="reading-time">
+  <i class="fa-solid fa-clock" style="margin-right:5px; margin-bottom: 5px"></i>
+  {{- if $isLPOrCourse -}}
+    {{- $hours := math.Ceil (div (float $totalReadingTime) 60.0) -}}
+    {{ T "readingTimeHours" (dict "Count" $hours) }}
+  {{- else -}}
+    {{ T "readingTime" $totalReadingTime }}
+  {{- end -}}
+</div>
+{{- end -}}
+
