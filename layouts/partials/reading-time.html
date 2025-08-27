@@ -1,5 +1,5 @@
 {{- $totalReadingTime := 0 -}}
-{{- $isLPOrCourse := or (eq .Params.type "learning-path") -}}
+{{- $isLPOrCourse := (eq .Params.type "learning-path") -}}
 
 {{- if eq .Params.type "learning-path" -}}
   {{- range .Pages -}}
@@ -21,6 +21,7 @@
       {{- end -}}
     {{- end -}}
   {{- end -}}
+  {{- $totalReadingTime = mul (div (add $totalReadingTime 5) 10) 10 -}}
 {{- else if eq .Params.type "module" -}}
   {{- range .Pages -}}
     {{- $totalReadingTime = add $totalReadingTime .ReadingTime -}}
