@@ -2,18 +2,16 @@
 {{- $contentId := .curriculaId -}}
 {{- $page_ctx := .page -}}
 
-{{- $svg := cond (partial "is-url.html" $b.svg) $b.svg (partial "resolve-local-resource.html" (dict "page" $page_ctx "path" $b.svg)) -}}
-{{- $png := cond (partial "is-url.html" $b.png) $b.png (partial "resolve-local-resource.html" (dict "page" $page_ctx "path" $b.png)) -}}
+{{- $image_url := cond (partial "is-url.html" $b.image_url) $b.image_url (partial "resolve-local-resource.html" (dict "page" $page_ctx "path" $b.image_url)) -}}
 
 {{- $badge := "nil" -}}
 
 {{- if $b }}
     {{- $badge =  dict
-      "title" $b.title
+      "name" $b.title
       "description" $b.description
       "label" $contentId
-      "svg" $svg
-      "png" $png
+      "image_url" $svg
     -}}
 {{- end -}}
 
