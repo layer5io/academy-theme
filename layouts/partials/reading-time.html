@@ -21,13 +21,13 @@
       {{- end -}}
     {{- end -}}
   {{- end -}}
-  {{- $totalReadingTime = mul (div (add $totalReadingTime 5) 10) 10 -}}
+  {{- $totalReadingTime = mul (div (add $totalReadingTime 9) 10) 10 -}}
 {{- else if eq .Params.type "module" -}}
   {{- range .Pages -}}
     {{- $totalReadingTime = add $totalReadingTime .ReadingTime -}}
   {{- end -}}
-  {{- $totalReadingTime = mul (div (add $totalReadingTime 5) 10) 10 -}}
 {{- else -}}
+{{- $totalReadingTime = mul (div (add $totalReadingTime 9) 10) 10 -}}
   {{- $totalReadingTime = .ReadingTime -}}
 {{- end -}}
 
