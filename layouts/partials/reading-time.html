@@ -27,7 +27,6 @@
     {{- $totalReadingTime = add $totalReadingTime .ReadingTime -}}
   {{- end -}}
 {{- else -}}
-{{- $totalReadingTime = mul (div (add $totalReadingTime 9) 10) 10 -}}
   {{- $totalReadingTime = .ReadingTime -}}
 {{- end -}}
 
