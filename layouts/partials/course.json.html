@@ -1,6 +1,7 @@
 
 {
   {{ partial "common-curricula-properties.html" . }},
+  "total_reading_time": {{ partial "aggregate-reading-time.html" .page }},
   "children": [
     {{- range $k, $m := .page.Pages }}
       {{- if $k }},{{ end }}
