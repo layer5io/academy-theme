@@ -259,7 +259,7 @@
             <i class="fas fa-arrow-left"></i>
         </div>
         <h1>{{ $title }}</h1>
-        <p>{{ .Content | default "Please answer the questions below to complete the test." }}</p>
+        <p id="test-description">{{ .Content | default "Please answer the questions below to complete the test." }}</p>
     </div>
 
     <!-- Missing Prerequisites Card -->
@@ -306,7 +306,7 @@
                     </div>
                     
                     <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; justify-content: end; flex-wrap: wrap;">
-                            <button class="btn btn-primary btn-sm" id="start-test-btn">
+                            <button class="btn btn-primary " id="start-test-btn">
                                 <i class="bi bi-play-fill me-1"></i>
                                 Start Test
                             </button>
@@ -374,11 +374,13 @@
 
 {{ $test := partial "test/single.html" . }}
 {{ $prerequisites := $test.prerequisites | default (slice) }}
+{{ $build := .Site.Params.build | default "development" }}
 
 <script>
     const prerequisites = {{$prerequisites}};
     const testId = {{$test.id}};
     const passPercentage = {{ or $test.pass_percentage 70 }};
+    const build = {{ $build }};
 
     let currentState = 'loading'; // loading, overview, form, result, prerequisites, viewing_submission
 
@@ -487,7 +489,7 @@
                                 <button class="btn btn-outline-secondary btn-sm me-2" id="view-submission-btn">
                                     View Submission
                                 </button>
-                                <button class="btn btn-primary btn-sm" id="retry-test-btn">
+                                <button class="btn btn-primary" id="retry-test-btn">
                                     <i class="bi bi-arrow-clockwise me-1"></i>
                                     Retry
                                 </button>
@@ -660,9 +662,24 @@
         showState('form');
     });
 
+
+    // get the prod build param 
+    const isProdBuild = build === "production"
+
+    if (!isProdBuild) {
+        // In non-production builds, skip prerequisite checks
+        showState('form');
+    } 
+    
+
     // Initialize when context is ready
     window.addEventListener("academyContextReady", () => {
         console.log("Quiz page loaded.", prerequisites);
+
+        if (!window.academyContext){
+            showState('form');
+            return;
+        }
         
         const pending_preqs = window.academyContext.progressTracker?.getPendingPrerequisites(prerequisites) || [];
         
