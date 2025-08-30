@@ -82,8 +82,7 @@ time_format_blog = "2006.01.02"
   [markup.goldmark]
     [markup.goldmark.parser.attribute]
       block = true
-    [markup.goldmark.renderer]
-      unsafe = true
+
   [markup.highlight]
     # See a complete list of available styles at https://xyproto.github.io/splash/docs/all.html
     style = "tango"
