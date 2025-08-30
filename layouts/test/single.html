@@ -312,7 +312,8 @@
 
                 {{ else if (eq $question.type "short_answer") }}
                 <input type="text" name="answer_text_{{ $question.id }}" class="text-input"
-                    placeholder="Type your answer here">
+                    placeholder="Type your answer here"
+                    data-case-sensitive="{{ if $question.case_sensitive }}true{{ else }}false{{ end }}">
                 {{ end }}
             </div>
             {{ end }}
@@ -460,7 +461,12 @@
                 // Single choice with radio button (multiple_response = false)
                 answer.selected_option_id = {[selectedRadio.value]: true};
             } else if (textInput && textInput.value.trim()) {
-                answer.answer_text = textInput.value.trim();
+                const caseSensitive = textInput.getAttribute('data-case-sensitive') === 'true';
+                let answerText = textInput.value.trim();
+                if (!caseSensitive) {
+                    answerText = answerText.toLowerCase();
+                }
+                answer.answer_text = answerText;
             }
 
             if (answer.selected_option_id || answer.answer_text) {
