@@ -1,0 +1,41 @@
+{{- $p := .Params -}}
+{{- $prerequisites := partial "test/collect-prerequisites.html" . -}}
+{{- $ctx := partial "resolve-tenant.html" . -}}
+{{- $orgId := $ctx.uuid -}}
+
+{{- $total := 0 -}}
+{{- range $p.questions }}
+  {{- $total = add $total (or .marks 0) }}
+{{- end }}
+
+{{- $parent := (cond (ne .Parent nil) (dict
+  "id" (partial "id.html" .Parent)
+  "title" .Parent.Title
+  "relPermalink" .Parent.RelPermalink
+  "type" .Parent.Type
+) nil) -}}
+
+{{- return (dict
+  "id" (partial "id.html" .)
+  "title" .Title
+  "org_id" $orgId
+  "final" (partial "test/is-final.html" .)
+  "description" (.Content | safeHTML)
+  "slug" .Slug
+  "relPermalink" .RelPermalink
+  "permalink" .Permalink
+  "type" .Type
+  "section" .Section
+  "layout" .Layout
+  "date" (.Date | time.Format "2006-01-02")
+  "lastmod" (.Lastmod | time.Format "2006-01-02")
+  "draft" .Draft
+  "file_path" .File.Path
+  "pass_percentage" (or $p.pass_percentage 70)
+  "time_limit" (or $p.time_limit "infinite")
+  "questions" $p.questions
+  "total_questions" (len $p.questions)
+  "prerequisites" $prerequisites
+  "total_marks" $total
+  "parent" $parent
+) -}}

@@ -24,28 +24,27 @@
     }
 
     #go-back {
-        position: fixed; 
-        top: 160px;     
-        left: 25px;    
-        z-index: 1010; 
-        
-        width: 45px;      
-        height: 45px;      
-        background-color:white; 
-        border-radius: 50%;   
+        position: fixed;
+        top: 160px;
+        left: 25px;
+        z-index: 1010;
+        width: 45px;
+        height: 45px;
+        background-color: white;
+        border-radius: 50%;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        display: flex;      
+        display: flex;
         justify-content: center;
-        align-items: center;    
+        align-items: center;
         color: var(--bs-primary);
-        font-size: 1.1rem;   
+        font-size: 1.1rem;
         cursor: pointer;
-        transition: all 0.2s ease-in-out; 
+        transition: all 0.2s ease-in-out;
         border: 1px solid var(--bs-border-color);
     }
 
     #go-back:hover {
-        transform: scale(1.1); 
+        transform: scale(1.1);
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
         color: var(--bs-link-hover-color);
     }
@@ -85,10 +84,10 @@
         line-height: 1.4;
     }
 
-    .question-instructions{
-        font: 0.2rem;
+    .question-instructions {
+        font-size: 0.85rem;
         color: var(--bs-gray-500);
-        margin-bottom:1.25rem;
+        margin-bottom: 1.25rem;
         line-height: 1;
     }
 
@@ -166,23 +165,6 @@
         cursor: not-allowed;
     }
 
-    .result {
-        margin-top: 2rem;
-    }
-
-    .result h2 {
-        color: var(--bs-emphasis-color);
-        margin-bottom: 1rem;
-        font-size: 1.25rem;
-        font-weight: 600;
-    }
-
-    .score-info {
-        font-size: 1rem;
-        margin: 0.5rem 0;
-        color: var(--bs-body-color);
-    }
-
     .loading {
         display: none;
         text-align: center;
@@ -200,13 +182,8 @@
     }
 
     @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
     .loading p {
@@ -220,6 +197,14 @@
         font-size: 0.85rem;
         font-weight: 500;
         margin-bottom: 0.5rem;
+    }
+
+    /* Hide all sections by default */
+    .missing-prerequisites,
+    .overview-card,
+    .result-card,
+    .form-container {
+        display: none;
     }
 
     @media (max-width: 768px) {
@@ -254,8 +239,9 @@
         .question-text {
             font-size: 1rem;
         }
-        .question-instructions{
-        font: 0.15rem;
+
+        .question-instructions {
+            font-size: 0.8rem;
         }
 
         .option label {
@@ -269,13 +255,72 @@
 
 <div class="container">
     <div class="header">
-            <div id="go-back">
-        <i class="fas fa-arrow-left"></i>
-    </div>
+        <div id="go-back">
+            <i class="fas fa-arrow-left"></i>
+        </div>
         <h1>{{ $title }}</h1>
         <p>{{ .Content | default "Please answer the questions below to complete the test." }}</p>
     </div>
 
+    <!-- Missing Prerequisites Card -->
+    <div class="missing-prerequisites">
+        <div class="card border-warning">
+            <div class="card-body text-center">
+                <div class="mb-3">
+                    <i class="bi bi-lock-fill text-warning fs-1"></i>
+                </div>
+                
+                <h5 class="card-title text-warning mb-3">Test Locked</h5>
+                
+                <p class="text-muted mb-4">
+                    Complete these prerequisites first:
+                </p>
+                
+                <div class="row g-2 mb-4 justify-content-center" id="prerequisites-list">
+                    <!-- Prerequisites will be inserted here -->
+                </div>
+             
+            </div>
+        </div>
+    </div>
+
+    <!-- Overview Card (New Test) -->
+    <div class="overview-card">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-body">
+                <h6 class="text-muted mb-3">Test details</h6>
+                
+                <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+                        <div >
+                            <div class="text-muted small">Questions</div>
+                            <div class="fw-medium">{{ len .Params.questions }}</div>
+                        </div>
+                        <div >
+                            <div class="text-muted small">Attempts</div>
+                            <div class="fw-medium">0 of {{ if eq .Params.max_attempts nil }}unlimited{{ else }}{{ .Params.max_attempts }}{{ end }}</div>
+                        </div>
+                        <div >
+                            <div class="text-muted small">Pass Percentage</div>
+                            <div class="fw-medium">{{ or .Params.pass_percentage 70 }}%</div>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; justify-content: end; flex-wrap: wrap;">
+                            <button class="btn btn-primary btn-sm" id="start-test-btn">
+                                <i class="bi bi-play-fill me-1"></i>
+                                Start Test
+                            </button>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+    <!-- Result Card (Existing Submission) -->
+    <div class="result-card">
+        <!-- Results will be dynamically inserted here -->
+    </div>
+
+    <!-- Quiz Form -->
     <div class="form-container">
         <form id="quiz-form">
             <input type="hidden" name="quiz_abs_path" value="{{ .RelPermalink }}">
@@ -287,13 +332,13 @@
                 {{ if $question.instructions }}
                 <div class="question-instructions">{{ $question.instructions }}</div>
                 {{ else }}
-                    {{ if eq $question.type "multiple-answers" }}
-                    <div class="question-instructions">Select all that apply</div>
-                    {{ else if eq $question.type "single-answer" }}
-                    <div class="question-instructions">Select one answer</div>
-                    {{ else if eq $question.type "short_answer" }}
-                    <div class="question-instructions">Type your answer below</div>
-                    {{ end }}
+                {{ if eq $question.type "multiple-answers" }}
+                <div class="question-instructions">Select all that apply</div>
+                {{ else if eq $question.type "single-answer" }}
+                <div class="question-instructions">Select one answer</div>
+                {{ else if eq $question.type "short_answer" }}
+                <div class="question-instructions">Type your answer below</div>
+                {{ end }}
                 {{ end }}
 
                 {{ if or ( eq $question.type "single-answer") ( eq $question.type "multiple-answers" ) }}
@@ -322,15 +367,54 @@
                 <p>Submitting your answers...</p>
             </div>
 
-            <button type="submit" class="submit-btn">Submit </button>
+            <button type="submit" class="submit-btn" id="submit-btn">Submit Test</button>
         </form>
-
-        <div id="result" class="result" style="display: none;"></div>
     </div>
 </div>
 
-<script>
+{{ $test := partial "test/single.html" . }}
+{{ $prerequisites := $test.prerequisites | default (slice) }}
 
+<script>
+    const prerequisites = {{$prerequisites}};
+    const testId = {{$test.id}};
+    const passPercentage = {{ or $test.pass_percentage 70 }};
+
+    let currentState = 'loading'; // loading, overview, form, result, prerequisites, viewing_submission
+
+    // State Management Functions
+    function showState(state) {
+        // Hide all sections
+        document.querySelector('.missing-prerequisites').style.display = 'none';
+        document.querySelector('.overview-card').style.display = 'none';
+        document.querySelector('.result-card').style.display = 'none';
+        document.querySelector('.form-container').style.display = 'none';
+
+        // Show the requested state
+        currentState = state;
+        switch(state) {
+            case 'prerequisites':
+                document.querySelector('.missing-prerequisites').style.display = 'block';
+                break;
+            case 'overview':
+                document.querySelector('.overview-card').style.display = 'block';
+                break;
+            case 'form':
+                document.querySelector('.form-container').style.display = 'block';
+                break;
+            case 'result':
+                document.querySelector('.result-card').style.display = 'block';
+                break;
+            case 'viewing_submission':
+                document.querySelector('.result-card').style.display = 'block';
+                document.querySelector('.form-container').style.display = 'block';
+                // Hide submit button when viewing submission
+                document.getElementById('submit-btn').style.display = 'none';
+                break;
+        }
+    }
+
+    // API Functions
     async function PostSubmissionForEvaluation(payload) {
         console.log("Posting submission for evaluation:", payload);
         const res = await fetch(`/api/academy/quiz/submit`, {
@@ -339,91 +423,145 @@
             body: JSON.stringify(payload)
         });
 
-        console.log("Response status:", res);
-
         if (!res.ok) {
-            const errorBody = await res.json(); // or res.json() if JSON error
+            const errorBody = await res.json();
             throw new Error(`${errorBody.details || errorBody.message || "Unknown error"}`);
         }
-        const data = await res.json();
-        return data;
+        return await res.json();
+    }
+
+    // Render Functions
+    function RenderMissingPrerequisites(pendingPreqs) {
+        const prerequisitesList = document.getElementById('prerequisites-list');
+        prerequisitesList.innerHTML = pendingPreqs.map(preq => `
+            <div class="col-auto">
+                <a href="${preq.permalink}" class="text-warning text-decoration-none fw-medium">
+                    ${preq.title}
+                </a>
+            </div>
+        `).join('');
     }
 
     function RenderSubmissionResult(data) {
-        const resultEl = document.getElementById("result");
-        resultEl.style.display = "block";
-
+        const resultEl = document.querySelector('.result-card');
+        
         // Calculate metrics
-        const correctCount = data.correct_submissions ? Object.keys(data.correct_submissions).filter(key => data.correct_submissions[key]).length : 0;
+        const correctCount = data.correct_submissions ? 
+            Object.keys(data.correct_submissions).filter(key => data.correct_submissions[key]).length : 0;
         const totalCount = document.querySelectorAll(".question").length;
-        const passStatus = data.passed ? 'passed' : 'failed';
-
         const incorrectCount = totalCount - correctCount;
-
+        
         const passed = data.passed;
         const statusText = passed ? 'Passed' : 'Failed';
         const statusClass = passed ? 'text-success' : 'text-danger';
         const bgClass = passed ? 'bg-success-subtle' : 'bg-danger-subtle';
-        const iconClass = passed ? 'fas fa-check-circle' : 'fas fa-times-circle';
+        const iconClass = passed ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
 
         resultEl.innerHTML = `
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3 ${bgClass} rounded p-3">
-                    <i class="${iconClass} me-3 fs-3 ${statusClass}"></i>
-                    <div>
-                        <h4 class="mb-0 ${statusClass}">${statusText}</h4>
-                        <small class="text-muted">You ${passed ? "passed" : "did not pass"} the quiz</small>
-                    </div>
-                </div>
+            <!-- Test Details Card -->
+            <div class="card border-0 shadow-sm mb-3">
+                <div class="card-body">
+                    <h6 class="text-muted mb-3">Test details</h6>
+                    
+                        <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+                            <div>
+                                <div class="text-muted small">Submitted</div>
+                                <div class="fw-medium">${new Date(data.attempted_at).toLocaleString()}</div>
+                            </div>
 
-                <div class="d-flex flex-wrap gap-3 mb-4">
-                    <div class="flex-grow-1 p-3 bg-light rounded">
-                        <div class="text-muted small mb-1">Score</div>
-                        <div class="fw-bold fs-5">${data.score} / ${data.total_marks}</div>
-                    </div>
-                    <div class="flex-grow-1 p-3 bg-light rounded">
-                        <div class="text-muted small mb-1">Percentage</div>
-                        <div class="fw-bold fs-5">${Math.round(data.percentage_scored)}%</div>
-                    </div>
-                </div>
 
-                ${data.correct_submissions
-                ? `
-                    <div class="d-flex justify-content-around text-center">
-                        <div>
-                            <div class="fw-bold text-success">${correctCount}</div>
-                            <small class="text-muted">Correct</small>
+                            <div>
+                                <div class="text-muted small">Pass Percentage</div>
+                                <div class="fw-medium">${passPercentage}%</div>
+                            </div>
+                            
+                            <div>
+                                <div class="text-muted small">Attempts</div>
+                                <div class="fw-medium">${data.attempts} of ${data.max_attempts  ?  data.max_attempts : "unlimited" }</div>
+                            </div>
+                            
+
                         </div>
-                        <div>
-                            <div class="fw-bold text-danger">${incorrectCount}</div>
-                            <small class="text-muted">Incorrect</small>
+                        
+                        <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; justify-content: end; flex-wrap: wrap;">
+                                <button class="btn btn-outline-secondary btn-sm me-2" id="view-submission-btn">
+                                    View Submission
+                                </button>
+                                <button class="btn btn-primary btn-sm" id="retry-test-btn">
+                                    <i class="bi bi-arrow-clockwise me-1"></i>
+                                    Retry
+                                </button>
                         </div>
-                        <div>
-                            <div class="fw-bold text-secondary">${totalCount}</div>
-                            <small class="text-muted">Total</small>
-                        </div>
-                    </div>`
-                : ''
-            }
+                    </div>
             </div>
-        </div>`;
 
-        document.querySelectorAll(".question").forEach((qEl) => {
-            const qid = qEl.dataset.questionId;
-            if (data.correct_submissions && data.correct_submissions[qid]) {
-                qEl.classList.add("correct");
-                qEl.classList.remove("incorrect");
-            } else {
-                qEl.classList.add("incorrect");
-                qEl.classList.remove("correct");
-            }
+            <!-- Grade Card -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-6">
+                            <div class="mb-2">
+                                <div class="${statusClass} small fw-medium d-flex align-items-center">
+                                    <i class="bi ${iconClass} me-1"></i>
+                                    ${statusText}
+                                </div>
+                                <div class="text-muted small">You ${passed ? "passed" : "did not pass"} the test</div>
+                            </div>
+                            <div class="display-4 fw-bold ${statusClass}">${Math.round(data.percentage_scored)}%</div>
+                        </div>
+                        
+                        <div class="col-6">
+                            <div class="d-flex justify-content-around text-center">
+                                <div>
+                                    <div class="fw-bold text-success">${correctCount}</div>
+                                    <small class="text-muted">Correct</small>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-danger">${incorrectCount}</div>
+                                    <small class="text-muted">Incorrect</small>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-secondary">${totalCount}</div>
+                                    <small class="text-muted">Total</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        // Color code questions
+        if (data.correct_submissions) {
+            document.querySelectorAll(".question").forEach((qEl) => {
+                const qid = qEl.dataset.questionId;
+                if (data.correct_submissions[qid]) {
+                    qEl.classList.add("correct");
+                    qEl.classList.remove("incorrect");
+                } else {
+                    qEl.classList.add("incorrect");
+                    qEl.classList.remove("correct");
+                }
+            });
+        }
+
+        // Add event listeners for result buttons
+        document.getElementById('view-submission-btn').addEventListener('click', () => {
+            showState('viewing_submission');
         });
 
-        // Scroll to results
-        resultEl.scrollIntoView({behavior: 'smooth'});
+        document.getElementById('retry-test-btn').addEventListener('click', () => {
+            // Reset form
+            document.getElementById('quiz-form').reset();
+            document.querySelectorAll(".question").forEach((qEl) => {
+                qEl.classList.remove("correct", "incorrect");
+            });
+            document.getElementById('submit-btn').style.display = 'block';
+            showState('form');
+        });
     }
 
+    // Form handling functions
     function ShowLoadingState(loadingEl, submitBtn) {
         loadingEl.style.display = "block";
         submitBtn.disabled = true;
@@ -433,7 +571,7 @@
     function HideLoadingState(loadingEl, submitBtn) {
         loadingEl.style.display = "none";
         submitBtn.disabled = false;
-        submitBtn.textContent = "Submit Quiz";
+        submitBtn.textContent = "Submit Test";
     }
 
     function CanSubmitQuiz(answers) {
@@ -451,13 +589,11 @@
             const answer = {question_id: questionID};
 
             if (selectedCheckboxes.length > 0) {
-                // Multiple choice with checkboxes 
                 answer.selected_option_id = Array.from(selectedCheckboxes).reduce((acc, cb) => {
                     acc[cb.value] = true;
                     return acc;
                 }, {})
             } else if (selectedRadio) {
-                // Single choice with radio button (multiple_response = false)
                 answer.selected_option_id = {[selectedRadio.value]: true};
             } else if (textInput && textInput.value.trim()) {
                 answer.answer_text = textInput.value.trim();
@@ -482,23 +618,17 @@
         e.preventDefault();
         e.stopPropagation();
 
-
-        // Prevent multiple submissions 
         if (document.getElementById("loading").style.display === "block") {
             return;
         }
-
-        console.log("Handling quiz submission...");
 
         const form = e.target;
         const loadingEl = document.getElementById("loading");
         const submitBtn = form.querySelector(".submit-btn");
 
-        // Show loading state
         ShowLoadingState(loadingEl, submitBtn);
 
         const payload = ConvertFormToPayload(form);
-        console.log("Submitting payload:", payload);
 
         if (!CanSubmitQuiz(payload.answers)) {
             HideLoadingState(loadingEl, submitBtn);
@@ -506,29 +636,52 @@
             return;
         }
 
-        PostSubmissionForEvaluation(payload)
-            .then(RenderSubmissionResult)
-            .catch((err) => {
-                HideLoadingState(loadingEl, submitBtn);
-                console.error("Error submitting quiz:", err);
-                alert("Error submitting quiz: " + err.message);
-            }).
-            finally(() => {
-                HideLoadingState(loadingEl, submitBtn);
-            });
+        try {
+            const result = await PostSubmissionForEvaluation(payload);
+            RenderSubmissionResult(result);
+            showState('result');
+        } catch (err) {
+            console.error("Error submitting quiz:", err);
+            alert("Error submitting quiz: " + err.message);
+        } finally {
+            HideLoadingState(loadingEl, submitBtn);
+        }
     }
 
-
+    // Event Listeners
     function HandleGoBack() {
         window.history.back();
     }
 
-
     document.getElementById("go-back").addEventListener("click", HandleGoBack);
-
     document.getElementById("quiz-form").addEventListener("submit", HandleQuizSubmission);
+    
+    document.getElementById("start-test-btn").addEventListener("click", () => {
+        showState('form');
+    });
 
+    // Initialize when context is ready
+    window.addEventListener("academyContextReady", () => {
+        console.log("Quiz page loaded.", prerequisites);
+        
+        const pending_preqs = window.academyContext.progressTracker?.getPendingPrerequisites(prerequisites) || [];
+        
+        if (pending_preqs.length > 0) {
+            RenderMissingPrerequisites(pending_preqs);
+            showState('prerequisites');
+            return;
+        }
+
+        // Check for existing submission
+        const existingGradeResult = window.academyContext?.progressTracker?.progress?.grades[testId] || null;
+        
+        if (existingGradeResult) {
+            RenderSubmissionResult(existingGradeResult);
+            showState('result');
+        } else {
+            showState('overview');
+        }
+    });
 </script>
-
 
 {{ end }}
