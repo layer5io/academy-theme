@@ -5,3 +5,7 @@ readingTime:
 readingTimeHours:
   one: "{{ .Count }} hour read"
   other: "{{ .Count }} hours read"
+
+readingTimeHoursAndMinutes:
+  one: "{{ .Hours }} hour {{ .Minutes }} minutes read"
+  other: "{{ .Hours }} hours {{ .Minutes }} minutes read"
