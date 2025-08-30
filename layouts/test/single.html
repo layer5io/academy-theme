@@ -249,7 +249,33 @@
             font-size: 0.9rem;
         }
     }
+
+    .prerequisites-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    .prerequisites-list li {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid var(--bs-border-color-translucent);
+    }
+    .prerequisites-list li:last-child {
+        border-bottom: none;
+    }
+    .prerequisites-list .status-icon {
+        margin-right: 1rem;
+        font-size: 1.2rem;
+    }
+    .prerequisites-list .status-icon.completed {
+        color: var(--bs-success);
+    }
+    .prerequisites-list .status-icon.pending {
+        color: var(--bs-secondary-color); /* 或者灰色 var(--bs-secondary-color) */
+    }
 </style>
+
+
 
 {{ $title := .Title }}
 
@@ -260,6 +286,32 @@
         </div>
         <h1>{{ $title }}</h1>
         <p id="test-description">{{ .Content | default "Please answer the questions below to complete the test." }}</p>
+    </div>
+
+    <div id="test-status-card" class="card shadow-sm" style="display: none;">
+        <div class="card-body">
+            <h6 class="text-muted mb-3">Test Details</h6>
+            <div id="test-meta-info" class="test-meta-grid">
+                <div>
+                    <div class="text-muted small">Questions</div>
+                    <div class="fw-medium" id="meta-questions-count"></div>
+                </div>
+                <div>
+                    <div class="text-muted small">Attempts</div>
+                    <div class="fw-medium" id="meta-attempts-count"></div>
+                </div>
+                <div>
+                    <div class="text-muted small">Pass Percentage</div>
+                    <div class="fw-medium" id="meta-pass-percentage"></div>
+                </div>
+            </div>
+    
+            <div id="dynamic-content-area" class="mt-4">
+                </div>
+    
+            <div id="action-buttons-area" class="mt-4 text-end">
+                </div>
+        </div>
     </div>
 
     <!-- Missing Prerequisites Card -->
@@ -433,7 +485,7 @@
     }
 
     // Render Functions
-    function RenderMissingPrerequisites(pendingPreqs) {
+    {{/*  function RenderMissingPrerequisites(pendingPreqs) {
         const prerequisitesList = document.getElementById('prerequisites-list');
         prerequisitesList.innerHTML = pendingPreqs.map(preq => `
             <div class="col-auto">
@@ -442,6 +494,60 @@
                 </a>
             </div>
         `).join('');
+    }  */}}
+
+    /**
+    * 根据完整的先决条件列表和未完成的列表，生成一个包含状态图标的 HTML 列表。
+    * @param {Array} allPrerequisites - 所有必需的先决条件对象数组。
+    * @param {Array} pendingPrerequisites - 未完成的先决条件对象数组。
+    * @returns {string} - 最终生成的 HTML 字符串。
+    */
+    function generatePrerequisitesListHTML(allPrerequisites, pendingPrerequisites) {
+
+        // 1. 为了高效查找，我们先把“未完成列表”转换成一个 Set 集合。
+        //    Set 的 .has() 查询速度远快于数组的 .find() 或 .includes()，这在列表很长时尤其重要。
+        //    我们存储每个未完成课程的链接（permalink），因为它是唯一标识。
+        const pendingSet = new Set(pendingPrerequisites.map(p => p.permalink));
+
+        // 2. 开始构建 HTML。我们使用 <ul> 标签，这在语义上比 <div> 更适合列表。
+        //    CSS class 'prerequisites-list' 是我们在上一步讨论中为新列表定义的样式钩子。
+        let listHtml = '<ul class="prerequisites-list">';
+
+        // 3. 遍历“完整列表”，而不是“未完成列表”。这是核心改变。
+        //    对于每一个必须的课程，我们都要为它生成一个列表项 <li>。
+        listHtml += allPrerequisites.map(prereq => {
+            
+            // 4. 检查当前课程是否存在于我们创建的“未完成 Set”中。
+            const isPending = pendingSet.has(prereq.permalink);
+            //补丁！！！！！！需要修改！！！
+            if (correctPermalink.startsWith('/learning-paths/')) {
+                correctPermalink = '/academy' + correctPermalink;
+            }
+
+            // 5. 根据检查结果（isPending 是 true 还是 false），定义不同的状态图标、CSS class 和链接样式。
+            const statusIcon = isPending 
+                ? '<i class="status-icon pending fas fa-times-circle"></i>' // ✗ 图标 (未完成)
+                : '<i class="status-icon completed fas fa-check-circle"></i>'; // ✓ 图标 (已完成)
+            
+            const linkClass = isPending ? 'text-body' : 'text-muted';
+            const itemClass = isPending ? 'pending' : 'completed';
+
+            // 6. 生成这个列表项 <li> 的 HTML。
+            //    - 对于已完成的项，我们让文字变灰且加上删除线，表示“已处理”。
+            //    - 对于未完成的项，它是一个正常的链接，引导用户去完成它。
+            return `
+                <li class="${itemClass}">
+                    ${statusIcon}
+                    <a href="${prereq.permalink}" class="${linkClass}">
+                        ${prereq.title}
+                    </a>
+                </li>
+            `;
+        }).join(''); // 7. 使用 .join('') 将 map 生成的所有 <li> 字符串拼接成一个完整的字符串。
+
+        // 8. 闭合 <ul> 标签并返回最终的 HTML。
+        listHtml += '</ul>';
+        return listHtml;
     }
 
     function RenderSubmissionResult(data) {
@@ -682,12 +788,33 @@
         }
         
         const pending_preqs = window.academyContext.progressTracker?.getPendingPrerequisites(prerequisites) || [];
-        
+
         if (pending_preqs.length > 0) {
-            RenderMissingPrerequisites(pending_preqs);
-            showState('prerequisites');
+            // 【第1步：改变目标容器】
+            // 不再获取旧的 'prerequisites-list'，而是获取新卡片里的 'dynamic-content-area'
+            const dynamicContentContainer = document.getElementById('dynamic-content-area');
+        
+            // 生成列表HTML (这行不变)
+            const listHtml = generatePrerequisitesListHTML(prerequisites, pending_preqs);
+            
+            // 将HTML注入到新的容器中
+            dynamicContentContainer.innerHTML = listHtml;
+            
+            // 【第2步：用新的显示逻辑替代旧的】
+            // 删除这行旧的调用
+            // showState('prerequisites'); 
+        
+            // 手动显示我们新的统一卡片
+            document.getElementById('test-status-card').style.display = 'block';
+        
+            // （可选）在这里你还可以继续用JS更新卡片里的其他信息，比如标题、按钮等
+            document.querySelector('.header h1').textContent = 'Test Locked';
+            document.getElementById('test-description').textContent = 'You need to complete the following prerequisites to unlock this test.';
+            document.getElementById('action-buttons-area').innerHTML = `<button class="btn btn-primary" disabled>Start Test</button>`;
+            
             return;
         }
+        
 
         // Check for existing submission
         const existingGradeResult = window.academyContext?.progressTracker?.progress?.grades[testId] || null;
