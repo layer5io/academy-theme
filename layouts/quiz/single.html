@@ -23,30 +23,16 @@
         font-size: 0.95rem;
     }
 
-    #go-back {
-        position: fixed; 
-        top: 160px;     
-        left: 25px;    
-        z-index: 1010; 
-        
-        width: 45px;      
-        height: 45px;      
-        background-color:white; 
-        border-radius: 50%;   
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        display: flex;      
-        justify-content: center;
-        align-items: center;    
+    .header #go-back {
+        display: inline-block;
+        margin-bottom: 1rem;
         color: var(--bs-primary);
-        font-size: 1.1rem;   
+        font-size: 1rem;
         cursor: pointer;
-        transition: all 0.2s ease-in-out; 
-        border: 1px solid var(--bs-border-color);
+        transition: color 0.2s ease;
     }
 
-    #go-back:hover {
-        transform: scale(1.1); 
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+    .header #go-back:hover {
         color: var(--bs-link-hover-color);
     }
 
@@ -83,13 +69,6 @@
         color: var(--bs-emphasis-color);
         margin-bottom: 1.25rem;
         line-height: 1.4;
-    }
-
-    .question-instructions{
-        font: 0.2rem;
-        color: var(--bs-gray-500);
-        margin-bottom:1.25rem;
-        line-height: 1;
     }
 
     .option {
@@ -223,14 +202,6 @@
     }
 
     @media (max-width: 768px) {
-        #go-back {
-            width: 38px;
-            height: 38px;
-            font-size: 0.9rem;
-            top: 200px;
-            left: 15px;
-        }
-
         .container {
             margin: 0;
         }
@@ -254,9 +225,6 @@
         .question-text {
             font-size: 1rem;
         }
-        .question-instructions{
-        font: 0.15rem;
-        }
 
         .option label {
             padding: 0.625rem 0.75rem;
@@ -265,15 +233,14 @@
     }
 </style>
 
-{{ $title := .Title }}
-
 <div class="container">
     <div class="header">
-            <div id="go-back">
-        <i class="fas fa-arrow-left"></i>
-    </div>
-        <h1>{{ $title }}</h1>
-        <p>{{ .Content | default "Please answer the questions below to complete the test." }}</p>
+        <div id="go-back">
+            <i class="fas fa-arrow-left"></i>
+            <p class="text-blue-600 hover:underline" id="go-back"> Back</a>
+        </div>
+        <h1>{{ .Title }}</h1>
+        <p>Answer all questions below and submit to see your results</p>
     </div>
 
     <div class="form-container">
@@ -284,23 +251,12 @@
             <div class="question" data-question-id="{{ $question.id }}" id="q-{{ $question.id }}">
                 <div class="question-number">Question {{ add $index 1 }}</div>
                 <div class="question-text">{{ $question.text }}</div>
-                {{ if $question.instructions }}
-                <div class="question-instructions">{{ $question.instructions }}</div>
-                {{ else }}
-                    {{ if eq $question.type "multiple-answers" }}
-                    <div class="question-instructions">Select all that apply</div>
-                    {{ else if eq $question.type "single-answer" }}
-                    <div class="question-instructions">Select one answer</div>
-                    {{ else if eq $question.type "short_answer" }}
-                    <div class="question-instructions">Type your answer below</div>
-                    {{ end }}
-                {{ end }}
 
-                {{ if or ( eq $question.type "single-answer") ( eq $question.type "multiple-answers" ) }}
+                {{ if eq $question.type "mcq" }}
                 {{ range $optIndex, $option := $question.options }}
                 <div class="option">
                     <label>
-                        {{ if eq $question.type "multiple-answers" }}
+                        {{ if $question.multiple_answers }}
                         <input type="checkbox" name="selected_option_ids_{{ $question.id }}" value="{{ $option.id }}">
                         {{ else }}
                         <input type="radio" name="selected_option_ids_{{ $question.id }}" value="{{ $option.id }}">
@@ -340,12 +296,7 @@
             body: JSON.stringify(payload)
         });
 
-        console.log("Response status:", res);
-
-        if (!res.ok) {
-            const errorBody = await res.json(); // or res.json() if JSON error
-            throw new Error(`${errorBody.details || errorBody.message || "Unknown error"}`);
-        }
+        if (!res.ok) throw new Error("Failed to submit quiz");
         const data = await res.json();
         return data;
     }
@@ -452,7 +403,7 @@
             const answer = {question_id: questionID};
 
             if (selectedCheckboxes.length > 0) {
-                // Multiple choice with checkboxes 
+                // Multiple choice with checkboxes (multiple_response = true)
                 answer.selected_option_id = Array.from(selectedCheckboxes).reduce((acc, cb) => {
                     acc[cb.value] = true;
                     return acc;
