@@ -288,7 +288,7 @@
         <p id="test-description">{{ .Content | default "Please answer the questions below to complete the test." }}</p>
     </div>
 
-    <div id="test-status-card" class="card shadow-sm" style="display: none;">
+    <div id="test-status-card" class="card shadow-sm">
         <div class="card-body">
             <h6 class="text-muted mb-3">Test Details</h6>
             <div id="test-meta-info" class="test-meta-grid">
@@ -315,7 +315,7 @@
     </div>
 
     <!-- Missing Prerequisites Card -->
-    <div class="missing-prerequisites">
+    <div class="missing-prerequisites" style="display: none;">
         <div class="card border-warning">
             <div class="card-body text-center">
                 <div class="mb-3">
@@ -337,7 +337,7 @@
     </div>
 
     <!-- Overview Card (New Test) -->
-    <div class="overview-card">
+    <div class="overview-card" style="display: none;">
         <div class="card border-0 shadow-sm mb-3">
             <div class="card-body">
                 <h6 class="text-muted mb-3">Test details</h6>
@@ -368,7 +368,7 @@
     </div>
 
     <!-- Result Card (Existing Submission) -->
-    <div class="result-card">
+    <div class="result-card" style="display: none;">
         <!-- Results will be dynamically inserted here -->
     </div>
 
@@ -520,6 +520,7 @@
             // 4. 检查当前课程是否存在于我们创建的“未完成 Set”中。
             const isPending = pendingSet.has(prereq.permalink);
             //补丁！！！！！！需要修改！！！
+            let correctPermalink = prereq.permalink;
             if (correctPermalink.startsWith('/learning-paths/')) {
                 correctPermalink = '/academy' + correctPermalink;
             }
@@ -538,7 +539,7 @@
             return `
                 <li class="${itemClass}">
                     ${statusIcon}
-                    <a href="${prereq.permalink}" class="${linkClass}">
+                    <a href="${correctPermalink}" class="${linkClass}">
                         ${prereq.title}
                     </a>
                 </li>
@@ -808,7 +809,6 @@
             document.getElementById('test-status-card').style.display = 'block';
         
             // （可选）在这里你还可以继续用JS更新卡片里的其他信息，比如标题、按钮等
-            document.querySelector('.header h1').textContent = 'Test Locked';
             document.getElementById('test-description').textContent = 'You need to complete the following prerequisites to unlock this test.';
             document.getElementById('action-buttons-area').innerHTML = `<button class="btn btn-primary" disabled>Start Test</button>`;
             
