@@ -294,15 +294,15 @@
             <div id="test-meta-info" class="test-meta-grid">
                 <div>
                     <div class="text-muted small">Questions</div>
-                    <div class="fw-medium" id="meta-questions-count"></div>
+                    <div class="fw-medium" id="meta-questions-count">{{ len .Params.questions }}</div>
                 </div>
                 <div>
                     <div class="text-muted small">Attempts</div>
-                    <div class="fw-medium" id="meta-attempts-count"></div>
+                    <div class="fw-medium" id="meta-attempts-count">0 of {{ .Params.max_attempts | default "unlimited" }}</div>
                 </div>
                 <div>
                     <div class="text-muted small">Pass Percentage</div>
-                    <div class="fw-medium" id="meta-pass-percentage"></div>
+                    <div class="fw-medium" id="meta-pass-percentage">{{ or .Params.pass_percentage 70 }}%</div>
                 </div>
             </div>
     
@@ -550,6 +550,95 @@
         listHtml += '</ul>';
         return listHtml;
     }
+    
+    /**
+    * 渲染“查看结果”状态的界面
+    * @param {object} resultData - 从API返回的测试结果数据
+    */
+    function renderResultState(resultData) {
+        console.log("Rendering Result State with data:", resultData);
+
+        const statusCard = document.getElementById('test-status-card');
+        const dynamicContentArea = document.getElementById('dynamic-content-area');
+        const actionButtonsArea = document.getElementById('action-buttons-area');
+
+        // 1. 更新顶部的静态信息栏，特别是“Attempts”
+        document.getElementById('meta-questions-count').textContent = '{{ len .Params.questions }}';
+        document.getElementById('meta-pass-percentage').textContent = `${passPercentage}%`;
+        const maxAttempts = resultData.max_attempts ? resultData.max_attempts : 'unlimited';
+        
+        // ✅ 使用API返回的动态数据来更新尝试次数！
+        document.getElementById('meta-attempts-count').textContent = `${resultData.attempts} of ${maxAttempts}`;
+
+        // 2. 在动态内容区域，注入结果详情
+        const passed = resultData.passed;
+        const score = Math.round(resultData.percentage_scored);
+        const passText = passed ? "Passed" : "Failed";
+        const passClass = passed ? "text-success" : "text-danger";
+
+        dynamicContentArea.innerHTML = `
+            <div class="text-center">
+                <h4 class="${passClass}">${passText}</h4>
+                <p>Your score: <strong>${score}%</strong> / Passing score: ${passPercentage}%</p>
+                <p class="text-muted small">
+                    Last attempt taken on: ${new Date(resultData.attempted_at).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                </p>
+            </div>
+        `;
+
+        // 3. 在按钮区域，注入“重试”和“查看答案”按钮
+        actionButtonsArea.innerHTML = `
+            <button class="btn btn-outline-secondary me-2" id="view-submission-btn">Review Answers</button>
+            <button class="btn btn-primary" id="retry-test-btn">Retake Test</button>
+        `;
+
+        // 4. 为新按钮绑定事件
+        document.getElementById('retry-test-btn').addEventListener('click', () => {
+            // 重置表单，并回到“准备开始”状态
+            document.getElementById('quiz-form').reset();
+            renderOverviewState(); 
+        });
+
+        document.getElementById('view-submission-btn').addEventListener('click', () => {
+            // (查看答案的功能我们之后再实现)
+            alert("Viewing submission is not implemented yet.");
+        });
+
+        // 5. 确保状态卡可见
+        statusCard.style.display = 'block';
+    }
+
+    /**
+    * 渲染“准备开始”状态的界面
+    * Renders the UI for the 'Ready to Start' (overview) state.
+    */
+    function renderOverviewState() {
+        console.log("Rendering Overview State..."); // 方便你调试，确认函数被调用
+
+        // 1. 获取统一面板中的各个区域
+        const statusCard = document.getElementById('test-status-card');
+        const dynamicContentArea = document.getElementById('dynamic-content-area');
+        const actionButtonsArea = document.getElementById('action-buttons-area');
+
+        // 2. 清理内容，确保面板是干净的
+        dynamicContentArea.innerHTML = ''; // 准备开始状态下，动态内容区是空的
+        
+        // 4. 在按钮区域，注入新的“开始测试”按钮
+        actionButtonsArea.innerHTML = `
+            <button class="btn btn-primary" id="start-test-btn-new">
+                Start Test
+            </button>
+        `;
+
+        // 5. 为这个新按钮绑定事件
+        document.getElementById('start-test-btn-new').addEventListener('click', () => {
+            statusCard.style.display = 'none'; // 点击后隐藏状态卡
+            document.querySelector('.form-container').style.display = 'block'; // 显示答题表单
+        });
+
+        // 6. 最后，确保整个状态卡是可见的
+        statusCard.style.display = 'block';
+    }
 
     function RenderSubmissionResult(data) {
         const resultEl = document.querySelector('.result-card');
@@ -747,8 +836,7 @@
 
         try {
             const result = await PostSubmissionForEvaluation(payload);
-            RenderSubmissionResult(result);
-            showState('result');
+            renderResultState(result); 
         } catch (err) {
             console.error("Error submitting quiz:", err);
             alert("Error submitting quiz: " + err.message);
@@ -764,68 +852,39 @@
 
     document.getElementById("go-back").addEventListener("click", HandleGoBack);
     document.getElementById("quiz-form").addEventListener("submit", HandleQuizSubmission);
-    
-    document.getElementById("start-test-btn").addEventListener("click", () => {
-        showState('form');
-    });
 
 
-    // get the prod build param 
+    {{/*  // get the prod build param 
     const isProdBuild = build === "production"
 
     if (!isProdBuild) {
         // In non-production builds, skip prerequisite checks
         showState('form');
-    } 
-    
+    }   */}}
 
-    // Initialize when context is ready
     window.addEventListener("academyContextReady", () => {
-        console.log("Quiz page loaded.", prerequisites);
-
-        if (!window.academyContext){
-            showState('form');
-            return;
-        }
-        
+        // 1. 获取数据和状态
         const pending_preqs = window.academyContext.progressTracker?.getPendingPrerequisites(prerequisites) || [];
-
-        if (pending_preqs.length > 0) {
-            // 【第1步：改变目标容器】
-            // 不再获取旧的 'prerequisites-list'，而是获取新卡片里的 'dynamic-content-area'
-            const dynamicContentContainer = document.getElementById('dynamic-content-area');
-        
-            // 生成列表HTML (这行不变)
-            const listHtml = generatePrerequisitesListHTML(prerequisites, pending_preqs);
-            
-            // 将HTML注入到新的容器中
-            dynamicContentContainer.innerHTML = listHtml;
-            
-            // 【第2步：用新的显示逻辑替代旧的】
-            // 删除这行旧的调用
-            // showState('prerequisites'); 
-        
-            // 手动显示我们新的统一卡片
-            document.getElementById('test-status-card').style.display = 'block';
-        
-            // （可选）在这里你还可以继续用JS更新卡片里的其他信息，比如标题、按钮等
-            document.getElementById('test-description').textContent = 'You need to complete the following prerequisites to unlock this test.';
-            document.getElementById('action-buttons-area').innerHTML = `<button class="btn btn-primary" disabled>Start Test</button>`;
-            
-            return;
-        }
-        
-
-        // Check for existing submission
         const existingGradeResult = window.academyContext?.progressTracker?.progress?.grades[testId] || null;
-        
-        if (existingGradeResult) {
-            RenderSubmissionResult(existingGradeResult);
-            showState('result');
+    
+        // 2. 显示我们的“多功能厅”
+        document.getElementById('test-status-card').style.display = 'block';
+        document.querySelector('.form-container').style.display = 'none';
+    
+        // 3. 调度员开始工作：根据状态调用不同的渲染函数
+        if (pending_preqs.length > 0) {
+            // 状态：已锁定
+            renderLockedState(pending_preqs); // 调用“锁定”场景布置函数
+        } else if (existingGradeResult) {
+            // 状态：有历史成绩
+            renderResultState(existingGradeResult); // 调用“结果”场景布置函数
         } else {
-            showState('overview');
+            // 状态：准备开始
+            renderOverviewState(); // 调用“准备开始”场景布置函数
         }
     });
+
+
 </script>
 
 {{ end }}
