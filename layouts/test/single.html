@@ -433,7 +433,7 @@
     const testId = {{$test.id}};
     const passPercentage = {{ or $test.pass_percentage 70 }};
     const build = {{ $build }};
-    const maxAttempts = {{ .Params.max_attempts | default "'unlimited'" }};
+    const maxAttempts = {{ .Params.max_attempts | default "unlimited" }};
 
     let currentState = 'loading'; // loading, overview, form, result, prerequisites, viewing_submission
 
@@ -485,17 +485,48 @@
         return await res.json();
     }
 
-    // Render Functions
-    {{/*  function RenderMissingPrerequisites(pendingPreqs) {
-        const prerequisitesList = document.getElementById('prerequisites-list');
-        prerequisitesList.innerHTML = pendingPreqs.map(preq => `
-            <div class="col-auto">
-                <a href="${preq.permalink}" class="text-warning text-decoration-none fw-medium">
-                    ${preq.title}
-                </a>
-            </div>
-        `).join('');
-    }  */}}
+    /**
+    * 根据已提交的答案数据，填充表单、标记对错并禁用所有选项
+    * @param {object} resultData - 从API返回的、包含用户答案的结果数据
+    */
+
+
+
+    /**
+    * 渲染“测试已锁定”状态的界面
+    * @param {Array} pendingPrereqs - 未完成的前置课程列表
+    */
+    function renderLockedState(pendingPrereqs) {
+        console.log("Rendering Locked State...");
+
+        const statusCard = document.getElementById('test-status-card');
+        const dynamicContentArea = document.getElementById('dynamic-content-area');
+        const actionButtonsArea = document.getElementById('action-buttons-area');
+        const descriptionEl = document.getElementById('test-description');
+
+        // 1. 更新顶部信息，此时尝试次数为0
+        updateMetaInfo({ attempts: 0, max_attempts: maxAttempts });
+
+        // 2. 更新页面引导文字
+        descriptionEl.textContent = 'You need to complete the following prerequisites to unlock this test:';
+
+        // 3. 调用我们已有的辅助函数，生成已完成/未完成的混合列表HTML
+        //    注意：第一个参数 prerequisites 是我们在脚本顶部定义的全局变量
+        const listHtml = generatePrerequisitesListHTML(prerequisites, pendingPrereqs);
+        dynamicContentArea.innerHTML = listHtml;
+        
+        // 4. 在按钮区域，注入一个灰色的、被禁用的“开始测试”按钮
+        actionButtonsArea.innerHTML = `
+            <button class="btn btn-primary" id="start-test-btn-locked" disabled>
+                Start Test
+            </button>
+        `;
+
+        // 5. 确保UI处于正确的显示状态
+        statusCard.style.display = 'block';
+        document.querySelector('.form-container').style.display = 'none';
+        document.getElementById('submit-btn').style.display = 'none';
+    }
 
     /**
     * 根据完整的先决条件列表和未完成的列表，生成一个包含状态图标的 HTML 列表。
@@ -864,7 +895,6 @@
         const submitBtn = form.querySelector(".submit-btn");
 
         ShowLoadingState(loadingEl, submitBtn);
-
         const payload = ConvertFormToPayload(form);
 
         if (!CanSubmitQuiz(payload.answers)) {
