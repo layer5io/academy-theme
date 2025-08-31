@@ -396,46 +396,41 @@
     }
 
     /**
-    * 根据已提交的答案数据，填充表单、标记对错并禁用所有选项
-    * @param {object} resultData - 从API返回的、包含用户答案的结果数据
+    * Populate the form with the user's answers, mark the correct and incorrect questions, and lock all inputs.
+    * @param {object} resultData - The result data from the API containing the user's answers.
     */
     function populateAndLockForm(resultData) {
         const form = document.getElementById('quiz-form');
 
-        // 1. 如果结果中没有包含用户答案，则不执行任何操作
         if (!resultData.answers) {
             console.warn("No answers found in resultData to populate form.");
             return;
         }
 
-        // 2. 清理并重置表单，确保一个干净的状态
         form.reset();
         form.querySelectorAll(".question").forEach(qEl => qEl.classList.remove("correct", "incorrect"));
 
-        // 3. 遍历用户提交的每一个答案，并填充到表单中
         resultData.answers.forEach(answer => {
             const questionEl = form.querySelector(`.question[data-question-id="${answer.question_id}"]`);
             if (!questionEl) return;
 
-            // 处理单选/多选题
             if (answer.selected_option_id) {
                 const selectedIds = Object.keys(answer.selected_option_id);
                 selectedIds.forEach(optionId => {
                     const input = questionEl.querySelector(`input[value="${optionId}"]`);
                     if (input) {
-                        input.checked = true; // 勾选用户当时选择的答案
+                        input.checked = true; 
                     }
                 });
             }
             else if (answer.answer_text) {
                 const textInput = questionEl.querySelector(`input[type="text"][name="answer_text_${answer.question_id}"]`);
                 if (textInput) {
-                    textInput.value = answer.answer_text; // 填充用户当时输入的文本
+                    textInput.value = answer.answer_text; 
                 }
             }
         });
 
-        // 4. 根据对错数据为题目上色
         if (resultData.correct_submissions) {
             document.querySelectorAll(".question").forEach((qEl) => {
                 const qid = qEl.dataset.questionId;
@@ -448,7 +443,6 @@
             });
         }
 
-        // 5. 锁定表单：禁用所有输入控件，使其变为只读
         form.querySelectorAll('input, textarea, select').forEach(el => {
             el.disabled = true;
         });
@@ -705,26 +699,21 @@
         }
 
         try {
-            // 1. 从API获取本次提交的结果 (注意：这里的 result.attempts 可能是错误的0)
+            // The backend API provides an incorrect 'attempts' count that does not increment with retries. 
+            // Manually calculates the correct cumulative attempts on the frontend to ensure the UI displays the right number for consecutive submissions.
             const result = await PostSubmissionForEvaluation(payload);
-
-            // 2. ✅ 核心修正：基于“上一次的最新状态”来计算新的尝试次数
-            //    我们优先使用缓存的 lastSubmissionResult，如果不存在（首次提交），再使用页面加载时的 existingGradeResult。
             const previousResult = lastSubmissionResult || (window.academyContext?.progressTracker?.progress?.grades[testId]);
             const previousAttempts = previousResult?.attempts || 0;
             const newAttempts = previousAttempts + 1;
 
-            // 3. 将后端返回的结果与我们自己计算的正确次数合并
             const updatedResult = {
                 ...result,
-                attempts: newAttempts, // 覆盖掉后端可能返回的错误值
-                answers: payload.answers // 确保结果对象中包含用户提交的答案，以便 view answer 功能使用
+                attempts: newAttempts, 
+                answers: payload.answers 
             };
 
-            // 4. 将这次最新的、最完整的结果存入缓存，供下一次 retake 使用
             lastSubmissionResult = updatedResult; 
 
-            // 5. 使用我们手动修正过的、最新的数据来渲染UI
             renderResultState(updatedResult);
 
             } catch (err) {
