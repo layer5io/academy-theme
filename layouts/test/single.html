@@ -540,7 +540,7 @@
 
         const hasAnswers = resultData.answers && resultData.answers.length > 0;
         const reviewButtonDisabled = hasAnswers ? "" : "disabled";
-        const reviewButtonTooltip = hasAnswers ? "" : 'title="Answer details are not available for this attempt."';
+        const reviewButtonTooltip = hasAnswers ? "" : 'title="Answer details are only visible after the test has been submitted."';
 
         dynamicContentArea.innerHTML = `
             <div class="text-center">
