@@ -376,6 +376,7 @@
     const passPercentage = {{ or $test.pass_percentage 70 }};
     const build = {{ $build }};
     const maxAttempts = {{ .Params.max_attempts | default "unlimited" }};
+    let lastSubmissionResult = null; 
 
     let currentState = 'loading'; // loading, overview, form, result, prerequisites, viewing_submission
 
@@ -536,6 +537,10 @@
         const score = Math.round(resultData.percentage_scored);
         const passText = passed ? "Passed" : "Failed";
         const passClass = passed ? "text-success" : "text-danger";
+
+        const hasAnswers = resultData.answers && resultData.answers.length > 0;
+        const reviewButtonDisabled = hasAnswers ? "" : "disabled";
+        const reviewButtonTooltip = hasAnswers ? "" : 'title="Answer details are not available for this attempt."';
 
         dynamicContentArea.innerHTML = `
             <div class="text-center">
@@ -742,22 +747,6 @@
     }   */}}
 
     window.addEventListener("academyContextReady", () => {
-
-        const pending_preqs = window.academyContext.progressTracker.getPendingPrerequisites(prerequisites) || [];
-        const existingGradeResult = window.academyContext.progressTracker.progress?.grades[testId] || null;
-    
-        if (pending_preqs.length > 0) {
-            renderLockedState(pending_preqs);
-    
-        } else if (existingGradeResult && existingGradeResult.attempts > 0) {
-            renderResultState(existingGradeResult);
-            
-        } else {
-            renderOverviewState();
-        }
-    });
-
-    window.addEventListener("academyContextReady", () => {
         // Get data and state
         const pending_preqs = window.academyContext.progressTracker?.getPendingPrerequisites(prerequisites) || [];
         const existingGradeResult = window.academyContext?.progressTracker?.progress?.grades[testId] || null;
@@ -770,7 +759,7 @@
         if (pending_preqs.length > 0) {
             // State: Locked
             renderLockedState(pending_preqs);
-        } else if (existingGradeResult) {
+        } else if (existingGradeResult && existingGradeResult.attempts > 0) {
             // State: Has existing grade
             lastSubmissionResult = existingGradeResult; 
             renderResultState(existingGradeResult);
