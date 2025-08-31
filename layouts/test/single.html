@@ -433,6 +433,7 @@
     const testId = {{$test.id}};
     const passPercentage = {{ or $test.pass_percentage 70 }};
     const build = {{ $build }};
+    const maxAttempts = {{ .Params.max_attempts | default "'unlimited'" }};
 
     let currentState = 'loading'; // loading, overview, form, result, prerequisites, viewing_submission
 
@@ -561,14 +562,8 @@
         const statusCard = document.getElementById('test-status-card');
         const dynamicContentArea = document.getElementById('dynamic-content-area');
         const actionButtonsArea = document.getElementById('action-buttons-area');
-
-        // 1. 更新顶部的静态信息栏，特别是“Attempts”
-        document.getElementById('meta-questions-count').textContent = '{{ len .Params.questions }}';
-        document.getElementById('meta-pass-percentage').textContent = `${passPercentage}%`;
-        const maxAttempts = resultData.max_attempts ? resultData.max_attempts : 'unlimited';
-        
-        // ✅ 使用API返回的动态数据来更新尝试次数！
-        document.getElementById('meta-attempts-count').textContent = `${resultData.attempts} of ${maxAttempts}`;
+        const formContainer = document.querySelector('.form-container');
+        updateMetaInfo(resultData);
 
         // 2. 在动态内容区域，注入结果详情
         const passed = resultData.passed;
@@ -592,20 +587,50 @@
             <button class="btn btn-primary" id="retry-test-btn">Retake Test</button>
         `;
 
-        // 4. 为新按钮绑定事件
-        document.getElementById('retry-test-btn').addEventListener('click', () => {
-            // 重置表单，并回到“准备开始”状态
+        formContainer.style.display = 'none';
+
+        const viewButton = document.getElementById('view-submission-btn');
+        const retryButton = document.getElementById('retry-test-btn');
+
+        retryButton.addEventListener('click', () => {
             document.getElementById('quiz-form').reset();
-            renderOverviewState(); 
+            document.querySelectorAll(".question").forEach(qEl => qEl.classList.remove("correct", "incorrect"));
+            statusCard.style.display = 'none';
+            formContainer.style.display = 'block';
+            document.getElementById('submit-btn').style.display = 'block';
         });
 
-        document.getElementById('view-submission-btn').addEventListener('click', () => {
-            // (查看答案的功能我们之后再实现)
-            alert("Viewing submission is not implemented yet.");
+        viewButton.addEventListener('click', () => {
+            // ✅ 更智能的“开关”逻辑
+            const isCurrentlyVisible = formContainer.style.display === 'block';
+    
+            if (isCurrentlyVisible) {
+                // 如果是可见的，就隐藏它
+                formContainer.style.display = 'none';
+                viewButton.textContent = 'Review Answers';
+            } else {
+                // 如果是隐藏的，就显示它，并标记对错
+                formContainer.style.display = 'block';
+                viewButton.textContent = 'Hide Answers';
+                
+                // 用API返回的数据标记题目颜色
+                if (resultData.correct_submissions) {
+                    document.querySelectorAll(".question").forEach((qEl) => {
+                        const qid = qEl.dataset.questionId;
+                        qEl.classList.remove("correct", "incorrect"); // 先清理，再上色
+                        if (resultData.correct_submissions[qid]) {
+                            qEl.classList.add("correct");
+                        } else {
+                            qEl.classList.add("incorrect");
+                        }
+                    });
+                }
+            }
         });
 
-        // 5. 确保状态卡可见
         statusCard.style.display = 'block';
+        document.getElementById('submit-btn').style.display = 'none';
+    
     }
 
     /**
@@ -613,12 +638,12 @@
     * Renders the UI for the 'Ready to Start' (overview) state.
     */
     function renderOverviewState() {
-        console.log("Rendering Overview State..."); // 方便你调试，确认函数被调用
-
         // 1. 获取统一面板中的各个区域
         const statusCard = document.getElementById('test-status-card');
         const dynamicContentArea = document.getElementById('dynamic-content-area');
         const actionButtonsArea = document.getElementById('action-buttons-area');
+
+        updateMetaInfo({ attempts: 0, max_attempts: maxAttempts });
 
         // 2. 清理内容，确保面板是干净的
         dynamicContentArea.innerHTML = ''; // 准备开始状态下，动态内容区是空的
@@ -638,6 +663,20 @@
 
         // 6. 最后，确保整个状态卡是可见的
         statusCard.style.display = 'block';
+    }
+
+    /**
+    * 更新顶部的测试元信息（问题数、尝试次数等）
+    * 这是一个辅助函数，确保数据来源统一
+    * @param {object} attemptsData - 包含尝试次数信息的对象, e.g., { attempts: 1, max_attempts: 10 }
+    */
+    function updateMetaInfo(attemptsData) {
+        const maxAttempts = attemptsData.max_attempts ? attemptsData.max_attempts : "unlimited";
+        const currentAttempts = attemptsData.attempts || 0; // 如果没有提供，默认为0
+
+        document.getElementById('meta-questions-count').textContent = '{{ len .Params.questions }}';
+        document.getElementById('meta-pass-percentage').textContent = `${passPercentage}%`;
+        document.getElementById('meta-attempts-count').textContent = `${currentAttempts} of ${maxAttempts}`;
     }
 
     function RenderSubmissionResult(data) {
@@ -883,7 +922,6 @@
             renderOverviewState(); // 调用“准备开始”场景布置函数
         }
     });
-
 
 </script>
 
