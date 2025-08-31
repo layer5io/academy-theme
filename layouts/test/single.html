@@ -506,14 +506,9 @@
         // Update meta info with 0 attempts
         updateMetaInfo({ attempts: 0, max_attempts: maxAttempts });
 
-        // Update page description
         descriptionEl.textContent = 'You need to complete the following prerequisites to unlock this test:';
-
-        // Generate prerequisites list HTML
         const listHtml = generatePrerequisitesListHTML(prerequisites, pendingPrereqs);
         dynamicContentArea.innerHTML = listHtml;
-        
-        // Add disabled start test button
         actionButtonsArea.innerHTML = `
             <button class="btn btn-primary" id="start-test-btn-locked" disabled>
                 Start Test
@@ -540,7 +535,7 @@
 
         listHtml += allPrerequisites.map(prereq => {
             const isPending = pendingSet.has(prereq.permalink);
-            // Fix permalink for academy paths
+            // !TODO: Temporary fix for permalink issue in academy paths
             let correctPermalink = prereq.permalink;
             if (correctPermalink.startsWith('/learning-paths/')) {
                 correctPermalink = '/academy' + correctPermalink;
@@ -889,7 +884,7 @@
     document.getElementById("go-back").addEventListener("click", HandleGoBack);
     document.getElementById("quiz-form").addEventListener("submit", HandleQuizSubmission);
 
-
+    // TODO: Temporarily commented out, will be restored later.
     {{/*  // get the prod build param 
     const isProdBuild = build === "production"
 
