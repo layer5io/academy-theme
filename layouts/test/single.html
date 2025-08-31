@@ -314,64 +314,6 @@
         </div>
     </div>
 
-    <!-- Missing Prerequisites Card -->
-    <div class="missing-prerequisites" style="display: none;">
-        <div class="card border-warning">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="bi bi-lock-fill text-warning fs-1"></i>
-                </div>
-                
-                <h5 class="card-title text-warning mb-3">Test Locked</h5>
-                
-                <p class="text-muted mb-4">
-                    Complete these prerequisites first:
-                </p>
-                
-                <div class="row g-2 mb-4 justify-content-center" id="prerequisites-list">
-                    <!-- Prerequisites will be inserted here -->
-                </div>
-             
-            </div>
-        </div>
-    </div>
-
-    <!-- Overview Card (New Test) -->
-    <div class="overview-card" style="display: none;">
-        <div class="card border-0 shadow-sm mb-3">
-            <div class="card-body">
-                <h6 class="text-muted mb-3">Test details</h6>
-                
-                <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: space-between; align-items: center;">
-                        <div >
-                            <div class="text-muted small">Questions</div>
-                            <div class="fw-medium">{{ len .Params.questions }}</div>
-                        </div>
-                        <div >
-                            <div class="text-muted small">Attempts</div>
-                            <div class="fw-medium">0 of {{ if eq .Params.max_attempts nil }}unlimited{{ else }}{{ .Params.max_attempts }}{{ end }}</div>
-                        </div>
-                        <div >
-                            <div class="text-muted small">Pass Percentage</div>
-                            <div class="fw-medium">{{ or .Params.pass_percentage 70 }}%</div>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; justify-content: end; flex-wrap: wrap;">
-                            <button class="btn btn-primary " id="start-test-btn">
-                                <i class="bi bi-play-fill me-1"></i>
-                                Start Test
-                            </button>
-                    </div>
-                </div>
-        </div>
-    </div>
-
-    <!-- Result Card (Existing Submission) -->
-    <div class="result-card" style="display: none;">
-        <!-- Results will be dynamically inserted here -->
-    </div>
-
     <!-- Quiz Form -->
     <div class="form-container">
         <form id="quiz-form">
@@ -437,38 +379,6 @@
 
     let currentState = 'loading'; // loading, overview, form, result, prerequisites, viewing_submission
 
-    // State Management Functions
-    function showState(state) {
-        // Hide all sections
-        document.querySelector('.missing-prerequisites').style.display = 'none';
-        document.querySelector('.overview-card').style.display = 'none';
-        document.querySelector('.result-card').style.display = 'none';
-        document.querySelector('.form-container').style.display = 'none';
-
-        // Show the requested state
-        currentState = state;
-        switch(state) {
-            case 'prerequisites':
-                document.querySelector('.missing-prerequisites').style.display = 'block';
-                break;
-            case 'overview':
-                document.querySelector('.overview-card').style.display = 'block';
-                break;
-            case 'form':
-                document.querySelector('.form-container').style.display = 'block';
-                break;
-            case 'result':
-                document.querySelector('.result-card').style.display = 'block';
-                break;
-            case 'viewing_submission':
-                document.querySelector('.result-card').style.display = 'block';
-                document.querySelector('.form-container').style.display = 'block';
-                // Hide submit button when viewing submission
-                document.getElementById('submit-btn').style.display = 'none';
-                break;
-        }
-    }
-
     // API Functions
     async function PostSubmissionForEvaluation(payload) {
         console.log("Posting submission for evaluation:", payload);
@@ -486,10 +396,57 @@
     }
 
     /**
-    * Populates the form, marks correct and incorrect answers, and disables all options based on the submitted answer data.
-    * @param {object} resultData - The result data returned from the API, containing the user's answers.
+    * 根据已提交的答案数据，填充表单、标记对错并禁用所有选项
+    * @param {object} resultData - 从API返回的、包含用户答案的结果数据
     */
+    function populateAndLockForm(resultData) {
+        const form = document.getElementById('quiz-form');
 
+        // 1. 如果结果中没有包含用户答案，则不执行任何操作
+        if (!resultData.answers) {
+            console.warn("No answers found in resultData to populate form.");
+            return;
+        }
+
+        // 2. 清理并重置表单，确保一个干净的状态
+        form.reset();
+        form.querySelectorAll(".question").forEach(qEl => qEl.classList.remove("correct", "incorrect"));
+
+        // 3. 遍历用户提交的每一个答案，并填充到表单中
+        resultData.answers.forEach(answer => {
+            const questionEl = form.querySelector(`.question[data-question-id="${answer.question_id}"]`);
+            if (!questionEl) return;
+
+            // 处理单选/多选题
+            if (answer.selected_option_id) {
+                const selectedIds = Object.keys(answer.selected_option_id);
+                selectedIds.forEach(optionId => {
+                    const input = questionEl.querySelector(`input[value="${optionId}"]`);
+                    if (input) {
+                        input.checked = true; // 勾选用户当时选择的答案
+                    }
+                });
+            }
+            // 这里可以扩展支持简答题等
+        });
+
+        // 4. 根据对错数据为题目上色
+        if (resultData.correct_submissions) {
+            document.querySelectorAll(".question").forEach((qEl) => {
+                const qid = qEl.dataset.questionId;
+                if (resultData.correct_submissions[qid]) {
+                    qEl.classList.add("correct");
+                } else {
+                    qEl.classList.add("incorrect");
+                }
+            });
+        }
+
+        // 5. 锁定表单：禁用所有输入控件，使其变为只读
+        form.querySelectorAll('input, textarea, select').forEach(el => {
+            el.disabled = true;
+        });
+    }
 
     /**
      * Render the locked state interface when prerequisites are not met
@@ -603,6 +560,11 @@
         retryButton.addEventListener('click', () => {
             document.getElementById('quiz-form').reset();
             document.querySelectorAll(".question").forEach(qEl => qEl.classList.remove("correct", "incorrect"));
+
+            document.getElementById('quiz-form').querySelectorAll('input, textarea, select').forEach(el => {
+                el.disabled = false;
+            });
+            
             statusCard.style.display = 'none';
             formContainer.style.display = 'block';
             document.getElementById('submit-btn').style.display = 'block';
@@ -617,18 +579,8 @@
             } else {
                 formContainer.style.display = 'block';
                 viewButton.textContent = 'Hide Answers';
-                
-                if (resultData.correct_submissions) {
-                    document.querySelectorAll(".question").forEach((qEl) => {
-                        const qid = qEl.dataset.questionId;
-                        qEl.classList.remove("correct", "incorrect");
-                        if (resultData.correct_submissions[qid]) {
-                            qEl.classList.add("correct");
-                        } else {
-                            qEl.classList.add("incorrect");
-                        }
-                    });
-                }
+
+                populateAndLockForm(resultData); 
             }
         });
 
@@ -659,7 +611,7 @@
         statusCard.style.display = 'block';
     }
 
-        /**
+    /**
      * Update test meta information (questions count, attempts, etc.)
      * @param {object} attemptsData - Object containing attempts info, e.g., { attempts: 1, max_attempts: 10 }
      */
@@ -670,125 +622,6 @@
         document.getElementById('meta-questions-count').textContent = '{{ len .Params.questions }}';
         document.getElementById('meta-pass-percentage').textContent = `${passPercentage}%`;
         document.getElementById('meta-attempts-count').textContent = `${currentAttempts} of ${maxAttempts}`;
-    }
-
-    function RenderSubmissionResult(data) {
-        const resultEl = document.querySelector('.result-card');
-        
-        // Calculate metrics
-        const correctCount = data.correct_submissions ? 
-            Object.keys(data.correct_submissions).filter(key => data.correct_submissions[key]).length : 0;
-        const totalCount = document.querySelectorAll(".question").length;
-        const incorrectCount = totalCount - correctCount;
-        
-        const passed = data.passed;
-        const statusText = passed ? 'Passed' : 'Failed';
-        const statusClass = passed ? 'text-success' : 'text-danger';
-        const bgClass = passed ? 'bg-success-subtle' : 'bg-danger-subtle';
-        const iconClass = passed ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
-
-        resultEl.innerHTML = `
-            <!-- Test Details Card -->
-            <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body">
-                    <h6 class="text-muted mb-3">Test details</h6>
-                    
-                        <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div class="text-muted small">Submitted</div>
-                                <div class="fw-medium">${new Date(data.attempted_at).toLocaleString()}</div>
-                            </div>
-
-
-                            <div>
-                                <div class="text-muted small">Pass Percentage</div>
-                                <div class="fw-medium">${passPercentage}%</div>
-                            </div>
-                            
-                            <div>
-                                <div class="text-muted small">Attempts</div>
-                                <div class="fw-medium">${data.attempts} of ${data.max_attempts  ?  data.max_attempts : "unlimited" }</div>
-                            </div>
-                            
-
-                        </div>
-                        
-                        <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; justify-content: end; flex-wrap: wrap;">
-                                <button class="btn btn-outline-secondary btn-sm me-2" id="view-submission-btn">
-                                    View Submission
-                                </button>
-                                <button class="btn btn-primary" id="retry-test-btn">
-                                    <i class="bi bi-arrow-clockwise me-1"></i>
-                                    Retry
-                                </button>
-                        </div>
-                    </div>
-            </div>
-
-            <!-- Grade Card -->
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-6">
-                            <div class="mb-2">
-                                <div class="${statusClass} small fw-medium d-flex align-items-center">
-                                    <i class="bi ${iconClass} me-1"></i>
-                                    ${statusText}
-                                </div>
-                                <div class="text-muted small">You ${passed ? "passed" : "did not pass"} the test</div>
-                            </div>
-                            <div class="display-4 fw-bold ${statusClass}">${Math.round(data.percentage_scored)}%</div>
-                        </div>
-                        
-                        <div class="col-6">
-                            <div class="d-flex justify-content-around text-center">
-                                <div>
-                                    <div class="fw-bold text-success">${correctCount}</div>
-                                    <small class="text-muted">Correct</small>
-                                </div>
-                                <div>
-                                    <div class="fw-bold text-danger">${incorrectCount}</div>
-                                    <small class="text-muted">Incorrect</small>
-                                </div>
-                                <div>
-                                    <div class="fw-bold text-secondary">${totalCount}</div>
-                                    <small class="text-muted">Total</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        // Color code questions
-        if (data.correct_submissions) {
-            document.querySelectorAll(".question").forEach((qEl) => {
-                const qid = qEl.dataset.questionId;
-                if (data.correct_submissions[qid]) {
-                    qEl.classList.add("correct");
-                    qEl.classList.remove("incorrect");
-                } else {
-                    qEl.classList.add("incorrect");
-                    qEl.classList.remove("correct");
-                }
-            });
-        }
-
-        // Add event listeners for result buttons
-        document.getElementById('view-submission-btn').addEventListener('click', () => {
-            showState('viewing_submission');
-        });
-
-        document.getElementById('retry-test-btn').addEventListener('click', () => {
-            // Reset form
-            document.getElementById('quiz-form').reset();
-            document.querySelectorAll(".question").forEach((qEl) => {
-                qEl.classList.remove("correct", "incorrect");
-            });
-            document.getElementById('submit-btn').style.display = 'block';
-            showState('form');
-        });
     }
 
     // Form handling functions
