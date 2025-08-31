@@ -271,7 +271,7 @@
         color: var(--bs-success);
     }
     .prerequisites-list .status-icon.pending {
-        color: var(--bs-secondary-color); /* 或者灰色 var(--bs-secondary-color) */
+        color: var(--bs-secondary-color); /* or gray var(--bs-secondary-color) */
     }
 </style>
 
@@ -486,16 +486,15 @@
     }
 
     /**
-    * 根据已提交的答案数据，填充表单、标记对错并禁用所有选项
-    * @param {object} resultData - 从API返回的、包含用户答案的结果数据
+    * Populates the form, marks correct and incorrect answers, and disables all options based on the submitted answer data.
+    * @param {object} resultData - The result data returned from the API, containing the user's answers.
     */
-
 
 
     /**
-    * 渲染“测试已锁定”状态的界面
-    * @param {Array} pendingPrereqs - 未完成的前置课程列表
-    */
+     * Render the locked state interface when prerequisites are not met
+     * @param {Array} pendingPrereqs - List of incomplete prerequisite courses
+     */
     function renderLockedState(pendingPrereqs) {
         console.log("Rendering Locked State...");
 
@@ -504,70 +503,55 @@
         const actionButtonsArea = document.getElementById('action-buttons-area');
         const descriptionEl = document.getElementById('test-description');
 
-        // 1. 更新顶部信息，此时尝试次数为0
+        // Update meta info with 0 attempts
         updateMetaInfo({ attempts: 0, max_attempts: maxAttempts });
 
-        // 2. 更新页面引导文字
+        // Update page description
         descriptionEl.textContent = 'You need to complete the following prerequisites to unlock this test:';
 
-        // 3. 调用我们已有的辅助函数，生成已完成/未完成的混合列表HTML
-        //    注意：第一个参数 prerequisites 是我们在脚本顶部定义的全局变量
+        // Generate prerequisites list HTML
         const listHtml = generatePrerequisitesListHTML(prerequisites, pendingPrereqs);
         dynamicContentArea.innerHTML = listHtml;
         
-        // 4. 在按钮区域，注入一个灰色的、被禁用的“开始测试”按钮
+        // Add disabled start test button
         actionButtonsArea.innerHTML = `
             <button class="btn btn-primary" id="start-test-btn-locked" disabled>
                 Start Test
             </button>
         `;
 
-        // 5. 确保UI处于正确的显示状态
+        // Set correct UI display state
         statusCard.style.display = 'block';
         document.querySelector('.form-container').style.display = 'none';
         document.getElementById('submit-btn').style.display = 'none';
     }
 
     /**
-    * 根据完整的先决条件列表和未完成的列表，生成一个包含状态图标的 HTML 列表。
-    * @param {Array} allPrerequisites - 所有必需的先决条件对象数组。
-    * @param {Array} pendingPrerequisites - 未完成的先决条件对象数组。
-    * @returns {string} - 最终生成的 HTML 字符串。
-    */
+     * Generate HTML list with status icons for prerequisites
+     * @param {Array} allPrerequisites - All required prerequisite objects
+     * @param {Array} pendingPrerequisites - Incomplete prerequisite objects
+     * @returns {string} Generated HTML string
+     */
     function generatePrerequisitesListHTML(allPrerequisites, pendingPrerequisites) {
-
-        // 1. 为了高效查找，我们先把“未完成列表”转换成一个 Set 集合。
-        //    Set 的 .has() 查询速度远快于数组的 .find() 或 .includes()，这在列表很长时尤其重要。
-        //    我们存储每个未完成课程的链接（permalink），因为它是唯一标识。
+        // Convert pending list to Set for efficient lookup
         const pendingSet = new Set(pendingPrerequisites.map(p => p.permalink));
 
-        // 2. 开始构建 HTML。我们使用 <ul> 标签，这在语义上比 <div> 更适合列表。
-        //    CSS class 'prerequisites-list' 是我们在上一步讨论中为新列表定义的样式钩子。
         let listHtml = '<ul class="prerequisites-list">';
 
-        // 3. 遍历“完整列表”，而不是“未完成列表”。这是核心改变。
-        //    对于每一个必须的课程，我们都要为它生成一个列表项 <li>。
         listHtml += allPrerequisites.map(prereq => {
-            
-            // 4. 检查当前课程是否存在于我们创建的“未完成 Set”中。
             const isPending = pendingSet.has(prereq.permalink);
-            //补丁！！！！！！需要修改！！！
+            // Fix permalink for academy paths
             let correctPermalink = prereq.permalink;
             if (correctPermalink.startsWith('/learning-paths/')) {
                 correctPermalink = '/academy' + correctPermalink;
             }
-
-            // 5. 根据检查结果（isPending 是 true 还是 false），定义不同的状态图标、CSS class 和链接样式。
             const statusIcon = isPending 
-                ? '<i class="status-icon pending fas fa-times-circle"></i>' // ✗ 图标 (未完成)
-                : '<i class="status-icon completed fas fa-check-circle"></i>'; // ✓ 图标 (已完成)
+                ? '<i class="status-icon pending fas fa-times-circle"></i>' // Incomplete
+                : '<i class="status-icon completed fas fa-check-circle"></i>'; // Complete
             
             const linkClass = isPending ? 'text-body' : 'text-muted';
             const itemClass = isPending ? 'pending' : 'completed';
 
-            // 6. 生成这个列表项 <li> 的 HTML。
-            //    - 对于已完成的项，我们让文字变灰且加上删除线，表示“已处理”。
-            //    - 对于未完成的项，它是一个正常的链接，引导用户去完成它。
             return `
                 <li class="${itemClass}">
                     ${statusIcon}
@@ -576,17 +560,17 @@
                     </a>
                 </li>
             `;
-        }).join(''); // 7. 使用 .join('') 将 map 生成的所有 <li> 字符串拼接成一个完整的字符串。
+        }).join('');
 
-        // 8. 闭合 <ul> 标签并返回最终的 HTML。
         listHtml += '</ul>';
         return listHtml;
     }
     
+
     /**
-    * 渲染“查看结果”状态的界面
-    * @param {object} resultData - 从API返回的测试结果数据
-    */
+     * Render the result state interface
+     * @param {object} resultData - Test result data from API
+     */
     function renderResultState(resultData) {
         console.log("Rendering Result State with data:", resultData);
 
@@ -596,7 +580,6 @@
         const formContainer = document.querySelector('.form-container');
         updateMetaInfo(resultData);
 
-        // 2. 在动态内容区域，注入结果详情
         const passed = resultData.passed;
         const score = Math.round(resultData.percentage_scored);
         const passText = passed ? "Passed" : "Failed";
@@ -612,7 +595,6 @@
             </div>
         `;
 
-        // 3. 在按钮区域，注入“重试”和“查看答案”按钮
         actionButtonsArea.innerHTML = `
             <button class="btn btn-outline-secondary me-2" id="view-submission-btn">Review Answers</button>
             <button class="btn btn-primary" id="retry-test-btn">Retake Test</button>
@@ -632,23 +614,19 @@
         });
 
         viewButton.addEventListener('click', () => {
-            // ✅ 更智能的“开关”逻辑
             const isCurrentlyVisible = formContainer.style.display === 'block';
     
             if (isCurrentlyVisible) {
-                // 如果是可见的，就隐藏它
                 formContainer.style.display = 'none';
                 viewButton.textContent = 'Review Answers';
             } else {
-                // 如果是隐藏的，就显示它，并标记对错
                 formContainer.style.display = 'block';
                 viewButton.textContent = 'Hide Answers';
                 
-                // 用API返回的数据标记题目颜色
                 if (resultData.correct_submissions) {
                     document.querySelectorAll(".question").forEach((qEl) => {
                         const qid = qEl.dataset.questionId;
-                        qEl.classList.remove("correct", "incorrect"); // 先清理，再上色
+                        qEl.classList.remove("correct", "incorrect");
                         if (resultData.correct_submissions[qid]) {
                             qEl.classList.add("correct");
                         } else {
@@ -664,46 +642,35 @@
     
     }
 
-    /**
-    * 渲染“准备开始”状态的界面
-    * Renders the UI for the 'Ready to Start' (overview) state.
-    */
     function renderOverviewState() {
-        // 1. 获取统一面板中的各个区域
         const statusCard = document.getElementById('test-status-card');
         const dynamicContentArea = document.getElementById('dynamic-content-area');
         const actionButtonsArea = document.getElementById('action-buttons-area');
 
         updateMetaInfo({ attempts: 0, max_attempts: maxAttempts });
 
-        // 2. 清理内容，确保面板是干净的
-        dynamicContentArea.innerHTML = ''; // 准备开始状态下，动态内容区是空的
+        dynamicContentArea.innerHTML = ''; 
         
-        // 4. 在按钮区域，注入新的“开始测试”按钮
         actionButtonsArea.innerHTML = `
             <button class="btn btn-primary" id="start-test-btn-new">
                 Start Test
             </button>
         `;
-
-        // 5. 为这个新按钮绑定事件
         document.getElementById('start-test-btn-new').addEventListener('click', () => {
-            statusCard.style.display = 'none'; // 点击后隐藏状态卡
-            document.querySelector('.form-container').style.display = 'block'; // 显示答题表单
+            statusCard.style.display = 'none'; 
+            document.querySelector('.form-container').style.display = 'block'; 
         });
 
-        // 6. 最后，确保整个状态卡是可见的
         statusCard.style.display = 'block';
     }
 
-    /**
-    * 更新顶部的测试元信息（问题数、尝试次数等）
-    * 这是一个辅助函数，确保数据来源统一
-    * @param {object} attemptsData - 包含尝试次数信息的对象, e.g., { attempts: 1, max_attempts: 10 }
-    */
+        /**
+     * Update test meta information (questions count, attempts, etc.)
+     * @param {object} attemptsData - Object containing attempts info, e.g., { attempts: 1, max_attempts: 10 }
+     */
     function updateMetaInfo(attemptsData) {
         const maxAttempts = attemptsData.max_attempts ? attemptsData.max_attempts : "unlimited";
-        const currentAttempts = attemptsData.attempts || 0; // 如果没有提供，默认为0
+        const currentAttempts = attemptsData.attempts || 0; // Default to 0 if not provided
 
         document.getElementById('meta-questions-count').textContent = '{{ len .Params.questions }}';
         document.getElementById('meta-pass-percentage').textContent = `${passPercentage}%`;
@@ -932,24 +899,24 @@
     }   */}}
 
     window.addEventListener("academyContextReady", () => {
-        // 1. 获取数据和状态
+        // Get data and state
         const pending_preqs = window.academyContext.progressTracker?.getPendingPrerequisites(prerequisites) || [];
         const existingGradeResult = window.academyContext?.progressTracker?.progress?.grades[testId] || null;
     
-        // 2. 显示我们的“多功能厅”
+        // Show the status card
         document.getElementById('test-status-card').style.display = 'block';
         document.querySelector('.form-container').style.display = 'none';
     
-        // 3. 调度员开始工作：根据状态调用不同的渲染函数
+        // Route to appropriate state based on conditions
         if (pending_preqs.length > 0) {
-            // 状态：已锁定
-            renderLockedState(pending_preqs); // 调用“锁定”场景布置函数
+            // State: Locked
+            renderLockedState(pending_preqs);
         } else if (existingGradeResult) {
-            // 状态：有历史成绩
-            renderResultState(existingGradeResult); // 调用“结果”场景布置函数
+            // State: Has existing grade
+            renderResultState(existingGradeResult);
         } else {
-            // 状态：准备开始
-            renderOverviewState(); // 调用“准备开始”场景布置函数
+            // State: Ready to start
+            renderOverviewState();
         }
     });
 
