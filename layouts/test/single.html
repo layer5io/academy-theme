@@ -427,13 +427,19 @@
                     }
                 });
             }
-            // 这里可以扩展支持简答题等
+            else if (answer.answer_text) {
+                const textInput = questionEl.querySelector(`input[type="text"][name="answer_text_${answer.question_id}"]`);
+                if (textInput) {
+                    textInput.value = answer.answer_text; // 填充用户当时输入的文本
+                }
+            }
         });
 
         // 4. 根据对错数据为题目上色
         if (resultData.correct_submissions) {
             document.querySelectorAll(".question").forEach((qEl) => {
                 const qid = qEl.dataset.questionId;
+                qEl.classList.remove("correct", "incorrect");
                 if (resultData.correct_submissions[qid]) {
                     qEl.classList.add("correct");
                 } else {
@@ -699,9 +705,29 @@
         }
 
         try {
+            // 1. 从API获取本次提交的结果 (注意：这里的 result.attempts 可能是错误的0)
             const result = await PostSubmissionForEvaluation(payload);
-            renderResultState(result); 
-        } catch (err) {
+
+            // 2. ✅ 核心修正：基于“上一次的最新状态”来计算新的尝试次数
+            //    我们优先使用缓存的 lastSubmissionResult，如果不存在（首次提交），再使用页面加载时的 existingGradeResult。
+            const previousResult = lastSubmissionResult || (window.academyContext?.progressTracker?.progress?.grades[testId]);
+            const previousAttempts = previousResult?.attempts || 0;
+            const newAttempts = previousAttempts + 1;
+
+            // 3. 将后端返回的结果与我们自己计算的正确次数合并
+            const updatedResult = {
+                ...result,
+                attempts: newAttempts, // 覆盖掉后端可能返回的错误值
+                answers: payload.answers // 确保结果对象中包含用户提交的答案，以便 view answer 功能使用
+            };
+
+            // 4. 将这次最新的、最完整的结果存入缓存，供下一次 retake 使用
+            lastSubmissionResult = updatedResult; 
+
+            // 5. 使用我们手动修正过的、最新的数据来渲染UI
+            renderResultState(updatedResult);
+
+            } catch (err) {
             console.error("Error submitting quiz:", err);
             alert("Error submitting quiz: " + err.message);
         } finally {
@@ -727,6 +753,22 @@
     }   */}}
 
     window.addEventListener("academyContextReady", () => {
+
+        const pending_preqs = window.academyContext.progressTracker.getPendingPrerequisites(prerequisites) || [];
+        const existingGradeResult = window.academyContext.progressTracker.progress?.grades[testId] || null;
+    
+        if (pending_preqs.length > 0) {
+            renderLockedState(pending_preqs);
+    
+        } else if (existingGradeResult && existingGradeResult.attempts > 0) {
+            renderResultState(existingGradeResult);
+            
+        } else {
+            renderOverviewState();
+        }
+    });
+
+    window.addEventListener("academyContextReady", () => {
         // Get data and state
         const pending_preqs = window.academyContext.progressTracker?.getPendingPrerequisites(prerequisites) || [];
         const existingGradeResult = window.academyContext?.progressTracker?.progress?.grades[testId] || null;
@@ -741,6 +783,7 @@
             renderLockedState(pending_preqs);
         } else if (existingGradeResult) {
             // State: Has existing grade
+            lastSubmissionResult = existingGradeResult; 
             renderResultState(existingGradeResult);
         } else {
             // State: Ready to start
