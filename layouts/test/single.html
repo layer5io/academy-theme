@@ -551,9 +551,20 @@
                 </p>
             </div>
         `;
+        
+        let reviewButtonHTML;
+        if (hasAnswers) {
+            reviewButtonHTML = `<button class="btn btn-outline-secondary me-2" id="view-submission-btn">Review Answers</button>`;
+        } else {
+            reviewButtonHTML = `
+                <span class="d-inline-block" tabindex="0" title="Answer details are only visible after the test has been submitted">
+                    <button class="btn btn-outline-secondary me-2" id="view-submission-btn" disabled style="pointer-events: none;">Review Answers</button>
+                </span>
+            `;
+        }
 
         actionButtonsArea.innerHTML = `
-            <button class="btn btn-outline-secondary me-2" id="view-submission-btn">Review Answers</button>
+            ${reviewButtonHTML}
             <button class="btn btn-primary" id="retry-test-btn">Retake Test</button>
         `;
 
@@ -575,19 +586,20 @@
             document.getElementById('submit-btn').style.display = 'block';
         });
 
-        viewButton.addEventListener('click', () => {
-            const isCurrentlyVisible = formContainer.style.display === 'block';
-    
-            if (isCurrentlyVisible) {
-                formContainer.style.display = 'none';
-                viewButton.textContent = 'Review Answers';
-            } else {
-                formContainer.style.display = 'block';
-                viewButton.textContent = 'Hide Answers';
-
-                populateAndLockForm(resultData); 
-            }
-        });
+        if (hasAnswers) {
+            viewButton.addEventListener('click', () => {
+                const isCurrentlyVisible = formContainer.style.display === 'block';
+        
+                if (isCurrentlyVisible) {
+                    formContainer.style.display = 'none';
+                    viewButton.textContent = 'Review Answers';
+                } else {
+                    formContainer.style.display = 'block';
+                    viewButton.textContent = 'Hide Answers';
+                    populateAndLockForm(resultData); 
+                }
+            });
+        }
 
         statusCard.style.display = 'block';
         document.getElementById('submit-btn').style.display = 'none';
