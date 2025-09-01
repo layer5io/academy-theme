@@ -1,0 +1,60 @@
+{{- $totalReadingTime := 0 -}}
+
+{{- if eq .Params.type "learning-path" -}}
+  {{- range .Pages -}}
+    {{- if eq .Params.type "course" -}}
+      {{- range .Pages -}}
+        {{- if eq .Params.type "module" -}}
+          {{- range .Pages -}}
+            {{- $totalReadingTime = add $totalReadingTime .ReadingTime -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- else if eq .Params.type "course" -}}
+  {{- range .Pages -}}
+    {{- if eq .Params.type "module" -}}
+      {{- range .Pages -}}
+        {{- $totalReadingTime = add $totalReadingTime .ReadingTime -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $totalReadingTime = mul (div (add $totalReadingTime 9) 10) 10 -}}
+{{- else if eq .Params.type "module" -}}
+  {{- range .Pages -}}
+    {{- $totalReadingTime = add $totalReadingTime .ReadingTime -}}
+  {{- end -}}
+{{- else -}}
+  {{- $totalReadingTime = .ReadingTime -}}
+{{- end -}}
+
+{{- if gt $totalReadingTime 0 -}}
+<div class="reading-time">
+  <i class="fa-solid fa-clock" style="margin-right:5px; margin-bottom: 5px"></i>
+
+  {{- if or (eq .Params.type "course") (eq .Params.type "module") -}}
+    {{- $hours := div $totalReadingTime 60 -}}
+    {{- $minutes := mod $totalReadingTime 60 -}}
+
+    {{- if gt $hours 0 -}}
+      {{- if gt $minutes 0 -}}
+        {{ T "readingTimeHoursAndMinutes" (dict "Hours" $hours "Minutes" $minutes) }}
+      {{- else -}}
+        {{ T "readingTimeHours" (dict "Count" $hours) }}
+      {{- end -}}
+    {{- else -}}
+      {{ T "readingTime" (dict "Count" $minutes) }}
+    {{- end -}}
+
+  {{- else if eq .Params.type "learning-path" -}}
+    {{- $hours := math.Ceil (div (float $totalReadingTime) 60.0) -}}
+    {{ T "readingTimeHours" (dict "Count" $hours) }}
+
+  {{- else -}}
+    {{ T "readingTime" (dict "Count" $totalReadingTime) }}
+  {{- end -}}
+</div>
+{{- end -}}
+
+
