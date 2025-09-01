@@ -270,7 +270,6 @@
         display: flex;
         align-items: center;
         padding: 8px 0;
-        border-bottom: 1px solid var(--bs-border-color-translucent);
     }
     .prerequisites-list li:last-child {
         border-bottom: none;
@@ -295,7 +294,7 @@
             <i class="fas fa-arrow-left"></i>
         </div>
         <h1>{{ $title }}</h1>
-        <p id="test-description">{{ .Content | default "Please answer the questions below to complete the test." }}</p>
+        <p id="test-description">{{ .Content | default "" }}</p>
     </div>
 
     <div id="test-status-card" class="card shadow-sm">
@@ -566,11 +565,7 @@
         if (hasAnswers) {
             reviewButtonHTML = `<button class="btn btn-outline-secondary me-2" id="view-submission-btn">Review Answers</button>`;
         } else {
-            reviewButtonHTML = `
-                <span class="d-inline-block" tabindex="0" title="Answer details are only visible after the test has been submitted">
-                    <button class="btn btn-outline-secondary me-2" id="view-submission-btn" disabled style="pointer-events: none;">Review Answers</button>
-                </span>
-            `;
+            reviewButtonHTML = ``;
         }
 
         actionButtonsArea.innerHTML = `
@@ -630,9 +625,19 @@
                 Start Test
             </button>
         `;
+        
         document.getElementById('start-test-btn-new').addEventListener('click', () => {
-            statusCard.style.display = 'none'; 
-            document.querySelector('.form-container').style.display = 'block'; 
+            console.log("Just-in-time prerequisite check initiated...");
+            const currentPendingPreqs = window.academyContext?.progressTracker?.getPendingPrerequisites(prerequisites) || [];
+    
+            if (currentPendingPreqs.length > 0) {
+                console.log("Prerequisites not met. Correcting UI to locked state.");
+                renderLockedState(currentPendingPreqs);
+            } else {
+                console.log("Prerequisites met. Proceeding to test form.");
+                statusCard.style.display = 'none'; 
+                document.querySelector('.form-container').style.display = 'block'; 
+            }
         });
 
         statusCard.style.display = 'block';
@@ -770,8 +775,8 @@
 
     window.addEventListener("academyContextReady", () => {
         // Get data and state
-        const pending_preqs = window.academyContext.progressTracker?.getPendingPrerequisites(prerequisites) || [];
-        const existingGradeResult = window.academyContext?.progressTracker?.progress?.grades[testId] || null;
+        const pending_preqs = window.academyContext?.progressTracker?.getPendingPrerequisites(prerequisites) || [];
+        const existingGradeResult = window.academyContext?.progressTracker?.progress?.grades?.[testId] || null;
     
         // Show the status card
         document.getElementById('test-status-card').style.display = 'block';
