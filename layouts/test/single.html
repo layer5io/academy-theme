@@ -1,26 +1,30 @@
 {{ define "main" }}
 <style>
     .container {
-        max-width: 780px;
+        max-width: 1200px;
+        width: 100%;
         margin: 0 auto;
-        min-height: 100vh;
+        padding: 0 16px; 
+        box-sizing: border-box;
     }
 
     .header {
-        border-bottom: var(--bs-border-width) solid var(--bs-border-color);
-        padding: 2rem 2rem 1.5rem;
+        border-bottom: 1px solid var(--bs-border-color);
+        padding: 24px 16px 20px;
     }
 
     .header h1 {
-        font-size: 1.75rem;
+        font-size: 1.5rem; 
         font-weight: 600;
         color: var(--bs-emphasis-color);
-        margin-bottom: 0.25rem;
+        margin-bottom: 8px; 
+        line-height: 1.334;
     }
 
     .header p {
         color: var(--bs-secondary-color);
-        font-size: 0.95rem;
+        font-size: 0.875rem;
+        line-height: 1.43; 
     }
 
     #go-back {
@@ -28,16 +32,16 @@
         top: 160px;
         left: 25px;
         z-index: 1010;
-        width: 45px;
-        height: 45px;
+        width: 40px; 
+        height: 40px;
         background-color: white;
         border-radius: 50%;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14);
         display: flex;
         justify-content: center;
         align-items: center;
         color: var(--bs-primary);
-        font-size: 1.1rem;
+        font-size: 1rem;
         cursor: pointer;
         transition: all 0.2s ease-in-out;
         border: 1px solid var(--bs-border-color);
@@ -45,20 +49,20 @@
 
     #go-back:hover {
         transform: scale(1.1);
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.3);
         color: var(--bs-link-hover-color);
     }
 
     .form-container {
-        padding: 2rem;
+        padding: 24px 16px; 
     }
 
     .question {
         background: var(--bs-white);
-        border: var(--bs-border-width) solid var(--bs-border-color);
-        border-radius: var(--bs-border-radius);
-        padding: 1.5rem 1.75rem;
-        margin-bottom: 1.5rem;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 4px;
+        padding: 16px; 
+        margin-bottom: 16px;
         transition: border-color 0.2s ease;
     }
 
@@ -77,22 +81,22 @@
     }
 
     .question-text {
-        font-size: 1.05rem;
+        font-size: 1rem; 
         font-weight: 500;
         color: var(--bs-emphasis-color);
-        margin-bottom: 1.25rem;
-        line-height: 1.4;
+        margin-bottom: 12px;
+        line-height: 1.5;
     }
 
     .question-instructions {
-        font-size: 0.85rem;
+        font-size: 0.875rem;
         color: var(--bs-gray-500);
-        margin-bottom: 1.25rem;
-        line-height: 1;
+        margin-bottom: 12px;
+        line-height: 1.43;
     }
 
     .option {
-        margin-bottom: 0.75rem;
+        margin-bottom: 8px;
     }
 
     .option:last-child {
@@ -103,13 +107,13 @@
         display: flex;
         align-items: flex-start;
         cursor: pointer;
-        padding: 0.75rem 1rem;
-        border-radius: var(--bs-border-radius-sm);
-        border: var(--bs-border-width) solid var(--bs-border-color);
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid var(--bs-border-color);
         background: var(--bs-tertiary-bg);
-        transition: all 0.15s ease;
-        font-size: 0.95rem;
-        line-height: 1.4;
+        transition: all 0.2s ease;
+        font-size: 0.875rem; 
+        line-height: 1.43;
     }
 
     .option label:hover {
@@ -119,41 +123,48 @@
 
     .option input[type="checkbox"],
     .option input[type="radio"] {
-        width: 18px;
-        height: 18px;
-        margin: 2px 12px 0 0;
+        width: 16px; 
+        height: 16px;
+        margin: 4px 12px 0 0;
         accent-color: var(--bs-primary);
         flex-shrink: 0;
     }
 
     .text-input {
         width: 100%;
-        padding: 0.875rem 1rem;
-        border: var(--bs-border-width) solid var(--bs-border-color);
-        border-radius: var(--bs-border-radius-sm);
-        font-size: 0.95rem;
+        padding: 8px 12px;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 4px;
+        font-size: 0.875rem; 
         background: var(--bs-white);
         transition: border-color 0.2s ease;
         color: var(--bs-body-color);
+        box-sizing: border-box;
     }
 
     .text-input:focus {
         outline: none;
         border-color: var(--bs-primary);
-        box-shadow: 0 0 0 var(--bs-focus-ring-width) var(--bs-focus-ring-color);
+        box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), 0.25); 
     }
 
     .submit-btn {
         background: var(--bs-primary);
         color: var(--bs-white);
         border: none;
-        padding: 0.875rem 2rem;
-        font-size: 0.95rem;
-        font-weight: 500;
-        border-radius: var(--bs-border-radius-sm);
+        padding: 8px 22px; 
+        font-size: 0.875rem;
+        font-weight: 500; 
+        line-height: 1.75; 
+        border-radius: 4px;
         cursor: pointer;
         transition: background-color 0.2s ease;
-        margin-top: 1.5rem;
+        text-transform: uppercase; 
+        min-width: 64px; 
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 16px;
     }
 
     .submit-btn:hover {
@@ -162,21 +173,22 @@
 
     .submit-btn:disabled {
         background: var(--bs-gray-500);
+        color: rgba(255, 255, 255, 0.3); 
         cursor: not-allowed;
     }
 
     .loading {
         display: none;
         text-align: center;
-        padding: 2rem 1rem;
+        padding: 16px;
     }
 
     .spinner {
         display: inline-block;
         width: 24px;
         height: 24px;
-        border: 2px solid var(--bs-border-color);
-        border-top: 2px solid var(--bs-primary);
+        border: 3px solid rgba(0, 0, 0, 0.1); 
+        border-top: 3px solid var(--bs-primary);
         border-radius: 50%;
         animation: spin 1s linear infinite;
     }
@@ -187,16 +199,16 @@
     }
 
     .loading p {
-        margin-top: 1rem;
+        margin-top: 8px;
         color: var(--bs-secondary-color);
-        font-size: 0.9rem;
+        font-size: 0.875rem;
     }
 
     .question-number {
         color: var(--bs-secondary-color);
-        font-size: 0.85rem;
+        font-size: 0.75rem; 
         font-weight: 500;
-        margin-bottom: 0.5rem;
+        margin-bottom: 8px;
     }
 
     /* Hide all sections by default */
@@ -207,46 +219,46 @@
         display: none;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 600px) { 
         #go-back {
-            width: 38px;
-            height: 38px;
-            font-size: 0.9rem;
+            width: 36px;
+            height: 36px;
+            font-size: 0.875rem;
             top: 200px;
-            left: 15px;
+            left: 16px;
         }
 
         .container {
-            margin: 0;
+            padding: 0 8px;
         }
 
         .header {
-            padding: 1.5rem 1rem 1.25rem;
+            padding: 16px 8px 12px;
         }
 
         .header h1 {
-            font-size: 1.5rem;
+            font-size: 1.25rem; 
         }
 
         .form-container {
-            padding: 1.5rem 1rem;
+            padding: 16px 8px;
         }
 
         .question {
-            padding: 1.25rem 1rem;
+            padding: 12px;
         }
 
         .question-text {
-            font-size: 1rem;
+            font-size: 0.875rem;
         }
 
         .question-instructions {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
         }
 
         .option label {
-            padding: 0.625rem 0.75rem;
-            font-size: 0.9rem;
+            padding: 8px;
+            font-size: 0.875rem;
         }
     }
 
@@ -257,25 +269,23 @@
     .prerequisites-list li {
         display: flex;
         align-items: center;
-        padding: 0.5rem 0;
+        padding: 8px 0;
         border-bottom: 1px solid var(--bs-border-color-translucent);
     }
     .prerequisites-list li:last-child {
         border-bottom: none;
     }
     .prerequisites-list .status-icon {
-        margin-right: 1rem;
-        font-size: 1.2rem;
+        margin-right: 8px;
+        font-size: 1.125rem;
     }
     .prerequisites-list .status-icon.completed {
         color: var(--bs-success);
     }
     .prerequisites-list .status-icon.pending {
-        color: var(--bs-secondary-color); /* or gray var(--bs-secondary-color) */
+        color: var(--bs-secondary-color);
     }
 </style>
-
-
 
 {{ $title := .Title }}
 
