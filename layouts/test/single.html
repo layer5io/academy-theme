@@ -729,7 +729,7 @@
             // The backend API provides an incorrect 'attempts' count that does not increment with retries. 
             // Manually calculates the correct cumulative attempts on the frontend to ensure the UI displays the right number for consecutive submissions.
             const result = await PostSubmissionForEvaluation(payload);
-            const previousResult = lastSubmissionResult || (window.academyContext?.progressTracker?.progress?.grades[testId]);
+            const previousResult = lastSubmissionResult || (window.academyContext?.progressTracker?.progress?.grades?.[testId]);
             const previousAttempts = previousResult?.attempts || 0;
             const newAttempts = previousAttempts + 1;
 
