@@ -26,38 +26,41 @@ information on using pull requests.
 
 To develop this theme locally, you can link it to a Hugo site (like the [academy starter template](https://github.com/layer5io/academy-example)) using a `replace` directive in the site's `go.mod` file.
 
-1.  **Directory Setup**
+1. **Directory Setup**
 
     Ensure you have cloned both this theme repository and your Hugo site repository into the same parent directory. Your folder structure should look like this:
+
     ```
     my-academy-content/
     ├── academy-example/     <-- Your content project
     └── academy-theme/  <-- This theme project
     ```
 
-2.  **Modify `go.mod`**
+2. **Modify `go.mod`**
 
     In your site's (`academy-example/`) `go.mod` file, add the following `replace` directive to point to your local theme folder:
+
     ```go
     replace github.com/layer5io/academy-theme => ../academy-theme
     ```
 
-3.  **Run the Server**
+3. **Run the Server**
     Now, when you run `make site` from within your site's directory, Hugo will use your local theme files instead of fetching the remote module, allowing you to see your changes live.
 
 ## Updating the Theme
 
 To ensure you have the latest version of the theme or to upgrade to a newer release, follow these steps:
 
-1.  **Update Go Module**
+1. **Update Go Module**
     Navigate to your Hugo site's root directory (e.g., `academy-example/`) in your terminal. Run the following command to update the theme module:
+
     ```bash
     go get -u github.com/layer5io/academy-theme
     ```
+
     This command will fetch the latest version of the theme and update your `go.mod` and `go.sum` files accordingly.
 
-
-2.  **Rebuild Your Site**
+2. **Rebuild Your Site**
     After updating the theme, rebuild your Hugo site to incorporate the changes:
 
     ```bash

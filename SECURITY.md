@@ -1,8 +1,10 @@
 # Security Policy
+
 We are very grateful to the security researchers and users that report
 back Layer5 project security vulnerabilities. We investigate every report thoroughly.
 
 ## Reporting a vulnerability
+
 To make a report, send an email to the private
 [security-vulns-reports@layer5.io](mailto:security-vulns-reports@layer5.io)
 mailing list with the vulnerability details. For normal product bugs
@@ -44,8 +46,8 @@ premature disclosure of the vulnerability.
 
 ## Early disclosure
 
-The Layer5 team maintains a mailing list for private early disclosure of security vulnerabilities. 
-The list is used to provide actionable information to close Layer5 partners. The list is not intended 
+The Layer5 team maintains a mailing list for private early disclosure of security vulnerabilities.
+The list is used to provide actionable information to close Layer5 partners. The list is not intended
 for individuals to find out about security issues.
 
 ## Public disclosure
@@ -61,4 +63,4 @@ branches.
   - The #announcements channel on Slack
 
 As much as possible this announcement will be actionable, and include any mitigating steps customers can take prior to
-upgrading to a fixed version. 
+upgrading to a fixed version.

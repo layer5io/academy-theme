@@ -5,5 +5,4 @@ The recommended approach to use this theme is through the academy starter templa
 
 ## Getting started with this theme
 
-
 The recommended approach to use this theme is through the academy starter template .
