@@ -334,19 +334,27 @@
     }
 
     .btn-outline-secondary {
-    opacity: 1 ;
-    background-color: transparent; 
-    border-color: var(--bs-gray-400); 
-    color: var(--bs-secondary); 
+    color: var(--bs-white); 
+    background-color: var(--bs-gray-500); 
+    border-color: var(--bs-gray-500); 
+    opacity: 1;
     transition: all 0.2s ease-in-out;
-    }
+}
 
-    .btn-outline-secondary:hover {
-    background-color: var(--bs-gray-400); 
-    color: var(--bs-white);
-    border-color: var(--bs-gray-400); 
-    opacity: 1; 
-    }
+.btn-outline-secondary:hover {
+    color: #ffffff; 
+    background-color: #a9a9a9; 
+    border-color: #a9a9a9; 
+    opacity: 1;
+}
+
+.btn-outline-secondary:disabled {
+    color: #666666; 
+    background-color: #e0e0e0;
+    border-color: #e0e0e0; 
+    opacity: 0.7;
+    cursor: not-allowed;
+}
 
     #test-status-card {
         border: 1px solid var(--bs-border-color); 
@@ -402,12 +410,12 @@
     }
     .option label:has(input:disabled) {
     cursor: default !important;
-}
+    }
 
-.option label:has(input:disabled):hover {
+    .option label:has(input:disabled):hover {
     border-color: var(--bs-border-color) !important;
     background: var(--bs-tertiary-bg) !important;
-}
+    }
 </style>
 
 {{ $title := .Title }}
@@ -422,23 +430,24 @@
     </div>
 
     <div id="test-status-card" class="card shadow-sm">
-        <div class="card-body">
-            <h6 class="text-muted medium mb-3">Test Details</h6>
-            <div id="test-meta-info" class="test-meta-grid">
-                <div>
-                    <div class="text-muted small">Total Questions:</div>
-                    <div class="fw-medium" id="meta-questions-count">{{ len .Params.questions }}</div>
-                </div>
-                <div>
-                    <div class="text-muted small">Attempts:</div>
-                    <div class="fw-medium" id="meta-attempts-count">0 of {{ .Params.max_attempts | default "unlimited" }}</div>
-                </div>
-                <div>
-                    <div class="text-muted small">Pass Percentage:</div>
-                    <div class="fw-medium" id="meta-pass-percentage">{{ or .Params.pass_percentage 70 }}%</div>
-                </div>
+    <div class="card-body">
+        <h6 class="text-muted mb-3" style="font-size: 1.25rem; font-weight: bold;">Test Details</h6>
+        <div id="test-meta-info" class="test-meta-grid">
+            <div>
+                <div class="text-muted" style="font-size: 1rem; font-weight: bold;">Total Questions:</div>
+                <div style="font-size: 1.1rem; font-weight: bold;" id="meta-questions-count">{{ len .Params.questions }}</div>
             </div>
-    
+            <div>
+                <div class="text-muted" style="font-size: 1rem; font-weight: bold;">Attempts:</div>
+                <div style="font-size: 1.1rem; font-weight: bold;" id="meta-attempts-count">0 of {{ .Params.max_attempts | default "unlimited" }}</div>
+            </div>
+            <div>
+                <div class="text-muted" style="font-size: 1rem; font-weight: bold;">Pass Percentage:</div>
+                <div style="font-size: 1.1rem; font-weight: bold;" id="meta-pass-percentage">{{ or .Params.pass_percentage 70 }}%</div>
+            </div>
+        </div>
+    </div>
+
             <div id="dynamic-content-area" class="mt-4">
             </div>
     
