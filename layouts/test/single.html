@@ -400,6 +400,14 @@
         justify-content: flex-end;
         align-items: center;
     }
+    .option label:has(input:disabled) {
+    cursor: default !important;
+}
+
+.option label:has(input:disabled):hover {
+    border-color: var(--bs-border-color) !important;
+    background: var(--bs-tertiary-bg) !important;
+}
 </style>
 
 {{ $title := .Title }}
