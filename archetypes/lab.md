@@ -21,14 +21,17 @@ answer_embed_link:
 ---
 
 {{< lab-intro >}}
-# Use this shortcode to add any content you need to display before the lab card. 
-# Otherwise, if you have specified starter_catalog_link or starter_embed_link, the lab card will be the first content to be shown on the page.
+
+# Use this shortcode to add any content you need to display before the lab card
+
+# Otherwise, if you have specified starter_catalog_link or starter_embed_link, the lab card will be the first content to be shown on the page
+
 {{< /lab-intro >}}
 
 ## Lab Steps
 
-1.  **First Step:**
+1. **First Step:**
     Describe the first action the user needs to take.
 
-2.  **Second Step:**
+2. **Second Step:**
     ...
