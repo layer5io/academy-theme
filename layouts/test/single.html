@@ -332,34 +332,35 @@
         cursor: pointer;
         transition: all 0.2s ease-in-out;
     }
-
+    
     .btn-outline-secondary {
     color: var(--bs-white); 
     background-color: var(--bs-gray-500); 
     border-color: var(--bs-gray-500); 
     opacity: 1;
     transition: all 0.2s ease-in-out;
-}
+    }
 
-.btn-outline-secondary:hover {
+    .btn-outline-secondary:hover {
     color: #ffffff; 
     background-color: #a9a9a9; 
     border-color: #a9a9a9; 
     opacity: 1;
-}
+    }
 
-.btn-outline-secondary:disabled {
+    .btn-outline-secondary:disabled {
     color: #666666; 
     background-color: #e0e0e0;
     border-color: #e0e0e0; 
     opacity: 0.7;
     cursor: not-allowed;
-}
+    }
 
     #test-status-card {
         border: 1px solid var(--bs-border-color); 
         border-radius: 12px; 
         padding: 20px;
+        margin-bottom: 30px;
     }
 
     /* Updated styles for chip-like design */
@@ -404,9 +405,9 @@
     /* New styles for button alignment */
     .action-buttons {
         display: flex;
-        gap: 8px; 
         justify-content: flex-end;
         align-items: center;
+        padding-top: 10px;
     }
     .option label:has(input:disabled) {
     cursor: default !important;
@@ -441,10 +442,7 @@
                 <div class="text-muted" style="font-size: 1rem; font-weight: bold;">Attempts:</div>
                 <div style="font-size: 1.1rem; font-weight: bold;" id="meta-attempts-count">0 of {{ .Params.max_attempts | default "unlimited" }}</div>
             </div>
-            <div>
-                <div class="text-muted" style="font-size: 1rem; font-weight: bold;">Pass Percentage:</div>
-                <div style="font-size: 1.1rem; font-weight: bold;" id="meta-pass-percentage">{{ or .Params.pass_percentage 70 }}%</div>
-            </div>
+            
         </div>
     </div>
 
@@ -671,84 +669,85 @@
      * @param {object} resultData - Test result data from API
      */
     function renderResultState(resultData) {
-        console.log("Rendering Result State with data:", resultData);
+    console.log("Rendering Result State with data:", resultData);
 
-        const statusCard = document.getElementById('test-status-card');
-        const dynamicContentArea = document.getElementById('dynamic-content-area');
-        const actionButtonsArea = document.getElementById('action-buttons-area');
-        const formContainer = document.querySelector('.form-container');
-        updateMetaInfo(resultData);
+    const statusCard = document.getElementById('test-status-card');
+    const dynamicContentArea = document.getElementById('dynamic-content-area');
+    const actionButtonsArea = document.getElementById('action-buttons-area');
+    const formContainer = document.querySelector('.form-container');
+    
+    updateMetaInfo(resultData);
 
-        const passed = resultData.passed;
-        const score = Math.round(resultData.percentage_scored);
-        const passText = passed ? "Passed" : "Failed";
-        const passClass = passed ? "passed" : "failed";
+    const passed = resultData.passed;
+    const score = Math.round(resultData.percentage_scored);
+    const passText = passed ? "Passed" : "Failed";
+    const passClass = passed ? "passed" : "failed";
 
-        const hasAnswers = resultData.answers && resultData.answers.length > 0;
-        const reviewButtonDisabled = hasAnswers ? "" : "disabled";
-        const reviewButtonTooltip = hasAnswers ? "" : 'title="Answer details are only visible after the test has been submitted."';
+    const hasAnswers = resultData.answers && resultData.answers.length > 0;
+    const reviewButtonDisabled = hasAnswers ? "" : "disabled";
+    const reviewButtonTooltip = hasAnswers ? "" : 'title="Answer details are only visible after the test has been submitted."';
 
-        dynamicContentArea.innerHTML = `
-            <div class="score-display">
-                <div class="score-value">${score}%</div>
-                <div class="score-label">Your Score</div>
-            </div>
-            <div class="status-chip ${passClass}">${passText}</div>
-            <p class="text-muted small">
-                <i class="bi bi-clock" style="font-size: 20px; color: black; text-shadow: 0 0 1px black;"></i> Attempted on: ${new Date(resultData.attempted_at).toLocaleString('en-US')}
-            </p>
-        `;
-        
-        let reviewButtonHTML;
-        if (hasAnswers) {
-            reviewButtonHTML = `<button class="btn btn-outline-secondary" id="view-submission-btn">Review Answers</button>`;
-        } else {
-            reviewButtonHTML = ``;
-        }
-
-        actionButtonsArea.innerHTML = `
-            <div class="action-buttons">
-                ${reviewButtonHTML}
-                <button class="btn btn-primary" id="retry-test-btn">Retake Test</button>
-            </div>
-        `;
-
-        formContainer.style.display = 'none';
-
-        const viewButton = document.getElementById('view-submission-btn');
-        const retryButton = document.getElementById('retry-test-btn');
-
-        retryButton.addEventListener('click', () => {
-            document.getElementById('quiz-form').reset();
-            document.querySelectorAll(".question").forEach(qEl => qEl.classList.remove("correct", "incorrect"));
-
-            document.getElementById('quiz-form').querySelectorAll('input, textarea, select').forEach(el => {
-                el.disabled = false;
-            });
-            
-            statusCard.style.display = 'none';
-            formContainer.style.display = 'block';
-            document.getElementById('submit-btn').style.display = 'block';
-        });
-
-        if (hasAnswers) {
-            viewButton.addEventListener('click', () => {
-                const isCurrentlyVisible = formContainer.style.display === 'block';
-        
-                if (isCurrentlyVisible) {
-                    formContainer.style.display = 'none';
-                    viewButton.textContent = 'Review Answers';
-                } else {
-                    formContainer.style.display = 'block';
-                    viewButton.textContent = 'Hide Answers';
-                    populateAndLockForm(resultData); 
-                }
-            });
-        }
-
-        statusCard.style.display = 'block';
-        document.getElementById('submit-btn').style.display = 'none';
+    dynamicContentArea.innerHTML = `
+    <div class="score-display">
+        <div class="score-value">${score}%</div>
+        <div class="score-label">Your Score (Pass Percentage: ${passPercentage}%)</div>
+    </div>
+    <div class="status-chip ${passClass}">${passText}</div>
+    <p class="text-muted small">
+        <i class="bi bi-clock" style="font-size: 20px; color: black; text-shadow: 0 0 1px black;"></i> Attempted on: ${new Date(resultData.attempted_at).toLocaleString('en-US')}
+    </p>
+`;
+    
+    let reviewButtonHTML;
+    if (hasAnswers) {
+        reviewButtonHTML = `<button class="btn btn-outline-secondary" id="view-submission-btn">Review Answers</button>`;
+    } else {
+        reviewButtonHTML = ``;
     }
+
+    actionButtonsArea.innerHTML = `
+        <div class="action-buttons">
+            ${reviewButtonHTML}
+            <button class="btn btn-primary" id="retry-test-btn">Retake Test</button>
+        </div>
+    `;
+
+    formContainer.style.display = 'none';
+
+    const viewButton = document.getElementById('view-submission-btn');
+    const retryButton = document.getElementById('retry-test-btn');
+
+    retryButton.addEventListener('click', () => {
+        document.getElementById('quiz-form').reset();
+        document.querySelectorAll(".question").forEach(qEl => qEl.classList.remove("correct", "incorrect"));
+
+        document.getElementById('quiz-form').querySelectorAll('input, textarea, select').forEach(el => {
+            el.disabled = false;
+        });
+        
+        statusCard.style.display = 'none';
+        formContainer.style.display = 'block';
+        document.getElementById('submit-btn').style.display = 'block';
+    });
+
+    if (hasAnswers) {
+        viewButton.addEventListener('click', () => {
+            const isCurrentlyVisible = formContainer.style.display === 'block';
+    
+            if (isCurrentlyVisible) {
+                formContainer.style.display = 'none';
+                viewButton.textContent = 'Review Answers';
+            } else {
+                formContainer.style.display = 'block';
+                viewButton.textContent = 'Hide Answers';
+                populateAndLockForm(resultData); 
+            }
+        });
+    }
+
+    statusCard.style.display = 'block';
+    document.getElementById('submit-btn').style.display = 'none';
+}
 
 
     function renderOverviewState() {
@@ -792,7 +791,6 @@
         const currentAttempts = attemptsData.attempts || 0; // Default to 0 if not provided
 
         document.getElementById('meta-questions-count').textContent = '{{ len .Params.questions }}';
-        document.getElementById('meta-pass-percentage').textContent = `${passPercentage}%`;
         document.getElementById('meta-attempts-count').textContent = `${currentAttempts} of ${maxAttempts}`;
     }
 
