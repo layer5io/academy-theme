@@ -371,25 +371,26 @@
         margin-bottom: 30px;
     }
 
-    .status-chip {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 4px 12px;
-        border-radius: 16px;
-        font-size: 0.875rem;
-        font-weight: 600;
-        margin: 8px 0 16px;
-        opacity: 1;
-        color: var(--bs-white); 
-        align-self: center;
+    .status-grid {
+        flex: 1 1 300px;
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
     }
-    .status-chip.passed {
-        background-color: var(--bs-success);
+    .status-grid.passed {
+        background-color: var(--bs-success-bg-subtle);
+        border-color: var(--bs-success-bg-subtle);
+        color: var(--bs-success);
     }
-    .status-chip.failed {
-        background-color: var(--bs-danger);
+    .status-grid.failed {
+        background-color: var(--bs-danger-bg-subtle);
+        border-color: var(--bs-danger-bg-subtle);
+        color: var(--bs-danger);
     }
+
 
     .score-display {
         text-align: center;
@@ -702,7 +703,14 @@
     <div class="score-display">
         <div class="score-value">${score}%</div>
         <div class="score-label">Your Score (Pass Percentage: ${passPercentage}%)</div>
-        <div class="status-chip ${passClass}">${passText}</div>
+        <div class="test-meta-grid">
+            <div class="status-grid ${passClass}">
+                <div style="font-size: 1.1rem; font-weight: bold; text-align: center; width: 100%;">${passText}</div>
+                <div class="status-grid-text">
+                    ${passed ? "Great job! You passed the test." : "Try again to improve your score!"}
+                </div>
+            </div>
+        </div>
         <p class="text-muted small">
             <i class="bi bi-clock" style="font-size: 20px; color: black; text-shadow: 0 0 1px black;"></i> Attempted on: ${new Date(resultData.attempted_at).toLocaleString('en-US')}
         </p>
