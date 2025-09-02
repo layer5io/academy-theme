@@ -264,23 +264,40 @@
         list-style-type: none;
         padding-left: 0;
     }
-    .prerequisites-list li {
+    .prerequisites-list div {
         display: flex;
+        width:auto;
+        max-width: 220px;
         align-items: center;
-        padding: 8px 0;
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
     }
-    .prerequisites-list li:last-child {
-        border-bottom: none;
+    .prerequisites-list div:hover.completed {
+        background-color: var(--bs-link-hover-color);
+    }
+    .prerequisites-list div:hover.pending {
+        background-color: var(--bs-gray-400);
+    }
+    .prerequisites-list div.completed {
+        background-color: var(--bs-primary);
+        color: var(--bs-white);
+    }
+    .prerequisites-list div.pending {
+        background-color: var(--bs-gray-500);
+        color: var(--bs-white);
     }
     .prerequisites-list .status-icon {
         margin-right: 8px;
         font-size: 1.125rem;
     }
     .prerequisites-list .status-icon.completed {
-        color: var(--bs-success);
+        color: var(--bs-white);
     }
     .prerequisites-list .status-icon.pending {
-        color: var(--bs-secondary-color);
+        color: var(--bs-white);
     }
 
     .test-meta-grid {
@@ -290,25 +307,16 @@
         font-size: 1rem;
     }
 
-    .test-meta-grid div {
+    .test-meta-grid > div {
         flex: 1 1 300px;
-    }
-
-    .test-meta-grid .key-value {
+        background-color: rgba(173, 216, 230, 0.2);
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid rgba(173, 216, 230, 0.5);
         display: flex;
-        margin-bottom: 8px;
+        flex-direction: column;
+        align-items: flex-start;
     }
-
-    .test-meta-grid .key {
-        font-weight: 500;
-        color: var(--bs-muted);
-    }
-
-    .test-meta-grid .value {
-        font-weight: 600;
-        color: var(--bs-emphasis-color);
-    }
-
     .prerequisites-header {
         margin-bottom: 8px;
         font-size: 0.95rem;
@@ -334,26 +342,26 @@
     }
     
     .btn-outline-secondary {
-    color: var(--bs-white); 
-    background-color: var(--bs-gray-500); 
-    border-color: var(--bs-gray-500); 
-    opacity: 1;
-    transition: all 0.2s ease-in-out;
+        color: var(--bs-white); 
+        background-color: var(--bs-gray-500); 
+        border-color: var(--bs-gray-500); 
+        opacity: 1;
+        transition: all 0.2s ease-in-out;
     }
 
     .btn-outline-secondary:hover {
-    color: #ffffff; 
-    background-color: #a9a9a9; 
-    border-color: #a9a9a9; 
-    opacity: 1;
+        color: #ffffff; 
+        background-color: #a9a9a9; 
+        border-color: #a9a9a9; 
+        opacity: 1;
     }
 
     .btn-outline-secondary:disabled {
-    color: #666666; 
-    background-color: #e0e0e0;
-    border-color: #e0e0e0; 
-    opacity: 0.7;
-    cursor: not-allowed;
+        color: #666666; 
+        background-color: #e0e0e0;
+        border-color: #e0e0e0; 
+        opacity: 0.7;
+        cursor: not-allowed;
     }
 
     #test-status-card {
@@ -363,17 +371,18 @@
         margin-bottom: 30px;
     }
 
-    /* Updated styles for chip-like design */
     .status-chip {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         padding: 4px 12px;
         border-radius: 16px;
         font-size: 0.875rem;
         font-weight: 600;
-        margin-bottom: 16px; 
+        margin: 8px 0 16px;
         opacity: 1;
         color: var(--bs-white); 
+        align-self: center;
     }
     .status-chip.passed {
         background-color: var(--bs-success);
@@ -382,10 +391,12 @@
         background-color: var(--bs-danger);
     }
 
-    /* New styles for score display */
     .score-display {
-        text-align: left;
+        text-align: center;
         margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .score-value {
@@ -402,20 +413,20 @@
         margin-top: 8px;
     }
 
-    /* New styles for button alignment */
     .action-buttons {
         display: flex;
         justify-content: flex-end;
         align-items: center;
         padding-top: 10px;
+        gap: 8px; 
     }
     .option label:has(input:disabled) {
-    cursor: default !important;
+        cursor: default !important;
     }
 
     .option label:has(input:disabled):hover {
-    border-color: var(--bs-border-color) !important;
-    background: var(--bs-tertiary-bg) !important;
+        border-color: var(--bs-border-color) !important;
+        background: var(--bs-tertiary-bg) !important;
     }
 </style>
 
@@ -431,25 +442,26 @@
     </div>
 
     <div id="test-status-card" class="card shadow-sm">
-    <div class="card-body">
-        <h6 class="text-muted mb-3" style="font-size: 1.25rem; font-weight: bold;">Test Details</h6>
-        <div id="test-meta-info" class="test-meta-grid">
-            <div>
-                <div class="text-muted" style="font-size: 1rem; font-weight: bold;">Total Questions:</div>
-                <div style="font-size: 1.1rem; font-weight: bold;" id="meta-questions-count">{{ len .Params.questions }}</div>
-            </div>
-            <div>
-                <div class="text-muted" style="font-size: 1rem; font-weight: bold;">Attempts:</div>
-                <div style="font-size: 1.1rem; font-weight: bold;" id="meta-attempts-count">0 of {{ .Params.max_attempts | default "unlimited" }}</div>
-            </div>
-            
+        <div class="card-body">
+            <h6 class="text-muted mb-3" style="font-size: 1.25rem; font-weight: bold;">Test Details</h6>
+            <div id="test-meta-info">
+    <div class="test-meta-grid">
+        <div>
+            <div class="text-muted" style="font-size: 1rem; font-weight: bold;">Total Questions</div>
+            <div style="font-size: 1.1rem; font-weight: bold;" id="meta-questions-count">{{ len .Params.questions }}</div>
         </div>
+        <div>
+            <div class="text-muted" style="font-size: 1rem; font-weight: bold;">Attempts</div>
+            <div style="font-size: 1.1rem; font-weight: bold;" id="meta-attempts-count">0 of {{ .Params.max_attempts | default "unlimited" }}</div>
+        </div>
+            
     </div>
+</div>
 
-            <div id="dynamic-content-area" class="mt-4">
-            </div>
+        <div id="dynamic-content-area" class="mt-4">
+        </div>
     
-            <div id="action-buttons-area" class="mt-4 text-end">
+        <div id="action-buttons-area" class="mt-4 text-end">
             </div>
         </div>
     </div>
@@ -633,7 +645,7 @@
         // Convert pending list to Set for efficient lookup
         const pendingSet = new Set(pendingPrerequisites.map(p => p.permalink));
 
-        let listHtml = '<ul class="prerequisites-list">';
+        let listHtml = '<div class="prerequisites-list">';
 
         listHtml += allPrerequisites.map(prereq => {
             const isPending = pendingSet.has(prereq.permalink);
@@ -646,20 +658,19 @@
                 ? '<i class="status-icon pending fas fa-times-circle"></i>' // Incomplete
                 : '<i class="status-icon completed fas fa-check-circle"></i>'; // Complete
             
-            const linkClass = isPending ? 'text-body' : 'text-muted';
             const itemClass = isPending ? 'pending' : 'completed';
 
             return `
-                <li class="${itemClass}">
+                <div class="${itemClass}">
                     ${statusIcon}
-                    <a href="${correctPermalink}" class="${linkClass}">
+                    <a href="${correctPermalink}" style="color: inherit; text-decoration: none;">
                         ${prereq.title}
                     </a>
-                </li>
+                </div>
             `;
         }).join('');
 
-        listHtml += '</ul>';
+        listHtml += '</div>';
         return listHtml;
     }
     
@@ -669,85 +680,85 @@
      * @param {object} resultData - Test result data from API
      */
     function renderResultState(resultData) {
-    console.log("Rendering Result State with data:", resultData);
+        console.log("Rendering Result State with data:", resultData);
 
-    const statusCard = document.getElementById('test-status-card');
-    const dynamicContentArea = document.getElementById('dynamic-content-area');
-    const actionButtonsArea = document.getElementById('action-buttons-area');
-    const formContainer = document.querySelector('.form-container');
-    
-    updateMetaInfo(resultData);
+        const statusCard = document.getElementById('test-status-card');
+        const dynamicContentArea = document.getElementById('dynamic-content-area');
+        const actionButtonsArea = document.getElementById('action-buttons-area');
+        const formContainer = document.querySelector('.form-container');
+        
+        updateMetaInfo(resultData);
 
-    const passed = resultData.passed;
-    const score = Math.round(resultData.percentage_scored);
-    const passText = passed ? "Passed" : "Failed";
-    const passClass = passed ? "passed" : "failed";
+        const passed = resultData.passed;
+        const score = Math.round(resultData.percentage_scored);
+        const passText = passed ? "Passed" : "Failed";
+        const passClass = passed ? "passed" : "failed";
 
-    const hasAnswers = resultData.answers && resultData.answers.length > 0;
-    const reviewButtonDisabled = hasAnswers ? "" : "disabled";
-    const reviewButtonTooltip = hasAnswers ? "" : 'title="Answer details are only visible after the test has been submitted."';
+        const hasAnswers = resultData.answers && resultData.answers.length > 0;
+        const reviewButtonDisabled = hasAnswers ? "" : "disabled";
+        const reviewButtonTooltip = hasAnswers ? "" : 'title="Answer details are only visible after the test has been submitted."';
 
-    dynamicContentArea.innerHTML = `
+        dynamicContentArea.innerHTML = `
     <div class="score-display">
         <div class="score-value">${score}%</div>
         <div class="score-label">Your Score (Pass Percentage: ${passPercentage}%)</div>
+        <div class="status-chip ${passClass}">${passText}</div>
+        <p class="text-muted small">
+            <i class="bi bi-clock" style="font-size: 20px; color: black; text-shadow: 0 0 1px black;"></i> Attempted on: ${new Date(resultData.attempted_at).toLocaleString('en-US')}
+        </p>
     </div>
-    <div class="status-chip ${passClass}">${passText}</div>
-    <p class="text-muted small">
-        <i class="bi bi-clock" style="font-size: 20px; color: black; text-shadow: 0 0 1px black;"></i> Attempted on: ${new Date(resultData.attempted_at).toLocaleString('en-US')}
-    </p>
 `;
-    
-    let reviewButtonHTML;
-    if (hasAnswers) {
-        reviewButtonHTML = `<button class="btn btn-outline-secondary" id="view-submission-btn">Review Answers</button>`;
-    } else {
-        reviewButtonHTML = ``;
-    }
-
-    actionButtonsArea.innerHTML = `
-        <div class="action-buttons">
-            ${reviewButtonHTML}
-            <button class="btn btn-primary" id="retry-test-btn">Retake Test</button>
-        </div>
-    `;
-
-    formContainer.style.display = 'none';
-
-    const viewButton = document.getElementById('view-submission-btn');
-    const retryButton = document.getElementById('retry-test-btn');
-
-    retryButton.addEventListener('click', () => {
-        document.getElementById('quiz-form').reset();
-        document.querySelectorAll(".question").forEach(qEl => qEl.classList.remove("correct", "incorrect"));
-
-        document.getElementById('quiz-form').querySelectorAll('input, textarea, select').forEach(el => {
-            el.disabled = false;
-        });
         
-        statusCard.style.display = 'none';
-        formContainer.style.display = 'block';
-        document.getElementById('submit-btn').style.display = 'block';
-    });
+        let reviewButtonHTML;
+        if (hasAnswers) {
+            reviewButtonHTML = `<button class="btn btn-outline-secondary" id="view-submission-btn">Review Answers</button>`;
+        } else {
+            reviewButtonHTML = ``;
+        }
 
-    if (hasAnswers) {
-        viewButton.addEventListener('click', () => {
-            const isCurrentlyVisible = formContainer.style.display === 'block';
-    
-            if (isCurrentlyVisible) {
-                formContainer.style.display = 'none';
-                viewButton.textContent = 'Review Answers';
-            } else {
-                formContainer.style.display = 'block';
-                viewButton.textContent = 'Hide Answers';
-                populateAndLockForm(resultData); 
-            }
+        actionButtonsArea.innerHTML = `
+            <div class="action-buttons">
+                ${reviewButtonHTML}
+                <button class="btn btn-primary" id="retry-test-btn">Retake Test</button>
+            </div>
+        `;
+
+        formContainer.style.display = 'none';
+
+        const viewButton = document.getElementById('view-submission-btn');
+        const retryButton = document.getElementById('retry-test-btn');
+
+        retryButton.addEventListener('click', () => {
+            document.getElementById('quiz-form').reset();
+            document.querySelectorAll(".question").forEach(qEl => qEl.classList.remove("correct", "incorrect"));
+
+            document.getElementById('quiz-form').querySelectorAll('input, textarea, select').forEach(el => {
+                el.disabled = false;
+            });
+            
+            statusCard.style.display = 'none';
+            formContainer.style.display = 'block';
+            document.getElementById('submit-btn').style.display = 'block';
         });
-    }
 
-    statusCard.style.display = 'block';
-    document.getElementById('submit-btn').style.display = 'none';
-}
+        if (hasAnswers) {
+            viewButton.addEventListener('click', () => {
+                const isCurrentlyVisible = formContainer.style.display === 'block';
+        
+                if (isCurrentlyVisible) {
+                    formContainer.style.display = 'none';
+                    viewButton.textContent = 'Review Answers';
+                } else {
+                    formContainer.style.display = 'block';
+                    viewButton.textContent = 'Hide Answers';
+                    populateAndLockForm(resultData); 
+                }
+            });
+        }
+
+        statusCard.style.display = 'block';
+        document.getElementById('submit-btn').style.display = 'none';
+    }
 
 
     function renderOverviewState() {
@@ -886,7 +897,7 @@
 
             renderResultState(updatedResult);
 
-            } catch (err) {
+        } catch (err) {
             console.error("Error submitting quiz:", err);
             alert("Error submitting quiz: " + err.message);
         } finally {
