@@ -1,65 +1,68 @@
 {{ define "main" }}
 <style>
     .container {
-        max-width: 780px;
+        width: 100%;
         margin: 0 auto;
-        min-height: 100vh;
+        padding: 0 16px; 
+        box-sizing: border-box;
+        border-radius: 16px;
+        margin-bottom: 24px;
     }
 
     .header {
-        border-bottom: var(--bs-border-width) solid var(--bs-border-color);
-        padding: 2rem 2rem 1.5rem;
+        padding: 24px 16px 20px;
     }
 
     .header h1 {
-        font-size: 1.75rem;
+        font-size: 1.5rem; 
         font-weight: 600;
         color: var(--bs-emphasis-color);
-        margin-bottom: 0.25rem;
+        margin-bottom: 8px; 
+        line-height: 1.334;
     }
 
     .header p {
         color: var(--bs-secondary-color);
-        font-size: 0.95rem;
+        font-size: 0.875rem;
+        line-height: 1.43; 
     }
 
     #go-back {
-        position: fixed; 
-        top: 160px;     
-        left: 25px;    
-        z-index: 1010; 
-        
-        width: 45px;      
-        height: 45px;      
-        background-color:white; 
-        border-radius: 50%;   
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        display: flex;      
+        position: fixed;
+        top: 160px;
+        left: 25px;
+        z-index: 1010;
+        width: 40px; 
+        height: 40px;
+        background-color: white;
+        border-radius: 50%;
+        box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.2), 0 6px 10px 0 rgba(0, 0, 0, 0.14);
+        display: flex;
         justify-content: center;
-        align-items: center;    
+        align-items: center;
         color: var(--bs-primary);
-        font-size: 1.1rem;   
+        font-size: 1rem;
         cursor: pointer;
-        transition: all 0.2s ease-in-out; 
+        transition: all 0.2s ease-in-out;
         border: 1px solid var(--bs-border-color);
     }
 
     #go-back:hover {
-        transform: scale(1.1); 
-        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        transform: scale(1.1);
+        box-shadow: 0 5px 15px -3px rgba(0, 0, 0, 0.3);
         color: var(--bs-link-hover-color);
     }
 
     .form-container {
-        padding: 2rem;
+        padding: 24px 16px; 
     }
 
     .question {
         background: var(--bs-white);
-        border: var(--bs-border-width) solid var(--bs-border-color);
-        border-radius: var(--bs-border-radius);
-        padding: 1.5rem 1.75rem;
-        margin-bottom: 1.5rem;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 4px;
+        padding: 16px; 
+        margin-bottom: 16px;
         transition: border-color 0.2s ease;
     }
 
@@ -78,22 +81,22 @@
     }
 
     .question-text {
-        font-size: 1.05rem;
+        font-size: 1rem; 
         font-weight: 500;
         color: var(--bs-emphasis-color);
-        margin-bottom: 1.25rem;
-        line-height: 1.4;
+        margin-bottom: 12px;
+        line-height: 1.5;
     }
 
-    .question-instructions{
-        font: 0.2rem;
+    .question-instructions {
+        font-size: 0.875rem;
         color: var(--bs-gray-500);
-        margin-bottom:1.25rem;
-        line-height: 1;
+        margin-bottom: 12px;
+        line-height: 1.43;
     }
 
     .option {
-        margin-bottom: 0.75rem;
+        margin-bottom: 8px;
     }
 
     .option:last-child {
@@ -104,13 +107,13 @@
         display: flex;
         align-items: flex-start;
         cursor: pointer;
-        padding: 0.75rem 1rem;
-        border-radius: var(--bs-border-radius-sm);
-        border: var(--bs-border-width) solid var(--bs-border-color);
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid var(--bs-border-color);
         background: var(--bs-tertiary-bg);
-        transition: all 0.15s ease;
-        font-size: 0.95rem;
-        line-height: 1.4;
+        transition: all 0.2s ease;
+        font-size: 0.875rem; 
+        line-height: 1.43;
     }
 
     .option label:hover {
@@ -120,8 +123,8 @@
 
     .option input[type="checkbox"],
     .option input[type="radio"] {
-        width: 18px;
-        height: 18px;
+        width: 16px; 
+        height: 16px;
         margin: 2px 12px 0 0;
         accent-color: var(--bs-primary);
         flex-shrink: 0;
@@ -129,32 +132,36 @@
 
     .text-input {
         width: 100%;
-        padding: 0.875rem 1rem;
-        border: var(--bs-border-width) solid var(--bs-border-color);
-        border-radius: var(--bs-border-radius-sm);
-        font-size: 0.95rem;
+        padding: 8px 12px;
+        border: 1px solid var(--bs-border-color);
+        border-radius: 4px;
+        font-size: 0.875rem; 
         background: var(--bs-white);
         transition: border-color 0.2s ease;
         color: var(--bs-body-color);
+        box-sizing: border-box;
     }
 
     .text-input:focus {
         outline: none;
         border-color: var(--bs-primary);
-        box-shadow: 0 0 0 var(--bs-focus-ring-width) var(--bs-focus-ring-color);
+        box-shadow: 0 0 0 4px rgba(var(--bs-primary-rgb), 0.25); 
     }
 
     .submit-btn {
         background: var(--bs-primary);
         color: var(--bs-white);
         border: none;
-        padding: 0.875rem 2rem;
-        font-size: 0.95rem;
-        font-weight: 500;
-        border-radius: var(--bs-border-radius-sm);
+        font-size: 0.875rem;
+        font-weight: 800; 
+        border-radius: 2px;
         cursor: pointer;
         transition: background-color 0.2s ease;
-        margin-top: 1.5rem;
+        text-transform: uppercase; 
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
     }
 
     .submit-btn:hover {
@@ -163,105 +170,264 @@
 
     .submit-btn:disabled {
         background: var(--bs-gray-500);
+        color: rgba(255, 255, 255, 0.3); 
         cursor: not-allowed;
-    }
-
-    .result {
-        margin-top: 2rem;
-    }
-
-    .result h2 {
-        color: var(--bs-emphasis-color);
-        margin-bottom: 1rem;
-        font-size: 1.25rem;
-        font-weight: 600;
-    }
-
-    .score-info {
-        font-size: 1rem;
-        margin: 0.5rem 0;
-        color: var(--bs-body-color);
     }
 
     .loading {
         display: none;
         text-align: center;
-        padding: 2rem 1rem;
+        padding: 16px;
     }
 
     .spinner {
         display: inline-block;
         width: 24px;
         height: 24px;
-        border: 2px solid var(--bs-border-color);
-        border-top: 2px solid var(--bs-primary);
+        border: 3px solid rgba(0, 0, 0, 0.1); 
+        border-top: 3px solid var(--bs-primary);
         border-radius: 50%;
         animation: spin 1s linear infinite;
     }
 
     @keyframes spin {
-        0% {
-            transform: rotate(0deg);
-        }
-
-        100% {
-            transform: rotate(360deg);
-        }
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
 
     .loading p {
-        margin-top: 1rem;
+        margin-top: 8px;
         color: var(--bs-secondary-color);
-        font-size: 0.9rem;
+        font-size: 0.875rem;
+        text-align: justify; /* Justify font for loading text */
     }
 
     .question-number {
         color: var(--bs-secondary-color);
-        font-size: 0.85rem;
+        font-size: 0.75rem; 
         font-weight: 500;
-        margin-bottom: 0.5rem;
+        margin-bottom: 8px;
     }
 
-    @media (max-width: 768px) {
+    /* Hide all sections by default */
+    .missing-prerequisites,
+    .overview-card,
+    .result-card,
+    .form-container {
+        display: none;
+    }
+
+    @media (max-width: 600px) { 
         #go-back {
-            width: 38px;
-            height: 38px;
-            font-size: 0.9rem;
+            width: 36px;
+            height: 36px;
+            font-size: 0.875rem;
             top: 200px;
-            left: 15px;
+            left: 16px;
         }
 
         .container {
-            margin: 0;
+            padding: 0 8px;
         }
 
         .header {
-            padding: 1.5rem 1rem 1.25rem;
+            padding: 16px 8px 12px;
         }
 
         .header h1 {
-            font-size: 1.5rem;
+            font-size: 1.25rem; 
         }
 
         .form-container {
-            padding: 1.5rem 1rem;
+            padding: 16px 8px;
         }
 
         .question {
-            padding: 1.25rem 1rem;
+            padding: 12px;
         }
 
         .question-text {
-            font-size: 1rem;
+            font-size: 0.875rem;
         }
-        .question-instructions{
-        font: 0.15rem;
+
+        .question-instructions {
+            font-size: 0.75rem;
         }
 
         .option label {
-            padding: 0.625rem 0.75rem;
-            font-size: 0.9rem;
+            padding: 8px;
+            font-size: 0.875rem;
         }
+    }
+
+    .prerequisites-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    .prerequisites-list div {
+        display: flex;
+        width:auto;
+        max-width: 220px;
+        align-items: center;
+        padding: 8px 12px;
+        margin-bottom: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .prerequisites-list div:hover.completed {
+        background-color: var(--bs-link-hover-color);
+    }
+    .prerequisites-list div:hover.pending {
+        background-color: var(--bs-gray-400);
+    }
+    .prerequisites-list div.completed {
+        background-color: var(--bs-primary);
+        color: var(--bs-white);
+    }
+    .prerequisites-list div.pending {
+        background-color: var(--bs-gray-500);
+        color: var(--bs-white);
+    }
+    .prerequisites-list .status-icon {
+        margin-right: 8px;
+        font-size: 1.125rem;
+    }
+    .prerequisites-list .status-icon.completed {
+        color: var(--bs-white);
+    }
+    .prerequisites-list .status-icon.pending {
+        color: var(--bs-white);
+    }
+
+    .test-meta-grid {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        font-size: 1rem;
+    }
+
+    .test-meta-grid > div {
+        flex: 1 1 300px;
+        background-color: rgba(173, 216, 230, 0.2);
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid rgba(173, 216, 230, 0.5);
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .prerequisites-header {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+        color: var(--bs-emphasis-color);
+    }
+
+    .btn {
+        display: inline-block;
+        font-weight: 800;
+        text-align: center;
+        white-space: normal;       
+        overflow-wrap: anywhere;   
+        vertical-align: middle;
+        user-select: none;
+        border: 1px solid transparent;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: 0.125rem;
+        max-width: 100%;           
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+    }
+    
+    .btn-outline-secondary {
+        color: var(--bs-white); 
+        background-color: var(--bs-gray-500); 
+        border-color: var(--bs-gray-500); 
+        opacity: 1;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .btn-outline-secondary:hover {
+        color: #ffffff; 
+        background-color: #a9a9a9; 
+        border-color: #a9a9a9; 
+        opacity: 1;
+    }
+
+    .btn-outline-secondary:disabled {
+        color: #666666; 
+        background-color: #e0e0e0;
+        border-color: #e0e0e0; 
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    #test-status-card {
+        border: 1px solid var(--bs-border-color); 
+        border-radius: 12px; 
+        padding: 20px;
+        margin-bottom: 30px;
+    }
+
+    .status-grid {
+        flex: 1 1 300px;
+        border-radius: 8px;
+        padding: 12px;
+        border: 1px solid;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .status-grid.passed {
+        background-color: var(--bs-success-bg-subtle);
+        border-color: var(--bs-success-bg-subtle);
+        color: var(--bs-success);
+    }
+    .status-grid.failed {
+        background-color: var(--bs-danger-bg-subtle);
+        border-color: var(--bs-danger-bg-subtle);
+        color: var(--bs-danger);
+    }
+
+
+    .score-display {
+        text-align: center;
+        margin-bottom: 16px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .score-value {
+        font-size: 2rem; 
+        font-weight: 700;
+        color: var(--bs-emphasis-color);
+        line-height: 1.2;
+    }
+
+    .score-label {
+        font-size: 1rem;
+        font-weight: 500;
+        color: var(--bs-secondary-color);
+        margin-top: 8px;
+    }
+
+    .action-buttons {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        padding-top: 10px;
+        gap: 8px; 
+    }
+    .option label:has(input:disabled) {
+        cursor: default !important;
+    }
+
+    .option label:has(input:disabled):hover {
+        border-color: var(--bs-border-color) !important;
+        background: var(--bs-tertiary-bg) !important;
     }
 </style>
 
@@ -269,13 +435,39 @@
 
 <div class="container">
     <div class="header">
-            <div id="go-back">
-        <i class="fas fa-arrow-left"></i>
-    </div>
+        <div id="go-back">
+            <i class="fas fa-arrow-left"></i>
+        </div>
         <h1>{{ $title }}</h1>
-        <p>{{ .Content | default "Please answer the questions below to complete the test." }}</p>
+        <p id="test-description">{{ .Content | default "" }}</p>
     </div>
 
+    <div id="test-status-card" class="card shadow-sm">
+        <div class="card-body">
+            <h6 class="text-muted mb-3" style="font-size: 1.25rem; font-weight: bold;">Test Details</h6>
+            <div id="test-meta-info">
+    <div class="test-meta-grid">
+        <div>
+            <div class="text-muted" style="font-size: 1rem; font-weight: bold;">Total Questions</div>
+            <div style="font-size: 1.1rem; font-weight: bold;" id="meta-questions-count">{{ len .Params.questions }}</div>
+        </div>
+        <div>
+            <div class="text-muted" style="font-size: 1rem; font-weight: bold;">Attempts</div>
+            <div style="font-size: 1.1rem; font-weight: bold;" id="meta-attempts-count">0 of {{ .Params.max_attempts | default "unlimited" }}</div>
+        </div>
+            
+    </div>
+</div>
+
+        <div id="dynamic-content-area" class="mt-4">
+        </div>
+    
+        <div id="action-buttons-area" class="mt-4 text-end">
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Form -->
     <div class="form-container">
         <form id="quiz-form">
             <input type="hidden" name="quiz_abs_path" value="{{ .RelPermalink }}">
@@ -287,13 +479,13 @@
                 {{ if $question.instructions }}
                 <div class="question-instructions">{{ $question.instructions }}</div>
                 {{ else }}
-                    {{ if eq $question.type "multiple-answers" }}
-                    <div class="question-instructions">Select all that apply</div>
-                    {{ else if eq $question.type "single-answer" }}
-                    <div class="question-instructions">Select one answer</div>
-                    {{ else if eq $question.type "short_answer" }}
-                    <div class="question-instructions">Type your answer below</div>
-                    {{ end }}
+                {{ if eq $question.type "multiple-answers" }}
+                <div class="question-instructions">Select all that apply</div>
+                {{ else if eq $question.type "single-answer" }}
+                <div class="question-instructions">Select one answer</div>
+                {{ else if eq $question.type "short_answer" }}
+                <div class="question-instructions">Type your answer below</div>
+                {{ end }}
                 {{ end }}
 
                 {{ if or ( eq $question.type "single-answer") ( eq $question.type "multiple-answers" ) }}
@@ -322,15 +514,26 @@
                 <p>Submitting your answers...</p>
             </div>
 
-            <button type="submit" class="submit-btn">Submit </button>
+            <button type="submit" class="submit-btn" id="submit-btn">Submit Test</button>
         </form>
-
-        <div id="result" class="result" style="display: none;"></div>
     </div>
 </div>
 
-<script>
+{{ $test := partial "test/single.html" . }}
+{{ $prerequisites := $test.prerequisites | default (slice) }}
+{{ $build := .Site.Params.build | default "development" }}
 
+<script>
+    const prerequisites = {{$prerequisites}};
+    const testId = {{$test.id}};
+    const passPercentage = {{ or $test.pass_percentage 70 }};
+    const build = {{ $build }};
+    const maxAttempts = {{ .Params.max_attempts | default "unlimited" }};
+    let lastSubmissionResult = null; 
+
+    let currentState = 'loading'; // loading, overview, form, result, prerequisites, viewing_submission
+
+    // API Functions
     async function PostSubmissionForEvaluation(payload) {
         console.log("Posting submission for evaluation:", payload);
         const res = await fetch(`/api/academy/quiz/submit`, {
@@ -339,91 +542,278 @@
             body: JSON.stringify(payload)
         });
 
-        console.log("Response status:", res);
-
         if (!res.ok) {
-            const errorBody = await res.json(); // or res.json() if JSON error
+            const errorBody = await res.json();
             throw new Error(`${errorBody.details || errorBody.message || "Unknown error"}`);
         }
-        const data = await res.json();
-        return data;
+        return await res.json();
     }
 
-    function RenderSubmissionResult(data) {
-        const resultEl = document.getElementById("result");
-        resultEl.style.display = "block";
+    /**
+    * Populate the form with the user's answers, mark the correct and incorrect questions, and lock all inputs.
+    * @param {object} resultData - The result data from the API containing the user's answers.
+    */
+    function populateAndLockForm(resultData) {
+        const form = document.getElementById('quiz-form');
 
-        // Calculate metrics
-        const correctCount = data.correct_submissions ? Object.keys(data.correct_submissions).filter(key => data.correct_submissions[key]).length : 0;
-        const totalCount = document.querySelectorAll(".question").length;
-        const passStatus = data.passed ? 'passed' : 'failed';
+        if (!resultData.answers) {
+            console.warn("No answers found in resultData to populate form.");
+            return;
+        }
 
-        const incorrectCount = totalCount - correctCount;
+        form.reset();
+        form.querySelectorAll(".question").forEach(qEl => qEl.classList.remove("correct", "incorrect"));
 
-        const passed = data.passed;
-        const statusText = passed ? 'Passed' : 'Failed';
-        const statusClass = passed ? 'text-success' : 'text-danger';
-        const bgClass = passed ? 'bg-success-subtle' : 'bg-danger-subtle';
-        const iconClass = passed ? 'fas fa-check-circle' : 'fas fa-times-circle';
+        resultData.answers.forEach(answer => {
+            const questionEl = form.querySelector(`.question[data-question-id="${answer.question_id}"]`);
+            if (!questionEl) return;
 
-        resultEl.innerHTML = `
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4">
-                <div class="d-flex align-items-center mb-3 ${bgClass} rounded p-3">
-                    <i class="${iconClass} me-3 fs-3 ${statusClass}"></i>
-                    <div>
-                        <h4 class="mb-0 ${statusClass}">${statusText}</h4>
-                        <small class="text-muted">You ${passed ? "passed" : "did not pass"} the quiz</small>
-                    </div>
-                </div>
-
-                <div class="d-flex flex-wrap gap-3 mb-4">
-                    <div class="flex-grow-1 p-3 bg-light rounded">
-                        <div class="text-muted small mb-1">Score</div>
-                        <div class="fw-bold fs-5">${data.score} / ${data.total_marks}</div>
-                    </div>
-                    <div class="flex-grow-1 p-3 bg-light rounded">
-                        <div class="text-muted small mb-1">Percentage</div>
-                        <div class="fw-bold fs-5">${Math.round(data.percentage_scored)}%</div>
-                    </div>
-                </div>
-
-                ${data.correct_submissions
-                ? `
-                    <div class="d-flex justify-content-around text-center">
-                        <div>
-                            <div class="fw-bold text-success">${correctCount}</div>
-                            <small class="text-muted">Correct</small>
-                        </div>
-                        <div>
-                            <div class="fw-bold text-danger">${incorrectCount}</div>
-                            <small class="text-muted">Incorrect</small>
-                        </div>
-                        <div>
-                            <div class="fw-bold text-secondary">${totalCount}</div>
-                            <small class="text-muted">Total</small>
-                        </div>
-                    </div>`
-                : ''
+            if (answer.selected_option_id) {
+                const selectedIds = Object.keys(answer.selected_option_id);
+                selectedIds.forEach(optionId => {
+                    const input = questionEl.querySelector(`input[value="${optionId}"]`);
+                    if (input) {
+                        input.checked = true; 
+                    }
+                });
             }
-            </div>
-        </div>`;
-
-        document.querySelectorAll(".question").forEach((qEl) => {
-            const qid = qEl.dataset.questionId;
-            if (data.correct_submissions && data.correct_submissions[qid]) {
-                qEl.classList.add("correct");
-                qEl.classList.remove("incorrect");
-            } else {
-                qEl.classList.add("incorrect");
-                qEl.classList.remove("correct");
+            else if (answer.answer_text) {
+                const textInput = questionEl.querySelector(`input[type="text"][name="answer_text_${answer.question_id}"]`);
+                if (textInput) {
+                    textInput.value = answer.answer_text; 
+                }
             }
         });
 
-        // Scroll to results
-        resultEl.scrollIntoView({behavior: 'smooth'});
+        if (resultData.correct_submissions) {
+            document.querySelectorAll(".question").forEach((qEl) => {
+                const qid = qEl.dataset.questionId;
+                qEl.classList.remove("correct", "incorrect");
+                if (resultData.correct_submissions[qid]) {
+                    qEl.classList.add("correct");
+                } else {
+                    qEl.classList.add("incorrect");
+                }
+            });
+        }
+
+        form.querySelectorAll('input, textarea, select').forEach(el => {
+            el.disabled = true;
+        });
     }
 
+    /**
+     * Render the locked state interface when prerequisites are not met
+     * @param {Array} pendingPrereqs - List of incomplete prerequisite courses
+     */
+    function renderLockedState(pendingPrereqs) {
+        console.log("Rendering Locked State...");
+
+        const statusCard = document.getElementById('test-status-card');
+        const dynamicContentArea = document.getElementById('dynamic-content-area');
+        const actionButtonsArea = document.getElementById('action-buttons-area');
+        const descriptionEl = document.getElementById('test-description');
+
+        // Update meta info with 0 attempts
+        updateMetaInfo({ attempts: 0, max_attempts: maxAttempts });
+
+        const listHtml = `
+            <div class="prerequisites-header">
+                <p><strong>Complete the following prerequisites to take this test:</strong></p>
+            </div>
+            ${generatePrerequisitesListHTML(prerequisites, pendingPrereqs)}
+        `;
+        dynamicContentArea.innerHTML = listHtml;
+        actionButtonsArea.innerHTML = `
+            <button class="btn btn-primary" id="start-test-btn-locked" disabled>
+                Start Test
+            </button>
+        `;
+
+        // Set correct UI display state
+        statusCard.style.display = 'block';
+        document.querySelector('.form-container').style.display = 'none';
+        document.getElementById('submit-btn').style.display = 'none';
+    }
+
+    /**
+     * Generate HTML list with status icons for prerequisites
+     * @param {Array} allPrerequisites - All required prerequisite objects
+     * @param {Array} pendingPrerequisites - Incomplete prerequisite objects
+     * @returns {string} Generated HTML string
+     */
+    function generatePrerequisitesListHTML(allPrerequisites, pendingPrerequisites) {
+        // Convert pending list to Set for efficient lookup
+        const pendingSet = new Set(pendingPrerequisites.map(p => p.permalink));
+
+        let listHtml = '<div class="prerequisites-list">';
+
+        listHtml += allPrerequisites.map(prereq => {
+            const isPending = pendingSet.has(prereq.permalink);
+            // !TODO: Temporary fix for permalink issue in academy paths
+            let correctPermalink = prereq.permalink;
+            if (correctPermalink.startsWith('/learning-paths/')) {
+                correctPermalink = '/academy' + correctPermalink;
+            }
+            const statusIcon = isPending 
+                ? '<i class="status-icon pending fas fa-times-circle"></i>' // Incomplete
+                : '<i class="status-icon completed fas fa-check-circle"></i>'; // Complete
+            
+            const itemClass = isPending ? 'pending' : 'completed';
+
+            return `
+                <div class="${itemClass}">
+                    ${statusIcon}
+                    <a href="${correctPermalink}" style="color: inherit; text-decoration: none;">
+                        ${prereq.title}
+                    </a>
+                </div>
+            `;
+        }).join('');
+
+        listHtml += '</div>';
+        return listHtml;
+    }
+    
+
+    /**
+     * Render the result state interface
+     * @param {object} resultData - Test result data from API
+     */
+    function renderResultState(resultData) {
+        console.log("Rendering Result State with data:", resultData);
+
+        const statusCard = document.getElementById('test-status-card');
+        const dynamicContentArea = document.getElementById('dynamic-content-area');
+        const actionButtonsArea = document.getElementById('action-buttons-area');
+        const formContainer = document.querySelector('.form-container');
+        
+        updateMetaInfo(resultData);
+
+        const passed = resultData.passed;
+        const score = Math.round(resultData.percentage_scored);
+        const passText = passed ? "Passed" : "Failed";
+        const passClass = passed ? "passed" : "failed";
+
+        const hasAnswers = resultData.answers && resultData.answers.length > 0;
+        const reviewButtonDisabled = hasAnswers ? "" : "disabled";
+        const reviewButtonTooltip = hasAnswers ? "" : 'title="Answer details are only visible after the test has been submitted."';
+
+        dynamicContentArea.innerHTML = `
+    <div class="score-display">
+        <div class="score-value">${score}%</div>
+        <div class="score-label">Your Score (Pass Percentage: ${passPercentage}%)</div>
+        <div class="test-meta-grid">
+            <div class="status-grid ${passClass}">
+                <div style="font-size: 1.1rem; font-weight: bold; text-align: center; width: 100%;">${passText}</div>
+                <div class="status-grid-text">
+                    ${passed ? "Great job! You passed the test." : "Try again to improve your score!"}
+                </div>
+            </div>
+        </div>
+        <p class="text-muted small">
+            <i class="bi bi-clock" style="font-size: 20px; color: black; text-shadow: 0 0 1px black;"></i> Attempted on: ${new Date(resultData.attempted_at).toLocaleString('en-US')}
+        </p>
+    </div>
+`;
+        
+        let reviewButtonHTML;
+        if (hasAnswers) {
+            reviewButtonHTML = `<button class="btn btn-outline-secondary" id="view-submission-btn">Review Answers</button>`;
+        } else {
+            reviewButtonHTML = ``;
+        }
+
+        actionButtonsArea.innerHTML = `
+            <div class="action-buttons">
+                ${reviewButtonHTML}
+                <button class="btn btn-primary" id="retry-test-btn">Retake Test</button>
+            </div>
+        `;
+
+        formContainer.style.display = 'none';
+
+        const viewButton = document.getElementById('view-submission-btn');
+        const retryButton = document.getElementById('retry-test-btn');
+
+        retryButton.addEventListener('click', () => {
+            document.getElementById('quiz-form').reset();
+            document.querySelectorAll(".question").forEach(qEl => qEl.classList.remove("correct", "incorrect"));
+
+            document.getElementById('quiz-form').querySelectorAll('input, textarea, select').forEach(el => {
+                el.disabled = false;
+            });
+            
+            statusCard.style.display = 'none';
+            formContainer.style.display = 'block';
+            document.getElementById('submit-btn').style.display = 'block';
+        });
+
+        if (hasAnswers) {
+            viewButton.addEventListener('click', () => {
+                const isCurrentlyVisible = formContainer.style.display === 'block';
+        
+                if (isCurrentlyVisible) {
+                    formContainer.style.display = 'none';
+                    viewButton.textContent = 'Review Answers';
+                } else {
+                    formContainer.style.display = 'block';
+                    viewButton.textContent = 'Hide Answers';
+                    populateAndLockForm(resultData); 
+                }
+            });
+        }
+
+        statusCard.style.display = 'block';
+        document.getElementById('submit-btn').style.display = 'none';
+    }
+
+
+    function renderOverviewState() {
+        const statusCard = document.getElementById('test-status-card');
+        const dynamicContentArea = document.getElementById('dynamic-content-area');
+        const actionButtonsArea = document.getElementById('action-buttons-area');
+
+        updateMetaInfo({ attempts: 0, max_attempts: maxAttempts });
+
+        dynamicContentArea.innerHTML = ''; 
+        
+        actionButtonsArea.innerHTML = `
+            <button class="btn btn-primary" id="start-test-btn-new">
+                Start Test
+            </button>
+        `;
+        
+        document.getElementById('start-test-btn-new').addEventListener('click', () => {
+            console.log("Just-in-time prerequisite check initiated...");
+            const currentPendingPreqs = window.academyContext?.progressTracker?.getPendingPrerequisites(prerequisites) || [];
+    
+            if (currentPendingPreqs.length > 0) {
+                console.log("Prerequisites not met. Correcting UI to locked state.");
+                renderLockedState(currentPendingPreqs);
+            } else {
+                console.log("Prerequisites met. Proceeding to test form.");
+                statusCard.style.display = 'none'; 
+                document.querySelector('.form-container').style.display = 'block'; 
+            }
+        });
+
+        statusCard.style.display = 'block';
+    }
+
+    /**
+     * Update test meta information (questions count, attempts, etc.)
+     * @param {object} attemptsData - Object containing attempts info, e.g., { attempts: 1, max_attempts: 10 }
+     */
+    function updateMetaInfo(attemptsData) {
+        const maxAttempts = attemptsData.max_attempts ? attemptsData.max_attempts : "unlimited";
+        const currentAttempts = attemptsData.attempts || 0; // Default to 0 if not provided
+
+        document.getElementById('meta-questions-count').textContent = '{{ len .Params.questions }}';
+        document.getElementById('meta-attempts-count').textContent = `${currentAttempts} of ${maxAttempts}`;
+    }
+
+    // Form handling functions
     function ShowLoadingState(loadingEl, submitBtn) {
         loadingEl.style.display = "block";
         submitBtn.disabled = true;
@@ -433,7 +823,7 @@
     function HideLoadingState(loadingEl, submitBtn) {
         loadingEl.style.display = "none";
         submitBtn.disabled = false;
-        submitBtn.textContent = "Submit Quiz";
+        submitBtn.textContent = "Submit Test";
     }
 
     function CanSubmitQuiz(answers) {
@@ -451,13 +841,11 @@
             const answer = {question_id: questionID};
 
             if (selectedCheckboxes.length > 0) {
-                // Multiple choice with checkboxes 
                 answer.selected_option_id = Array.from(selectedCheckboxes).reduce((acc, cb) => {
                     acc[cb.value] = true;
                     return acc;
                 }, {})
             } else if (selectedRadio) {
-                // Single choice with radio button (multiple_response = false)
                 answer.selected_option_id = {[selectedRadio.value]: true};
             } else if (textInput && textInput.value.trim()) {
                 answer.answer_text = textInput.value.trim();
@@ -482,23 +870,16 @@
         e.preventDefault();
         e.stopPropagation();
 
-
-        // Prevent multiple submissions 
         if (document.getElementById("loading").style.display === "block") {
             return;
         }
-
-        console.log("Handling quiz submission...");
 
         const form = e.target;
         const loadingEl = document.getElementById("loading");
         const submitBtn = form.querySelector(".submit-btn");
 
-        // Show loading state
         ShowLoadingState(loadingEl, submitBtn);
-
         const payload = ConvertFormToPayload(form);
-        console.log("Submitting payload:", payload);
 
         if (!CanSubmitQuiz(payload.answers)) {
             HideLoadingState(loadingEl, submitBtn);
@@ -506,29 +887,72 @@
             return;
         }
 
-        PostSubmissionForEvaluation(payload)
-            .then(RenderSubmissionResult)
-            .catch((err) => {
-                HideLoadingState(loadingEl, submitBtn);
-                console.error("Error submitting quiz:", err);
-                alert("Error submitting quiz: " + err.message);
-            }).
-            finally(() => {
-                HideLoadingState(loadingEl, submitBtn);
-            });
+        try {
+            // The backend API provides an incorrect 'attempts' count that does not increment with retries. 
+            // Manually calculates the correct cumulative attempts on the frontend to ensure the UI displays the right number for consecutive submissions.
+            const result = await PostSubmissionForEvaluation(payload);
+            const previousResult = lastSubmissionResult || (window.academyContext?.progressTracker?.progress?.grades?.[testId]);
+            const previousAttempts = previousResult?.attempts || 0;
+            const newAttempts = previousAttempts + 1;
+
+            const updatedResult = {
+                ...result,
+                attempts: newAttempts, 
+                answers: payload.answers 
+            };
+
+            lastSubmissionResult = updatedResult; 
+
+            renderResultState(updatedResult);
+
+        } catch (err) {
+            console.error("Error submitting quiz:", err);
+            alert("Error submitting quiz: " + err.message);
+        } finally {
+            HideLoadingState(loadingEl, submitBtn);
+        }
     }
 
-
+    // Event Listeners
     function HandleGoBack() {
         window.history.back();
     }
 
-
     document.getElementById("go-back").addEventListener("click", HandleGoBack);
-
     document.getElementById("quiz-form").addEventListener("submit", HandleQuizSubmission);
 
-</script>
+    // TODO: Temporarily commented out, will be restored later.
+    {{/*  // get the prod build param 
+    const isProdBuild = build === "production"
 
+    if (!isProdBuild) {
+        // In non-production builds, skip prerequisite checks
+        showState('form');
+    }   */}}
+
+    window.addEventListener("academyContextReady", () => {
+        // Get data and state
+        const pending_preqs = window.academyContext?.progressTracker?.getPendingPrerequisites(prerequisites) || [];
+        const existingGradeResult = window.academyContext?.progressTracker?.progress?.grades?.[testId] || null;
+    
+        // Show the status card
+        document.getElementById('test-status-card').style.display = 'block';
+        document.querySelector('.form-container').style.display = 'none';
+    
+        // Route to appropriate state based on conditions
+        if (pending_preqs.length > 0) {
+            // State: Locked
+            renderLockedState(pending_preqs);
+        } else if (existingGradeResult && existingGradeResult.attempts > 0) {
+            // State: Has existing grade
+            lastSubmissionResult = existingGradeResult; 
+            renderResultState(existingGradeResult);
+        } else {
+            // State: Ready to start
+            renderOverviewState();
+        }
+    });
+
+</script>
 
 {{ end }}
