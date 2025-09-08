@@ -6,6 +6,11 @@
         min-height: 100vh;
     }
 
+    .button {
+        cursor: pointer;
+        padding: 0.25rem 1rem;
+    }
+
     .header {
         border-bottom: var(--bs-border-width) solid var(--bs-border-color);
         padding: 2rem 2rem 1.5rem;
@@ -182,8 +187,13 @@
     }
 
     @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
     }
 
     .loading p {
@@ -205,6 +215,62 @@
     .result-card,
     .form-container {
         display: none;
+    }
+
+    .overview-card {
+        margin-top: 2rem;
+    }
+
+    /* Prerequisites Styles */
+    .missing-prerequisites .preq {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        gap: 1rem;
+        border-radius: var(--bs-border-radius-sm);
+        cursor: pointer;
+        transition: all 0.15s ease;
+        font-size: 1.5rem;
+    }
+
+    .missing-prerequisites .preq:hover {
+        background: var(--bs-light-bg-subtle);
+    }
+
+    .missing-prerequisites .completed-preq {
+        background: var(--bs-primary);
+        color: #fff;
+    }
+
+    .missing-prerequisites .pending-preq {
+        background: var(--bs-gray-500);
+        color: #fff;
+    }
+
+    .test-result-summary {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        margin-top: 1rem;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .test-result-stat {
+        flex: 1 1 120px;
+    }
+
+    .test-stat-header {
+        font-size: 1rem;
+        text-transform: uppercase;
+        color: var(--bs-secondary-color);
+        margin-bottom: 0.25rem;
+    }
+
+    .test-stat-value {
+        font-size: 1.5rem;
+        font-weight: 600;
+        color: var(--bs-emphasis-color);
     }
 
     @media (max-width: 768px) {
@@ -262,63 +328,75 @@
         <p id="test-description">{{ .Content | default "Please answer the questions below to complete the test." }}</p>
     </div>
 
-    <!-- Missing Prerequisites Card -->
-    <div class="missing-prerequisites">
-        <div class="card border-warning">
-            <div class="card-body text-center">
-                <div class="mb-3">
-                    <i class="bi bi-lock-fill text-warning fs-1"></i>
-                </div>
-                
-                <h5 class="card-title text-warning mb-3">Test Locked</h5>
-                
-                <p class="text-muted mb-4">
-                    Complete these prerequisites first:
-                </p>
-                
-                <div class="row g-2 mb-4 justify-content-center" id="prerequisites-list">
-                    <!-- Prerequisites will be inserted here -->
-                </div>
-             
-            </div>
-        </div>
-    </div>
+
 
     <!-- Overview Card (New Test) -->
     <div class="overview-card">
         <div class="card border-0 shadow-sm mb-3">
             <div class="card-body">
-                <h6 class="text-muted mb-3">Test details</h6>
-                
-                <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: space-between; align-items: center;">
-                        <div >
-                            <div class="text-muted small">Questions</div>
+                <h3 class="mb-3">Test details</h6>
+
+                    <div
+                        style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div class="text-muted">QUESTIONS</div>
                             <div class="fw-medium">{{ len .Params.questions }}</div>
                         </div>
-                        <div >
-                            <div class="text-muted small">Attempts</div>
-                            <div class="fw-medium">0 of {{ if eq .Params.max_attempts nil }}unlimited{{ else }}{{ .Params.max_attempts }}{{ end }}</div>
+                        <div>
+                            <div class="text-muted">ATTEMPTS</div>
+                            <div class="fw-medium">
+                                <span id="attempts-made">0</span>
+                                of {{ if eq .Params.max_attempts nil }}unlimited{{ else }}{{
+                                .Params.max_attempts }}{{ end }}
+                            </div>
                         </div>
-                        <div >
-                            <div class="text-muted small">Pass Percentage</div>
+                        <div>
+                            <div class="text-muted">PASS PERCENTAGE</div>
                             <div class="fw-medium">{{ or .Params.pass_percentage 70 }}%</div>
                         </div>
                     </div>
-                    
-                    <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; justify-content: end; flex-wrap: wrap;">
-                            <button class="btn btn-primary " id="start-test-btn">
-                                <i class="bi bi-play-fill me-1"></i>
-                                Start Test
-                            </button>
+
+                    <!-- Missing Prerequisites Card -->
+                    <div class="missing-prerequisites">
+
+                        <p class="text-muted mb-4">
+                            Complete the following prerequisites to take this test:
+                        </p>
+
+                        <div class="row g-2 mb-4 justify-content-center" id="prerequisites-list">
+                            <!-- Prerequisites will be inserted here -->
+                        </div>
+
                     </div>
-                </div>
+
+                    <!-- Result Card (Existing Submission) -->
+                    <div class="result-card">
+                        <!-- Results will be dynamically inserted here -->
+                    </div>
+
+                    <div
+                        style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; justify-content: end; flex-wrap: wrap;">
+                        <button class="btn btn-primary button" id="start-test-btn">
+                            <i class="bi bi-play-fill me-1"></i>
+                            Start Test
+                        </button>
+                        <button class="btn btn-outline-secondary  me-2 button" id="view-submission-btn">
+                            View Submission
+                        </button>
+                        <button class="btn btn-outline-secondary me-2 button" id="hide-submission-btn">
+                            Hide Submission
+                        </button>
+                        <button class="btn btn-primary button" id="retry-test-btn">
+                            <i class="bi bi-arrow-clockwise me-1"></i>
+                            Retry
+                        </button>
+
+                    </div>
+            </div>
         </div>
     </div>
 
-    <!-- Result Card (Existing Submission) -->
-    <div class="result-card">
-        <!-- Results will be dynamically inserted here -->
-    </div>
+
 
     <!-- Quiz Form -->
     <div class="form-container">
@@ -379,39 +457,73 @@
 <script>
     const prerequisites = {{$prerequisites}};
     const testId = {{$test.id}};
-    const passPercentage = {{ or $test.pass_percentage 70 }};
-    const build = {{ $build }};
+    const passPercentage = {{or $test.pass_percentage 70 }};
+    const build = {{$build}};
 
-    let currentState = 'loading'; // loading, overview, form, result, prerequisites, viewing_submission
+    let currentState = 'loading'; // loading, new_test, submitted_test , viewing_submission , missing_prerequisites , taking_test
 
     // State Management Functions
-    function showState(state) {
+    function showState(state, data) {
         // Hide all sections
+        document.getElementById('test-description').style.display = 'none';
         document.querySelector('.missing-prerequisites').style.display = 'none';
         document.querySelector('.overview-card').style.display = 'none';
         document.querySelector('.result-card').style.display = 'none';
         document.querySelector('.form-container').style.display = 'none';
+        // hide all buttons 
+        document.getElementById('start-test-btn').style.display = 'none';
+        document.getElementById('retry-test-btn').style.display = 'none';
+        document.getElementById('view-submission-btn').style.display = 'none';
+        document.getElementById('hide-submission-btn').style.display = 'none';
 
         // Show the requested state
         currentState = state;
-        switch(state) {
-            case 'prerequisites':
-                document.querySelector('.missing-prerequisites').style.display = 'block';
-                break;
-            case 'overview':
+        switch (state) {
+
+            case 'missing_prerequisites':
                 document.querySelector('.overview-card').style.display = 'block';
+                document.querySelector('.missing-prerequisites').style.display = 'block';
+                RenderMissingPrerequisites(data);
                 break;
-            case 'form':
+
+            case 'new_test':
+                document.querySelector('.overview-card').style.display = 'block';
+                document.getElementById('start-test-btn').style.display = 'block';
+                break;
+
+            case 'taking_test':
                 document.querySelector('.form-container').style.display = 'block';
+                document.getElementById('test-description').style.display = 'block';
+                document.getElementById('submit-btn').style.display = 'block';
+                // Reset form
+                document.getElementById('quiz-form').reset();
+                document.querySelectorAll(".question").forEach((qEl) => {
+                    qEl.classList.remove("correct", "incorrect");
+                });
                 break;
-            case 'result':
+
+            case 'submitted_test':
+                document.querySelector('.overview-card').style.display = 'block';
                 document.querySelector('.result-card').style.display = 'block';
+
+                // enable retry and view submission buttons 
+                document.getElementById('retry-test-btn').style.display = 'block';
+                document.getElementById('view-submission-btn').style.display = 'block';
+
+
+                RenderSubmissionResult(data);
                 break;
+
             case 'viewing_submission':
+                document.querySelector('.overview-card').style.display = 'block';
                 document.querySelector('.result-card').style.display = 'block';
                 document.querySelector('.form-container').style.display = 'block';
                 // Hide submit button when viewing submission
                 document.getElementById('submit-btn').style.display = 'none';
+                document.getElementById('hide-submission-btn').style.display = 'block';
+                document.getElementById('retry-test-btn').style.display = 'block';
+
+                RenderSubmissionResult(data);
                 break;
         }
     }
@@ -435,102 +547,91 @@
     // Render Functions
     function RenderMissingPrerequisites(pendingPreqs) {
         const prerequisitesList = document.getElementById('prerequisites-list');
-        prerequisitesList.innerHTML = pendingPreqs.map(preq => `
-            <div class="col-auto">
-                <a href="${preq.permalink}" class="text-warning text-decoration-none fw-medium">
+
+        const isPrerequisitePending = (preq) => {
+            return pendingPreqs.some(p => p.id === preq.id);
+        };
+        const preqLink = (preq) => {
+            return "/academy" + preq.permalink;
+        };
+
+        const pendingPreq = (preq) => {
+            return `
+              <a href="${preqLink(preq)}" class='pending-preq preq'>
+                <i class="bi bi-x-circle-fill text-white me-1"></i>
+                <div  class="">
                     ${preq.title}
-                </a>
-            </div>
-        `).join('');
+                </div>
+            </a>`
+        };
+        const completedPreq = (preq) => {
+            return `
+              <a href="${preqLink(preq)}" class='completed-preq preq'>
+                <i class="bi bi-check-circle-fill text-white me-1"></i>
+                <div  class="">
+                    ${preq.title}
+                </div>
+             </a>`;
+        };
+
+
+        prerequisitesList.innerHTML = prerequisites.map(preq => {
+            return isPrerequisitePending(preq) ? pendingPreq(preq) : completedPreq(preq);
+        }).join('');
     }
 
     function RenderSubmissionResult(data) {
         const resultEl = document.querySelector('.result-card');
-        
+
         // Calculate metrics
-        const correctCount = data.correct_submissions ? 
+        const correctCount = data.correct_submissions ?
             Object.keys(data.correct_submissions).filter(key => data.correct_submissions[key]).length : 0;
         const totalCount = document.querySelectorAll(".question").length;
         const incorrectCount = totalCount - correctCount;
-        
+
         const passed = data.passed;
-        const statusText = passed ? 'Passed' : 'Failed';
+        const statusText = passed ? 'You have passed the test' : 'You have not passed the test';
         const statusClass = passed ? 'text-success' : 'text-danger';
         const bgClass = passed ? 'bg-success-subtle' : 'bg-danger-subtle';
         const iconClass = passed ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
+        const attemptsMade = data.attempts || 1;
+
+        console.log("Rendering submission result:", data);
+
+        document.getElementById('attempts-made').textContent = attemptsMade;
 
         resultEl.innerHTML = `
-            <!-- Test Details Card -->
-            <div class="card border-0 shadow-sm mb-3">
-                <div class="card-body">
-                    <h6 class="text-muted mb-3">Test details</h6>
-                    
-                        <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div class="text-muted small">Submitted</div>
-                                <div class="fw-medium">${new Date(data.attempted_at).toLocaleString()}</div>
-                            </div>
-
-
-                            <div>
-                                <div class="text-muted small">Pass Percentage</div>
-                                <div class="fw-medium">${passPercentage}%</div>
-                            </div>
-                            
-                            <div>
-                                <div class="text-muted small">Attempts</div>
-                                <div class="fw-medium">${data.attempts} of ${data.max_attempts  ?  data.max_attempts : "unlimited" }</div>
-                            </div>
-                            
-
-                        </div>
-                        
-                        <div style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; justify-content: end; flex-wrap: wrap;">
-                                <button class="btn btn-outline-secondary btn-sm me-2" id="view-submission-btn">
-                                    View Submission
-                                </button>
-                                <button class="btn btn-primary" id="retry-test-btn">
-                                    <i class="bi bi-arrow-clockwise me-1"></i>
-                                    Retry
-                                </button>
-                        </div>
-                    </div>
-            </div>
-
             <!-- Grade Card -->
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="row align-items-center">
-                        <div class="col-6">
-                            <div class="mb-2">
-                                <div class="${statusClass} small fw-medium d-flex align-items-center">
-                                    <i class="bi ${iconClass} me-1"></i>
-                                    ${statusText}
-                                </div>
-                                <div class="text-muted small">You ${passed ? "passed" : "did not pass"} the test</div>
-                            </div>
-                            <div class="display-4 fw-bold ${statusClass}">${Math.round(data.percentage_scored)}%</div>
+                <div class="">
+                    <div class="${statusClass}  fw-medium d-flex align-items-center">
+                        <i class="bi ${iconClass} me-1"></i>
+                        ${statusText}
+                    </div>
+
+                    <div class="test-result-summary">
+                        <div class="test-result-stat">
+                          <div class="test-stat-header">Score</div>
+                          <div class="test-stat-value ${statusClass}">${Math.round(data.percentage_scored)}%</div>
+                        </div>
+
+                        <div class="test-result-stat">
+                          <div class="test-stat-header">Pass Percentage</div>
+                          <div class="test-stat-value">${passPercentage}%</div>
+                        </div>
+
+                        <div class="test-result-stat">
+                          <div class="test-stat-header">Correct</div>
+                          <div class="test-stat-value text-success">${correctCount}</div>
+                        </div>
+
+                        <div class="test-result-stat">
+                          <div class="test-stat-header">Incorrect</div>
+                          <div class="test-stat-value text-danger">${incorrectCount}</div>
                         </div>
                         
-                        <div class="col-6">
-                            <div class="d-flex justify-content-around text-center">
-                                <div>
-                                    <div class="fw-bold text-success">${correctCount}</div>
-                                    <small class="text-muted">Correct</small>
-                                </div>
-                                <div>
-                                    <div class="fw-bold text-danger">${incorrectCount}</div>
-                                    <small class="text-muted">Incorrect</small>
-                                </div>
-                                <div>
-                                    <div class="fw-bold text-secondary">${totalCount}</div>
-                                    <small class="text-muted">Total</small>
-                                </div>
-                            </div>
-                        </div>
                     </div>
                 </div>
-            </div>
+    
         `;
 
         // Color code questions
@@ -553,13 +654,8 @@
         });
 
         document.getElementById('retry-test-btn').addEventListener('click', () => {
-            // Reset form
-            document.getElementById('quiz-form').reset();
-            document.querySelectorAll(".question").forEach((qEl) => {
-                qEl.classList.remove("correct", "incorrect");
-            });
-            document.getElementById('submit-btn').style.display = 'block';
-            showState('form');
+
+            showState('taking_test');
         });
     }
 
@@ -640,8 +736,7 @@
 
         try {
             const result = await PostSubmissionForEvaluation(payload);
-            RenderSubmissionResult(result);
-            showState('result');
+            showState('submitted_test', result);
         } catch (err) {
             console.error("Error submitting quiz:", err);
             alert("Error submitting quiz: " + err.message);
@@ -657,46 +752,53 @@
 
     document.getElementById("go-back").addEventListener("click", HandleGoBack);
     document.getElementById("quiz-form").addEventListener("submit", HandleQuizSubmission);
-    
+
     document.getElementById("start-test-btn").addEventListener("click", () => {
-        showState('form');
+        showState('taking_test');
     });
 
+    document.getElementById("hide-submission-btn").addEventListener("click", () => {
+        showState('submitted_test');
+    });
+
+    document.addEventListener("preq", (e) => {
+        // get permalink from data-link attribute
+        const preqLink = e.target.dataset.link;
+        window.location.open("/academy" + preqLink, "_blank");
+    });
 
     // get the prod build param 
     const isProdBuild = build === "production"
 
     if (!isProdBuild) {
         // In non-production builds, skip prerequisite checks
-        showState('form');
-    } 
-    
+        showState('taking_test');
+    }
+
 
     // Initialize when context is ready
     window.addEventListener("academyContextReady", () => {
         console.log("Quiz page loaded.", prerequisites);
 
-        if (!window.academyContext){
-            showState('form');
+        if (!window.academyContext) {
+            showState('taking_test');
             return;
         }
-        
+
         const pending_preqs = window.academyContext.progressTracker?.getPendingPrerequisites(prerequisites) || [];
-        
+
         if (pending_preqs.length > 0) {
-            RenderMissingPrerequisites(pending_preqs);
-            showState('prerequisites');
+            showState('missing_prerequisites', pending_preqs);
             return;
         }
 
         // Check for existing submission
         const existingGradeResult = window.academyContext?.progressTracker?.progress?.grades[testId] || null;
-        
+
         if (existingGradeResult) {
-            RenderSubmissionResult(existingGradeResult);
-            showState('result');
+            showState('submitted_test', existingGradeResult);
         } else {
-            showState('overview');
+            showState('new_test');
         }
     });
 </script>
