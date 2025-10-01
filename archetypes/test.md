@@ -65,4 +65,12 @@ questions:
       - id: "d"
         text: "To handle errors in a function"
         is_correct: false
+
+  # True/False Question
+  - id: "q5"
+    text: "True or False: Go supports concurrency through goroutines."
+    type: "true-false"
+    marks: 2
+    answer: true
+    explanation: "Goroutines enable concurrent execution in Go."
 ---
