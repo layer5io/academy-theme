@@ -695,6 +695,7 @@
         const answers = [];
         document.querySelectorAll(".question").forEach((questionEl) => {
             const questionID = questionEl.dataset.questionId;
+            const questionType = questionEl.dataset.questionType;
             const selectedCheckboxes = questionEl.querySelectorAll("input[type='checkbox']:checked");
             const selectedRadio = questionEl.querySelector("input[type='radio']:checked");
             const textInput = questionEl.querySelector("input[type='text']");
@@ -707,7 +708,12 @@
                     return acc;
                 }, {})
             } else if (selectedRadio) {
-                answer.selected_option_id = {[selectedRadio.value]: true};
+                if (questionType === 'true-false') {
+                    // For true/false
+                    answer.answer_text = String(selectedRadio.value).toLowerCase();
+                } else {
+                    answer.selected_option_id = {[selectedRadio.value]: true};
+                }
             } else if (textInput && textInput.value.trim()) {
                 answer.answer_text = textInput.value.trim();
             }
