@@ -559,8 +559,9 @@
             return `
               <a href="${preqLink(preq)}" class='pending-preq preq'>
                 <i class="bi bi-x-circle-fill text-white me-1"></i>
-                <div  class="">
-                    ${preq.title}
+                <div>
+                    <strong>${preq.title}</strong><br/>
+                    <span class="text-danger">You must complete this before taking the test.</span>
                 </div>
             </a>`
         };
@@ -568,16 +569,23 @@
             return `
               <a href="${preqLink(preq)}" class='completed-preq preq'>
                 <i class="bi bi-check-circle-fill text-white me-1"></i>
-                <div  class="">
+                <div>
                     ${preq.title}
                 </div>
              </a>`;
         };
 
-
-        prerequisitesList.innerHTML = prerequisites.map(preq => {
-            return isPrerequisitePending(preq) ? pendingPreq(preq) : completedPreq(preq);
-        }).join('');
+        if (pendingPreqs.length > 0) {
+            prerequisitesList.innerHTML = prerequisites.map(preq => {
+                return isPrerequisitePending(preq) ? pendingPreq(preq) : completedPreq(preq);
+            }).join('');
+            // Add a clear, actionable message
+            prerequisitesList.insertAdjacentHTML('beforebegin', `<div class="alert alert-warning" role="alert">
+                <strong>Action Required:</strong> You need to complete all prerequisites before you can start this test. Click on each prerequisite to view and complete it.
+            </div>`);
+        } else {
+            prerequisitesList.innerHTML = '';
+        }
     }
 
     function RenderSubmissionResult(data) {
@@ -752,10 +760,7 @@
 
     document.getElementById("go-back").addEventListener("click", HandleGoBack);
     document.getElementById("quiz-form").addEventListener("submit", HandleQuizSubmission);
-
-    document.getElementById("start-test-btn").addEventListener("click", () => {
-        showState('taking_test');
-    });
+    // start-test-btn click logic handled in academyContextReady for prerequisite check
 
     document.getElementById("hide-submission-btn").addEventListener("click", () => {
         showState('submitted_test');
@@ -785,16 +790,29 @@
             return;
         }
 
-        const pending_preqs = window.academyContext.progressTracker?.getPendingPrerequisites(prerequisites) || [];
+        // Prerequisite check before test start
+        let pending_preqs = window.academyContext.progressTracker?.getPendingPrerequisites(prerequisites) || [];
+        let prerequisitesMet = pending_preqs.length === 0;
 
-        if (pending_preqs.length > 0) {
+        // Only allow starting test if prerequisites are met
+        const startTestBtn = document.getElementById("start-test-btn");
+        if (startTestBtn) {
+            startTestBtn.onclick = function() {
+                if (!prerequisitesMet) {
+                    showState('missing_prerequisites', pending_preqs);
+                } else {
+                    showState('taking_test');
+                }
+            };
+        }
+
+        if (!prerequisitesMet) {
             showState('missing_prerequisites', pending_preqs);
             return;
         }
 
         // Check for existing submission
         const existingGradeResult = window.academyContext?.progressTracker?.progress?.grades[testId] || null;
-
         if (existingGradeResult) {
             showState('submitted_test', existingGradeResult);
         } else {
