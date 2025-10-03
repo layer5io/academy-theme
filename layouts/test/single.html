@@ -414,7 +414,7 @@
                 <div class="question-instructions">Select all that apply</div>
                 {{ else if eq $question.type "single-answer" }}
                 <div class="question-instructions">Select one answer</div>
-                {{ else if eq $question.type "short_answer" }}
+                {{ else if eq $question.type "short-answer" }}
                 <div class="question-instructions">Type your answer below</div>
                 {{ end }}
                 {{ end }}
@@ -433,7 +433,7 @@
                 </div>
                 {{ end }}
 
-                {{ else if (eq $question.type "short_answer") }}
+                {{ else if (eq $question.type "short-answer") }}
                 <input type="text" name="answer_text_{{ $question.id }}" class="text-input"
                     placeholder="Type your answer here">
                 {{ end }}
