@@ -610,12 +610,12 @@
 
                     <div class="test-result-summary">
                         <div class="test-result-stat">
-                          <div class="test-stat-header">Score</div>
+                          <div class="test-stat-header">Your Score</div>
                           <div class="test-stat-value ${statusClass}">${Math.round(data.percentage_scored)}%</div>
                         </div>
 
                         <div class="test-result-stat">
-                          <div class="test-stat-header">Pass Percentage</div>
+                          <div class="test-stat-header">Pass Score</div>
                           <div class="test-stat-value">${passPercentage}%</div>
                         </div>
 
@@ -761,11 +761,6 @@
         showState('submitted_test');
     });
 
-    document.addEventListener("preq", (e) => {
-        // get permalink from data-link attribute
-        const preqLink = e.target.dataset.link;
-        window.location.open("/academy" + preqLink, "_blank");
-    });
 
     // get the prod build param 
     const isProdBuild = build === "production"
