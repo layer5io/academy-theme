@@ -376,19 +376,24 @@
 
                     <div
                         style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; justify-content: end; flex-wrap: wrap;">
-                        <button class="btn btn-primary button" id="start-test-btn">
-                            <i class="bi bi-play-fill me-1"></i>
-                            Start Test
-                        </button>
-                        <button class="btn btn-outline-secondary  me-2 button" id="view-submission-btn">
+ 
+                        
+                        <button class="btn   me-2 button" id="view-submission-btn">
                             View Submission
                         </button>
-                        <button class="btn btn-outline-secondary me-2 button" id="hide-submission-btn">
+                        <button class="btn  me-2 button" id="hide-submission-btn">
                             Hide Submission
                         </button>
-                        <button class="btn btn-primary button" id="retry-test-btn">
+                        <button class="btn btn-outline-secondary button" id="retry-test-btn">
                             <i class="bi bi-arrow-clockwise me-1"></i>
-                            Retry
+                            Retake Test
+                        </button>
+                       <button class="btn btn-outline-secondary button" id="go-to-overview-btn">
+                            Go to Overview
+                        </button>
+                       <button class="btn btn-primary button" id="start-test-btn">
+                            <i class="bi bi-play-fill me-1"></i>
+                            Start Test
                         </button>
 
                     </div>
@@ -489,6 +494,7 @@
             case 'new_test':
                 document.querySelector('.overview-card').style.display = 'block';
                 document.getElementById('start-test-btn').style.display = 'block';
+
                 break;
 
             case 'taking_test':
@@ -509,6 +515,10 @@
                 // enable retry and view submission buttons 
                 document.getElementById('retry-test-btn').style.display = 'block';
                 document.getElementById('view-submission-btn').style.display = 'block';
+
+                // set oveview-btn as primary button
+                document.getElementById('go-to-overview-btn').classList.add('btn-primary');
+                document.getElementById('go-to-overview-btn').classList.remove('btn-outline-secondary');
 
 
                 RenderSubmissionResult(data);
@@ -742,12 +752,13 @@
             alert("Error submitting quiz: " + err.message);
         } finally {
             HideLoadingState(loadingEl, submitBtn);
+            window.academyContext?.refreshData();
         }
     }
 
     // Event Listeners
     function HandleGoBack() {
-        window.history.back();
+        window.academyContext?.Router?.back();
     }
 
     document.getElementById("go-back").addEventListener("click", HandleGoBack);
@@ -759,6 +770,10 @@
 
     document.getElementById("hide-submission-btn").addEventListener("click", () => {
         showState('submitted_test');
+    });
+
+    document.getElementById("go-to-overview-btn").addEventListener("click", () => {
+        window.academyContext?.Router?.back();
     });
 
 
