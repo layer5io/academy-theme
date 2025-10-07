@@ -742,12 +742,13 @@
             alert("Error submitting quiz: " + err.message);
         } finally {
             HideLoadingState(loadingEl, submitBtn);
+            window.academyContext?.refreshData();
         }
     }
 
     // Event Listeners
     function HandleGoBack() {
-        window.history.back();
+        window.academyContext?.Router?.back();
     }
 
     document.getElementById("go-back").addEventListener("click", HandleGoBack);
