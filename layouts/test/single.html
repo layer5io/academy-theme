@@ -421,6 +421,8 @@
                 <div class="question-instructions">Select one answer</div>
                 {{ else if eq $question.type "short-answer" }}
                 <div class="question-instructions">Type your answer below</div>
+                {{ else if eq $question.type "true-false" }}
+                <div class="question-instructions">Select True or False</div>
                 {{ end }}
                 {{ end }}
 
@@ -441,6 +443,19 @@
                 {{ else if (eq $question.type "short-answer") }}
                 <input type="text" name="answer_text_{{ $question.id }}" class="text-input"
                     placeholder="Type your answer here">
+                {{ else if (eq $question.type "true-false") }}
+                <div class="option">
+                    <label>
+                        <input type="radio" name="selected_option_ids_{{ $question.id }}" value="true">
+                        <span>True</span>
+                    </label>
+                </div>
+                <div class="option">
+                    <label>
+                        <input type="radio" name="selected_option_ids_{{ $question.id }}" value="false">
+                        <span>False</span>
+                    </label>
+                </div>
                 {{ end }}
             </div>
             {{ end }}
@@ -690,6 +705,7 @@
         const answers = [];
         document.querySelectorAll(".question").forEach((questionEl) => {
             const questionID = questionEl.dataset.questionId;
+            const questionType = questionEl.dataset.questionType;
             const selectedCheckboxes = questionEl.querySelectorAll("input[type='checkbox']:checked");
             const selectedRadio = questionEl.querySelector("input[type='radio']:checked");
             const textInput = questionEl.querySelector("input[type='text']");
@@ -702,7 +718,12 @@
                     return acc;
                 }, {})
             } else if (selectedRadio) {
-                answer.selected_option_id = {[selectedRadio.value]: true};
+                if (questionType === 'true-false') {
+                    // For true/false
+                    answer.answer_text = String(selectedRadio.value).toLowerCase();
+                } else {
+                    answer.selected_option_id = {[selectedRadio.value]: true};
+                }
             } else if (textInput && textInput.value.trim()) {
                 answer.answer_text = textInput.value.trim();
             }

@@ -31,7 +31,7 @@ questions:
   # Short Answer Question
   - id: "q2"
     text: "Go is a statically typed language. (true/false)"
-    type: "short_answer"
+    type: "short-answer"
     marks: 2
     correct_answer: "true"
     case_sensitive: false
@@ -40,7 +40,7 @@ questions:
   # Short Answer Question (Numeric)
   - id: "q3"
     text: "What is the zero value of an uninitialized int in Go?"
-    type: "short_answer"
+    type: "short-answer"
     marks: 2
     correct_answer: "0"
     explanation: "In Go, the zero value for numeric types like int is 0."
@@ -65,4 +65,12 @@ questions:
       - id: "d"
         text: "To handle errors in a function"
         is_correct: false
+
+  # True/False Question
+  - id: "q5"
+    text: "True or False: Go supports concurrency through goroutines."
+    type: "true-false"
+    marks: 2
+    answer: true
+    explanation: "Goroutines enable concurrent execution in Go."
 ---
