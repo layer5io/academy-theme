@@ -14,4 +14,10 @@
 "permalink": {{ $page.Permalink | jsonify }},
 "type": {{ $type | jsonify }},
 "prerequisites": {{ partial "test/collect-prerequisites.html" $page | jsonify }},
-"reading_time": {{ $page.ReadingTime | jsonify }}
+"reading_time": {{ $page.ReadingTime | jsonify }},
+"competencies": {{ $page.Params.competencies | jsonify }},
+"objectives": {{ $page.Params.objectives | jsonify }},
+"audience": {{ $page.Params.audience | jsonify }},
+"prerequisite_knowledge": {{ $page.Params.prerequisite_knowledge | jsonify }},
+"related_resources": {{ $page.Params.related_resources | jsonify }}
+

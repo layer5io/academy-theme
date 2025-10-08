@@ -36,7 +36,12 @@
     "total_tests": {{ len (where .Pages "Type" "test") }},
     "total_modules": {{ len (where .Pages "Type" "module") }},
     "total_pages": {{ len (where .Pages "Type" "page") }},
-
+    "competencies": {{ .Params.competencies | jsonify }},
+    "objectives": {{ .Params.objectives | jsonify }},
+    "audience": {{ .Params.audience | jsonify }},
+    "prerequisite_knowledge": {{ .Params.prerequisite_knowledge | jsonify }},
+    "related_resources": {{ .Params.related_resources | jsonify }},
+    "additional_attributes": {{ .Params.additional_attributes | jsonify }},
     "children": [
       {{- range $j, $c := .Pages }}
         {{- if $j }},{{ end }}
