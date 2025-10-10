@@ -31,8 +31,9 @@
   "lastmod" (.Lastmod | time.Format "2006-01-02")
   "draft" .Draft
   "file_path" .File.Path
+  "max_attempts" (or $p.max_attempts 0)
   "pass_percentage" (or $p.pass_percentage 70)
-  "time_limit" (or $p.time_limit "infinite")
+  "time_limit" (or $p.time_limit 0 | string)
   "questions" $p.questions
   "total_questions" (len $p.questions)
   "prerequisites" $prerequisites
