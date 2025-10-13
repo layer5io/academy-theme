@@ -1,4 +1,11 @@
 {{ define "main" }}
+{{ $title := .Title }}
+{{ $build := .Site.Params.build | default "development" }}
+
+
+<!-- Quiz Form  only for development build-->
+{{ if eq $build "development" }}
+
 <style>
     .container {
         max-width: 780px;
@@ -148,27 +155,6 @@
         box-shadow: 0 0 0 var(--bs-focus-ring-width) var(--bs-focus-ring-color);
     }
 
-    .submit-btn {
-        background: var(--bs-primary);
-        color: var(--bs-white);
-        border: none;
-        padding: 0.875rem 2rem;
-        font-size: 0.95rem;
-        font-weight: 500;
-        border-radius: var(--bs-border-radius-sm);
-        cursor: pointer;
-        transition: background-color 0.2s ease;
-        margin-top: 1.5rem;
-    }
-
-    .submit-btn:hover {
-        background: var(--bs-link-hover-color);
-    }
-
-    .submit-btn:disabled {
-        background: var(--bs-gray-500);
-        cursor: not-allowed;
-    }
 
     .loading {
         display: none;
@@ -209,69 +195,7 @@
         margin-bottom: 0.5rem;
     }
 
-    /* Hide all sections by default */
-    .missing-prerequisites,
-    .overview-card,
-    .result-card,
-    .form-container {
-        display: none;
-    }
 
-    .overview-card {
-        margin-top: 2rem;
-    }
-
-    /* Prerequisites Styles */
-    .missing-prerequisites .preq {
-        display: flex;
-        align-items: center;
-        padding: 0.5rem 1rem;
-        gap: 1rem;
-        border-radius: var(--bs-border-radius-sm);
-        cursor: pointer;
-        transition: all 0.15s ease;
-        font-size: 1.5rem;
-    }
-
-    .missing-prerequisites .preq:hover {
-        background: var(--bs-light-bg-subtle);
-    }
-
-    .missing-prerequisites .completed-preq {
-        background: var(--bs-primary);
-        color: #fff;
-    }
-
-    .missing-prerequisites .pending-preq {
-        background: var(--bs-gray-500);
-        color: #fff;
-    }
-
-    .test-result-summary {
-        display: flex;
-        gap: 1rem;
-        margin-bottom: 1rem;
-        margin-top: 1rem;
-        flex-wrap: wrap;
-        justify-content: space-between;
-    }
-
-    .test-result-stat {
-        flex: 1 1 120px;
-    }
-
-    .test-stat-header {
-        font-size: 1rem;
-        text-transform: uppercase;
-        color: var(--bs-secondary-color);
-        margin-bottom: 0.25rem;
-    }
-
-    .test-stat-value {
-        font-size: 1.5rem;
-        font-weight: 600;
-        color: var(--bs-emphasis-color);
-    }
 
     @media (max-width: 768px) {
         #go-back {
@@ -317,7 +241,7 @@
     }
 </style>
 
-{{ $title := .Title }}
+
 
 <div class="container">
     <div class="header">
@@ -330,75 +254,8 @@
 
 
 
-    <!-- Overview Card (New Test) -->
-    <div class="overview-card">
-        <div class="card border-0 shadow-sm mb-3">
-            <div class="card-body">
-                <h3 class="mb-3">Test details</h6>
-
-                    <div
-                        style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div class="text-muted">QUESTIONS</div>
-                            <div class="fw-medium">{{ len .Params.questions }}</div>
-                        </div>
-                        <div>
-                            <div class="text-muted">ATTEMPTS</div>
-                            <div class="fw-medium">
-                                <span id="attempts-made">0</span>
-                                of {{ if eq .Params.max_attempts nil }}unlimited{{ else }}{{
-                                .Params.max_attempts }}{{ end }}
-                            </div>
-                        </div>
-                        <div>
-                            <div class="text-muted">PASS PERCENTAGE</div>
-                            <div class="fw-medium">{{ or .Params.pass_percentage 70 }}%</div>
-                        </div>
-                    </div>
-
-                    <!-- Missing Prerequisites Card -->
-                    <div class="missing-prerequisites">
-
-                        <p class="text-muted mb-4">
-                            Complete the following prerequisites to take this test:
-                        </p>
-
-                        <div class="row g-2 mb-4 justify-content-center" id="prerequisites-list">
-                            <!-- Prerequisites will be inserted here -->
-                        </div>
-
-                    </div>
-
-                    <!-- Result Card (Existing Submission) -->
-                    <div class="result-card">
-                        <!-- Results will be dynamically inserted here -->
-                    </div>
-
-                    <div
-                        style="margin-bottom: 1.5rem; display: flex; gap: 0.5rem; justify-content: end; flex-wrap: wrap;">
-                        <button class="btn btn-primary button" id="start-test-btn">
-                            <i class="bi bi-play-fill me-1"></i>
-                            Start Test
-                        </button>
-                        <button class="btn btn-outline-secondary  me-2 button" id="view-submission-btn">
-                            View Submission
-                        </button>
-                        <button class="btn btn-outline-secondary me-2 button" id="hide-submission-btn">
-                            Hide Submission
-                        </button>
-                        <button class="btn btn-primary button" id="retry-test-btn">
-                            <i class="bi bi-arrow-clockwise me-1"></i>
-                            Retry
-                        </button>
-
-                    </div>
-            </div>
-        </div>
-    </div>
 
 
-
-    <!-- Quiz Form -->
     <div class="form-container">
         <form id="quiz-form">
             <input type="hidden" name="quiz_abs_path" value="{{ .RelPermalink }}">
@@ -414,7 +271,7 @@
                 <div class="question-instructions">Select all that apply</div>
                 {{ else if eq $question.type "single-answer" }}
                 <div class="question-instructions">Select one answer</div>
-                {{ else if eq $question.type "short_answer" }}
+                {{ else if eq $question.type "short-answer" }}
                 <div class="question-instructions">Type your answer below</div>
                 {{ end }}
                 {{ end }}
@@ -433,374 +290,99 @@
                 </div>
                 {{ end }}
 
-                {{ else if (eq $question.type "short_answer") }}
+                {{ else if (eq $question.type "short-answer") }}
                 <input type="text" name="answer_text_{{ $question.id }}" class="text-input"
                     placeholder="Type your answer here">
                 {{ end }}
             </div>
             {{ end }}
 
-            <div class="loading" id="loading">
-                <div class="spinner"></div>
-                <p>Submitting your answers...</p>
-            </div>
-
-            <button type="submit" class="submit-btn" id="submit-btn">Submit Test</button>
         </form>
     </div>
 </div>
 
+{{ else }}
+
+<!-- In production build, show a loader while redirecting to the test page -->
+<style>
+    /* HTML: <div class="loader"></div> */
+    .loader {
+        width: 50px;
+        padding: 8px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: var(--bs-primary);
+        --_m:
+            conic-gradient(#0000 10%, #000),
+            linear-gradient(#000 0 0) content-box;
+        -webkit-mask: var(--_m);
+        mask: var(--_m);
+        -webkit-mask-composite: source-out;
+        mask-composite: subtract;
+        animation: l3 1s infinite linear;
+    }
+
+    .loader-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 90vh;
+        text-align: center;
+    }
+
+    @keyframes l3 {
+        to {
+            transform: rotate(1turn)
+        }
+    }
+</style>
+<div class="loader-container">
+    <div class="loader">
+    </div>
+    <p class="loader-text">Preparing your test...</p>
+</div>
+
+{{ end }}
+
 {{ $test := partial "test/single.html" . }}
-{{ $prerequisites := $test.prerequisites | default (slice) }}
-{{ $build := .Site.Params.build | default "development" }}
+{{ $tesAbsPath := .RelPermalink }}
 
 <script>
-    const prerequisites = {{$prerequisites}};
     const testId = {{$test.id}};
-    const passPercentage = {{or $test.pass_percentage 70 }};
+    const testAbsPath = "{{$tesAbsPath}}";
     const build = {{$build}};
 
-    let currentState = 'loading'; // loading, new_test, submitted_test , viewing_submission , missing_prerequisites , taking_test
-
-    // State Management Functions
-    function showState(state, data) {
-        // Hide all sections
-        document.getElementById('test-description').style.display = 'none';
-        document.querySelector('.missing-prerequisites').style.display = 'none';
-        document.querySelector('.overview-card').style.display = 'none';
-        document.querySelector('.result-card').style.display = 'none';
-        document.querySelector('.form-container').style.display = 'none';
-        // hide all buttons 
-        document.getElementById('start-test-btn').style.display = 'none';
-        document.getElementById('retry-test-btn').style.display = 'none';
-        document.getElementById('view-submission-btn').style.display = 'none';
-        document.getElementById('hide-submission-btn').style.display = 'none';
-
-        // Show the requested state
-        currentState = state;
-        switch (state) {
-
-            case 'missing_prerequisites':
-                document.querySelector('.overview-card').style.display = 'block';
-                document.querySelector('.missing-prerequisites').style.display = 'block';
-                RenderMissingPrerequisites(data);
-                break;
-
-            case 'new_test':
-                document.querySelector('.overview-card').style.display = 'block';
-                document.getElementById('start-test-btn').style.display = 'block';
-                break;
-
-            case 'taking_test':
-                document.querySelector('.form-container').style.display = 'block';
-                document.getElementById('test-description').style.display = 'block';
-                document.getElementById('submit-btn').style.display = 'block';
-                // Reset form
-                document.getElementById('quiz-form').reset();
-                document.querySelectorAll(".question").forEach((qEl) => {
-                    qEl.classList.remove("correct", "incorrect");
-                });
-                break;
-
-            case 'submitted_test':
-                document.querySelector('.overview-card').style.display = 'block';
-                document.querySelector('.result-card').style.display = 'block';
-
-                // enable retry and view submission buttons 
-                document.getElementById('retry-test-btn').style.display = 'block';
-                document.getElementById('view-submission-btn').style.display = 'block';
-
-
-                RenderSubmissionResult(data);
-                break;
-
-            case 'viewing_submission':
-                document.querySelector('.overview-card').style.display = 'block';
-                document.querySelector('.result-card').style.display = 'block';
-                document.querySelector('.form-container').style.display = 'block';
-                // Hide submit button when viewing submission
-                document.getElementById('submit-btn').style.display = 'none';
-                document.getElementById('hide-submission-btn').style.display = 'block';
-                document.getElementById('retry-test-btn').style.display = 'block';
-
-                RenderSubmissionResult(data);
-                break;
-        }
-    }
-
-    // API Functions
-    async function PostSubmissionForEvaluation(payload) {
-        console.log("Posting submission for evaluation:", payload);
-        const res = await fetch(`/api/academy/quiz/submit`, {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(payload)
-        });
-
-        if (!res.ok) {
-            const errorBody = await res.json();
-            throw new Error(`${errorBody.details || errorBody.message || "Unknown error"}`);
-        }
-        return await res.json();
-    }
-
-    // Render Functions
-    function RenderMissingPrerequisites(pendingPreqs) {
-        const prerequisitesList = document.getElementById('prerequisites-list');
-
-        const isPrerequisitePending = (preq) => {
-            return pendingPreqs.some(p => p.id === preq.id);
-        };
-        const preqLink = (preq) => {
-            return "/academy" + preq.permalink;
-        };
-
-        const pendingPreq = (preq) => {
-            return `
-              <a href="${preqLink(preq)}" class='pending-preq preq'>
-                <i class="bi bi-x-circle-fill text-white me-1"></i>
-                <div  class="">
-                    ${preq.title}
-                </div>
-            </a>`
-        };
-        const completedPreq = (preq) => {
-            return `
-              <a href="${preqLink(preq)}" class='completed-preq preq'>
-                <i class="bi bi-check-circle-fill text-white me-1"></i>
-                <div  class="">
-                    ${preq.title}
-                </div>
-             </a>`;
-        };
-
-
-        prerequisitesList.innerHTML = prerequisites.map(preq => {
-            return isPrerequisitePending(preq) ? pendingPreq(preq) : completedPreq(preq);
-        }).join('');
-    }
-
-    function RenderSubmissionResult(data) {
-        const resultEl = document.querySelector('.result-card');
-
-        // Calculate metrics
-        const correctCount = data.correct_submissions ?
-            Object.keys(data.correct_submissions).filter(key => data.correct_submissions[key]).length : 0;
-        const totalCount = document.querySelectorAll(".question").length;
-        const incorrectCount = totalCount - correctCount;
-
-        const passed = data.passed;
-        const statusText = passed ? 'You have passed the test' : 'You have not passed the test';
-        const statusClass = passed ? 'text-success' : 'text-danger';
-        const bgClass = passed ? 'bg-success-subtle' : 'bg-danger-subtle';
-        const iconClass = passed ? 'bi-check-circle-fill' : 'bi-x-circle-fill';
-        const attemptsMade = data.attempts || 1;
-
-        console.log("Rendering submission result:", data);
-
-        document.getElementById('attempts-made').textContent = attemptsMade;
-
-        resultEl.innerHTML = `
-            <!-- Grade Card -->
-                <div class="">
-                    <div class="${statusClass}  fw-medium d-flex align-items-center">
-                        <i class="bi ${iconClass} me-1"></i>
-                        ${statusText}
-                    </div>
-
-                    <div class="test-result-summary">
-                        <div class="test-result-stat">
-                          <div class="test-stat-header">Score</div>
-                          <div class="test-stat-value ${statusClass}">${Math.round(data.percentage_scored)}%</div>
-                        </div>
-
-                        <div class="test-result-stat">
-                          <div class="test-stat-header">Pass Percentage</div>
-                          <div class="test-stat-value">${passPercentage}%</div>
-                        </div>
-
-                        <div class="test-result-stat">
-                          <div class="test-stat-header">Correct</div>
-                          <div class="test-stat-value text-success">${correctCount}</div>
-                        </div>
-
-                        <div class="test-result-stat">
-                          <div class="test-stat-header">Incorrect</div>
-                          <div class="test-stat-value text-danger">${incorrectCount}</div>
-                        </div>
-                        
-                    </div>
-                </div>
-    
-        `;
-
-        // Color code questions
-        if (data.correct_submissions) {
-            document.querySelectorAll(".question").forEach((qEl) => {
-                const qid = qEl.dataset.questionId;
-                if (data.correct_submissions[qid]) {
-                    qEl.classList.add("correct");
-                    qEl.classList.remove("incorrect");
-                } else {
-                    qEl.classList.add("incorrect");
-                    qEl.classList.remove("correct");
-                }
-            });
-        }
-
-        // Add event listeners for result buttons
-        document.getElementById('view-submission-btn').addEventListener('click', () => {
-            showState('viewing_submission');
-        });
-
-        document.getElementById('retry-test-btn').addEventListener('click', () => {
-
-            showState('taking_test');
-        });
-    }
-
-    // Form handling functions
-    function ShowLoadingState(loadingEl, submitBtn) {
-        loadingEl.style.display = "block";
-        submitBtn.disabled = true;
-        submitBtn.textContent = "Submitting...";
-    }
-
-    function HideLoadingState(loadingEl, submitBtn) {
-        loadingEl.style.display = "none";
-        submitBtn.disabled = false;
-        submitBtn.textContent = "Submit Test";
-    }
-
-    function CanSubmitQuiz(answers) {
-        return answers.length > 0;
-    }
-
-    function ParseFormAnswers(form) {
-        const answers = [];
-        document.querySelectorAll(".question").forEach((questionEl) => {
-            const questionID = questionEl.dataset.questionId;
-            const selectedCheckboxes = questionEl.querySelectorAll("input[type='checkbox']:checked");
-            const selectedRadio = questionEl.querySelector("input[type='radio']:checked");
-            const textInput = questionEl.querySelector("input[type='text']");
-
-            const answer = {question_id: questionID};
-
-            if (selectedCheckboxes.length > 0) {
-                answer.selected_option_id = Array.from(selectedCheckboxes).reduce((acc, cb) => {
-                    acc[cb.value] = true;
-                    return acc;
-                }, {})
-            } else if (selectedRadio) {
-                answer.selected_option_id = {[selectedRadio.value]: true};
-            } else if (textInput && textInput.value.trim()) {
-                answer.answer_text = textInput.value.trim();
-            }
-
-            if (answer.selected_option_id || answer.answer_text) {
-                answers.push(answer);
-            }
-        });
-        return answers;
-    }
-
-    function ConvertFormToPayload(form) {
-        return {
-            registration_id: window.academyContext?.RegistrationData?.id || null,
-            quiz_abs_path: form.querySelector("input[name='quiz_abs_path']").value,
-            answers: ParseFormAnswers(form)
-        };
-    }
-
-    async function HandleQuizSubmission(e) {
-        e.preventDefault();
-        e.stopPropagation();
-
-        if (document.getElementById("loading").style.display === "block") {
-            return;
-        }
-
-        const form = e.target;
-        const loadingEl = document.getElementById("loading");
-        const submitBtn = form.querySelector(".submit-btn");
-
-        ShowLoadingState(loadingEl, submitBtn);
-
-        const payload = ConvertFormToPayload(form);
-
-        if (!CanSubmitQuiz(payload.answers)) {
-            HideLoadingState(loadingEl, submitBtn);
-            alert("Please answer at least one question.");
-            return;
-        }
-
-        try {
-            const result = await PostSubmissionForEvaluation(payload);
-            showState('submitted_test', result);
-        } catch (err) {
-            console.error("Error submitting quiz:", err);
-            alert("Error submitting quiz: " + err.message);
-        } finally {
-            HideLoadingState(loadingEl, submitBtn);
-        }
-    }
 
     // Event Listeners
     function HandleGoBack() {
-        window.history.back();
+        window.academyContext?.Router?.back();
     }
 
-    document.getElementById("go-back").addEventListener("click", HandleGoBack);
-    document.getElementById("quiz-form").addEventListener("submit", HandleQuizSubmission);
-
-    document.getElementById("start-test-btn").addEventListener("click", () => {
-        showState('taking_test');
-    });
-
-    document.getElementById("hide-submission-btn").addEventListener("click", () => {
-        showState('submitted_test');
-    });
-
-    document.addEventListener("preq", (e) => {
-        // get permalink from data-link attribute
-        const preqLink = e.target.dataset.link;
-        window.location.open("/academy" + preqLink, "_blank");
-    });
 
     // get the prod build param 
     const isProdBuild = build === "production"
 
     if (!isProdBuild) {
-        // In non-production builds, skip prerequisite checks
-        showState('taking_test');
+        const backBtn = document.getElementById("go-back")
+
+        if (backBtn?.addEventListener) {
+            backBtn.addEventListener("click", HandleGoBack);
+        }
     }
+
 
 
     // Initialize when context is ready
     window.addEventListener("academyContextReady", () => {
-        console.log("Quiz page loaded.", prerequisites);
-
-        if (!window.academyContext) {
-            showState('taking_test');
+        if (isProdBuild && window.academyContext?.RegistrationData?.id) {
+            // redirect to test page 
+            const curriculaRoot = window.location.pathname.split("/").slice(0, 5).join("/");
+            window.location.replace(`${curriculaRoot}/test?id=${testId}&registration_id=${window.academyContext?.RegistrationData?.id}&test_abs_path=${testAbsPath}`);
             return;
-        }
-
-        const pending_preqs = window.academyContext.progressTracker?.getPendingPrerequisites(prerequisites) || [];
-
-        if (pending_preqs.length > 0) {
-            showState('missing_prerequisites', pending_preqs);
-            return;
-        }
-
-        // Check for existing submission
-        const existingGradeResult = window.academyContext?.progressTracker?.progress?.grades[testId] || null;
-
-        if (existingGradeResult) {
-            showState('submitted_test', existingGradeResult);
-        } else {
-            showState('new_test');
         }
     });
+
 </script>
 
 {{ end }}
