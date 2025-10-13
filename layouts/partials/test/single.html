@@ -2,11 +2,35 @@
 {{- $prerequisites := partial "test/collect-prerequisites.html" . -}}
 {{- $ctx := partial "resolve-tenant.html" . -}}
 {{- $orgId := $ctx.uuid -}}
+{{- $id := partial "id.html" . -}}
+
+{{- $totalQuestionsPerSet := $p.number_of_questions | default (len $p.questions) -}}
+
+<!-- Validate: TotalQuestions should be multiple of totalQuestionsPerSet -->
+{{- if ne (mod (len $p.questions) $totalQuestionsPerSet) 0 -}}
+  {{- errorf "Total questions (%d) is not a multiple of total_questions_per_set (%d)" (len $p.questions) $totalQuestionsPerSet -}}
+{{- end -}}
+
+<!-- Validate all question ids are unique -->
+{{- $questionIds := (slice ) -}}
+{{- range $p.questions -}}
+  {{- if in $questionIds .id -}}
+    {{- errorf "Duplicate question id found: %s" .id -}}
+  {{- end -}}
+  {{- $questionIds =  $questionIds | append  (string $id)  -}}
+{{- end -}}
+
+{{- $numberOfQuestionSets := div (len $p.questions) $totalQuestionsPerSet -}}
 
 {{- $total := 0 -}}
-{{- range $p.questions }}
+{{- range first $totalQuestionsPerSet $p.questions -}}
   {{- $total = add $total (or .marks 0) }}
 {{- end }}
+
+{{- $maxAttempts := or $p.max_attempts 0 -}}
+{{- if and (eq $maxAttempts 0) (gt $numberOfQuestionSets 1) -}}
+    {{ $maxAttempts = $numberOfQuestionSets -}}
+{{- end -}}
 
 {{- $parent := (cond (ne .Parent nil) (dict
   "id" (partial "id.html" .Parent)
@@ -31,11 +55,13 @@
   "lastmod" (.Lastmod | time.Format "2006-01-02")
   "draft" .Draft
   "file_path" .File.Path
-  "max_attempts" (or $p.max_attempts 0)
+  "max_attempts" $maxAttempts
+  "total_question_sets" $numberOfQuestionSets 
+  "total_questions_in_bank" (len $p.questions)
   "pass_percentage" (or $p.pass_percentage 70)
   "time_limit" (or $p.time_limit 0 | string)
   "questions" $p.questions
-  "total_questions" (len $p.questions)
+  "total_questions" $totalQuestionsPerSet
   "prerequisites" $prerequisites
   "total_marks" $total
   "parent" $parent
