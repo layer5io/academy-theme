@@ -57,8 +57,10 @@ related_resources:
 # Additional attributes about the test
 additional_attributes: 
   - title: "Retake Policy"
+    value: "3"
     description: "One Retake allowed after 30 days"
   - title: "Labs"
+    value: "Mandatory"
     description: "Hands-on labs included"
 
 
