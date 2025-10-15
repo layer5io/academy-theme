@@ -45,10 +45,12 @@ prerequisite_knowledge:
       - title: "Basic knowledge of Linux command line
         link: "https://linuxcommand.org/"
       - title: "Basic Certification: Networking Basics"
+        link: "https://academy-domain.com/certifications/networking-basics" 
+  
   - title: "Supplemental Learning"
     children:
-      - title: "Networking Fundamentals"
-        link: "https://academy-domain.com/certifications/networking-basics"      
+      - title: "More relevant information"
+        link: "#"      
 
 # List of additional resources for further reading 
 related_resources:
