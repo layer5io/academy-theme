@@ -38,20 +38,17 @@ competencies:
 # List of resource that are recommended to complete before taking the test
 # Not strictly enforced, but recommended
 prerequisite_knowledge:
-  - title: "Learning Path: Cloud Computing Basics"
+  - title: "Learning Path"
     children:
-      - title: "Overview"
+      - title: "Cloud Computing Basics"
         link: "https://academy-domain.com/learning-paths/cloud-computing-basics"
-
-  - title: "Basic Certification: Networking Basics"
+      - title: "Basic knowledge of Linux command line
+        link: "https://linuxcommand.org/"
+      - title: "Basic Certification: Networking Basics"
+  - title: "Supplemental Learning"
     children:
       - title: "Networking Fundamentals"
-        link: "https://academy-domain.com/certifications/networking-basics"
-
-  - title: "Basic knowledge of Linux command line"
-    children:
-      - title: "Linux Command Guide"
-        link: "https://linuxcommand.org/"
+        link: "https://academy-domain.com/certifications/networking-basics"      
 
 # List of additional resources for further reading 
 related_resources:
@@ -63,8 +60,10 @@ related_resources:
   - title: "Instructions"
     children:
       - title: "How-to Guides"
-        link: "https://instructions.example.com/"
-
+        link: "https://instructions.example.com"
+      - title: "More How-tos"
+        link: "https://instructions.example.com"
+        
   - title: "YouTube Channel"
     children:
       - title: "Official Channel"
