@@ -47,10 +47,7 @@ prerequisite_knowledge:
       - title: "Basic Certification: Networking Basics"
         link: "https://academy-domain.com/certifications/networking-basics" 
   
-  - title: "Supplemental Learning"
-    children:
-      - title: "More relevant information"
-        link: "#"      
+
 
 # List of additional resources for further reading 
 related_resources:
