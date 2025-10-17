@@ -3,7 +3,7 @@ title: 'test'
 pass_percentage: 70 # Minimum percentage required to pass the test
 time_limit: 15 # Duration of the test in minutes
 max_attempts: 3 # Maximum number of attempts allowed
-difficulty: "beginner" # Difficulty level of the test
+level: "beginner" # Difficulty level of the test
 category: "Programming Languages" # Category of the test
 tags: ["golang", "basics", "syntax", "fundamentals"] # Tags for the test, useful for search and categorization
 type: "test" # Type of the content, in this case, a test ( required for the test to be recognized by the system )
