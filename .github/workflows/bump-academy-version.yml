@@ -16,6 +16,8 @@ jobs:
           - layer5io/exoscale-academy
           - layer5io/academy-build
           - layer5io/academy-example
+          - meshery-extensions/meshery-academy
+          - layer5io/digitalocean-academy
     steps:
 
       - name: Setup Hugo (Extended)
