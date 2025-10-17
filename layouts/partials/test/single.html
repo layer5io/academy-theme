@@ -8,7 +8,7 @@
 
 <!-- Validate: TotalQuestions should be multiple of totalQuestionsPerSet -->
 {{- if ne (mod (len $p.questions) $totalQuestionsPerSet) 0 -}}
-  {{- errorf "Total questions (%d) is not a multiple of total_questions_per_set (%d)" (len $p.questions) $totalQuestionsPerSet -}}
+  {{- errorf "Total questions (%d) is not a multiple of total_questions_per_set (%d) [ %s ]" (len $p.questions) $totalQuestionsPerSet .File.Path -}}
 {{- end -}}
 
 <!-- Validate all question ids are unique -->

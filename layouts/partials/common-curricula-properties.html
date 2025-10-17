@@ -11,7 +11,7 @@
 "description": {{ $page.Description | jsonify }},
 "weight": {{ $page.Params.Order | jsonify }},
 "banner": {{ $banner_url | jsonify }},
-"permalink": {{ $page.Permalink | jsonify }},
+"permalink": {{ $page.RelPermalink | jsonify }},
 "type": {{ $type | jsonify }},
 "prerequisites": {{ partial "test/collect-prerequisites.html" $page | jsonify }},
 "reading_time": {{ $page.ReadingTime | jsonify }},
