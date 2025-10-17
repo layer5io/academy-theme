@@ -29,7 +29,7 @@
     "banner": {{ $banner_url | jsonify }},
     "badge": {{ partial "badge.html" (dict "page" . "badge" .Params.badge "curriculaId" $id ) | jsonify }},
     "certificate": {{ .Params.certificate | jsonify }},
-    "permalink": {{ .Permalink | jsonify }},
+    "permalink": {{ .RelPermalink | jsonify }},
     "categories": {{ .Params.Categories | jsonify }},
     "tags": {{ .Params.Tags | jsonify }},
     "total_courses": {{ len (where .Pages "Type" "course") }},
