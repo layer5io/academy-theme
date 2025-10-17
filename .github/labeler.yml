@@ -6,3 +6,7 @@ area/challenges:
 - changed-files:
   - any-glob-to-any-file:
     - "content/en/challenges/**/*"
+area/certifications:
+  - changed-files:
+      - any-glob-to-any-file:
+          - "content/en/certifications/**/*"
