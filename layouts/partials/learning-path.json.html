@@ -26,6 +26,7 @@
   "metadata": {
     "title": {{ .Title | jsonify }},
     "description": {{ .Description | jsonify }},
+    "detailed_description": {{ .Content | jsonify }}, 
     "banner": {{ $banner_url | jsonify }},
     "badge": {{ partial "badge.html" (dict "page" . "badge" .Params.badge "curriculaId" $id ) | jsonify }},
     "certificate": {{ .Params.certificate | jsonify }},
