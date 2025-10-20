@@ -12,7 +12,7 @@ questions:
   # Multiple Choice Question (Single Answer)
   - id: "q1"
     text: "What keyword is used to define a function in Go?"
-    type: "mcq"
+    type: "single-answer"
     marks: 2
     explanation: "The 'func' keyword is used to declare functions in Go, similar to how 'function' is used in JavaScript."
     options:
@@ -32,7 +32,7 @@ questions:
   # Short Answer Question
   - id: "q2"
     text: "Go is a statically typed language. (true/false)"
-    type: "short_answer"
+    type: "short-answer"
     marks: 2
     correct_answer: "true"
     case_sensitive: false
@@ -41,7 +41,7 @@ questions:
   # Short Answer Question (Numeric)
   - id: "q3"
     text: "What is the zero value of an uninitialized int in Go?"
-    type: "short_answer"
+    type: "short-answer"
     marks: 2
     correct_answer: "0"
     explanation: "In Go, the zero value for numeric types like int is 0."
@@ -49,8 +49,7 @@ questions:
   # Multiple Choice Question (Multiple Answers)
   - id: "q4"
     text: "What are the purposes of the 'defer' keyword in Go? (Select all that apply)"
-    type: "mcq"
-    multiple_answers: true
+    type: "multiple-answers"
     marks: 2
     explanation: "The defer keyword is commonly used to delay function execution until the surrounding function returns, often used for cleanup tasks like closing files."
     options:
@@ -66,4 +65,11 @@ questions:
       - id: "d"
         text: "To handle errors in a function"
         is_correct: false
+
+  # True/False Question (Dedicated type)
+  - id: "q5"
+    text: "True or False: Go supports concurrency through goroutines."
+    type: "true-false"
+    answer: true
+    marks: 2
 ---

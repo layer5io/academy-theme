@@ -271,6 +271,8 @@
                 <div class="question-instructions">Select all that apply</div>
                 {{ else if eq $question.type "single-answer" }}
                 <div class="question-instructions">Select one answer</div>
+                {{ else if eq $question.type "true-false" }}
+                <div class="question-instructions">Select true or false</div>
                 {{ else if eq $question.type "short-answer" }}
                 <div class="question-instructions">Type your answer below</div>
                 {{ end }}
@@ -289,6 +291,20 @@
                     </label>
                 </div>
                 {{ end }}
+
+                {{ else if (eq $question.type "true-false") }}
+                <div class="option">
+                    <label>
+                        <input type="radio" name="answer_bool_{{ $question.id }}" value="true">
+                        <span>True</span>
+                    </label>
+                </div>
+                <div class="option">
+                    <label>
+                        <input type="radio" name="answer_bool_{{ $question.id }}" value="false">
+                        <span>False</span>
+                    </label>
+                </div>
 
                 {{ else if (eq $question.type "short-answer") }}
                 <input type="text" name="answer_text_{{ $question.id }}" class="text-input"
