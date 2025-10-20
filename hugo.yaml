@@ -1,6 +1,5 @@
 baseURL: http://localhost:9876/academy/
 title: Layer5 Academy Theme
-canonifyurls: true
 ignoreLogs: ['warning-goldmark-raw-html']
 
 # cSpell:ignore goldmark github hugo readingtime docsy subdir lastmod pygments linenos catmullrom norsk gu
