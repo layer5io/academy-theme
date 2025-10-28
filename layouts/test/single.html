@@ -61,6 +61,78 @@
         color: var(--bs-link-hover-color);
     }
 
+    #test-timer {
+        position: fixed;
+        top: 20px;
+        right: 25px;
+        z-index: 1020;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        padding: 0.75rem 1.5rem;
+        border: 1px solid var(--bs-border-color);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        transition: all 0.2s ease-in-out;
+    }
+
+    #test-timer.warning {
+        border-color: var(--bs-warning);
+        background-color: var(--bs-warning-bg-subtle);
+    }
+
+    #test-timer.danger {
+        border-color: var(--bs-danger);
+        background-color: var(--bs-danger-bg-subtle);
+    }
+
+    #test-timer .timer-icon {
+        font-size: 1.2rem;
+        color: var(--bs-primary);
+    }
+
+    #test-timer.warning .timer-icon {
+        color: var(--bs-warning);
+    }
+
+    #test-timer.danger .timer-icon {
+        color: var(--bs-danger);
+    }
+
+    #test-timer .timer-label {
+        font-size: 0.75rem;
+        color: var(--bs-secondary-color);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    #test-timer .timer-value {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--bs-emphasis-color);
+        font-family: 'Courier New', monospace;
+    }
+
+    #test-timer.warning .timer-value {
+        color: var(--bs-warning-text-emphasis);
+    }
+
+    #test-timer.danger .timer-value {
+        color: var(--bs-danger-text-emphasis);
+        animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.6;
+        }
+    }
+
     .form-container {
         padding: 2rem;
     }
@@ -206,6 +278,25 @@
             left: 15px;
         }
 
+        #test-timer {
+            top: 15px;
+            right: 15px;
+            padding: 0.5rem 1rem;
+            gap: 0.5rem;
+        }
+
+        #test-timer .timer-icon {
+            font-size: 1rem;
+        }
+
+        #test-timer .timer-label {
+            font-size: 0.65rem;
+        }
+
+        #test-timer .timer-value {
+            font-size: 1rem;
+        }
+
         .container {
             margin: 0;
         }
@@ -244,6 +335,20 @@
 
 
 <div class="container">
+    <!-- Timer Display (Fixed Position) -->
+    {{ $timeLimit := .Params.time_limit | default 0 }}
+    {{ if gt $timeLimit 0 }}
+    <div id="test-timer">
+        <div class="timer-icon">
+            <i class="fas fa-clock"></i>
+        </div>
+        <div>
+            <div class="timer-label">Time Remaining</div>
+            <div class="timer-value" id="timer-display">{{ $timeLimit }}:00</div>
+        </div>
+    </div>
+    {{ end }}
+
     <div class="header">
         <div id="go-back">
             <i class="fas fa-arrow-left"></i>
@@ -352,6 +457,7 @@
     const testId = {{$test.id}};
     const testAbsPath = "{{$tesAbsPath}}";
     const build = {{$build}};
+    const timeLimit = {{ $test.time_limit }};  // in minutes
 
 
     // Event Listeners
@@ -369,8 +475,60 @@
         if (backBtn?.addEventListener) {
             backBtn.addEventListener("click", HandleGoBack);
         }
+
+        // Initialize timer if time limit is set
+        if (timeLimit > 0) {
+            initTimer(timeLimit);
+        }
     }
 
+    // Timer functionality
+    function initTimer(minutes) {
+        let totalSeconds = minutes * 60;
+        const timerDisplay = document.getElementById("timer-display");
+        const timerElement = document.getElementById("test-timer");
+        
+        if (!timerDisplay || !timerElement) return;
+
+        function updateTimer() {
+            const mins = Math.floor(totalSeconds / 60);
+            const secs = totalSeconds % 60;
+            
+            // Format display
+            timerDisplay.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            
+            // Update timer appearance based on time remaining
+            timerElement.classList.remove('warning', 'danger');
+            
+            // Last 5 minutes - warning
+            if (totalSeconds <= 300 && totalSeconds > 60) {
+                timerElement.classList.add('warning');
+            }
+            // Last minute - danger
+            else if (totalSeconds <= 60) {
+                timerElement.classList.add('danger');
+            }
+            
+            if (totalSeconds <= 0) {
+                clearInterval(timerInterval);
+                handleTimeUp();
+            } else {
+                totalSeconds--;
+            }
+        }
+        
+        function handleTimeUp() {
+            timerDisplay.textContent = "0:00";
+            alert("Time's up! Your test has been automatically submitted.");
+            // You can add auto-submit logic here if needed
+        }
+        
+        // Update immediately
+        updateTimer();
+        
+        // Then update every second
+        const timerInterval = setInterval(updateTimer, 1000);
+    }
 
 
     // Initialize when context is ready
