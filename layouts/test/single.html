@@ -475,11 +475,11 @@
         if (backBtn?.addEventListener) {
             backBtn.addEventListener("click", HandleGoBack);
         }
+    }
 
-        // Initialize timer if time limit is set
-        if (timeLimit > 0) {
-            initTimer(timeLimit);
-        }
+    // Initialize timer if time limit is set (works in both dev and prod builds)
+    if (timeLimit > 0) {
+        initTimer(timeLimit);
     }
 
     // Timer functionality
@@ -489,6 +489,8 @@
         const timerElement = document.getElementById("test-timer");
         
         if (!timerDisplay || !timerElement) return;
+
+        let timerInterval; // Declare at function scope for proper cleanup
 
         function updateTimer() {
             const mins = Math.floor(totalSeconds / 60);
@@ -519,15 +521,16 @@
         
         function handleTimeUp() {
             timerDisplay.textContent = "0:00";
-            alert("Time's up! Your test has been automatically submitted.");
-            // You can add auto-submit logic here if needed
+            timerElement.classList.add('danger');
+            // Timer expired - visual indication is provided through the timer display
+            // Auto-submit or other actions can be handled by the parent application
         }
         
         // Update immediately
         updateTimer();
         
         // Then update every second
-        const timerInterval = setInterval(updateTimer, 1000);
+        timerInterval = setInterval(updateTimer, 1000);
     }
 
 
