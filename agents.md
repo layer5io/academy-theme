@@ -23,7 +23,7 @@ content sites using the Hugo static site generator.
 
 - Go (latest version)
 - Node.js and npm
-- Hugo Extended (0.146.0 or later)
+- Hugo Extended (version 0.146.0 or later, as specified in hugo.yaml)
 
 ### Setup Commands
 
