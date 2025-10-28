@@ -16,6 +16,7 @@ content sites using the Hugo static site generator.
 - Go modules
 - PostCSS & Autoprefixer
 - Docsy theme as a base
+- Layer5 Sistent Design System
 
 ## Development Environment
 
@@ -107,6 +108,27 @@ This requires `markdownlint-cli2` (will be auto-installed if using npm).
 - PostCSS is configured via `postcss.config.js`
 - Changes should be compatible with the theme's responsive design
 
+### Design System Adherence
+
+#### Layer5 Sistent Design System
+
+This theme adheres to the [Layer5 Sistent Design
+System](https://github.com/layer5io/sistent), which provides consistent UI
+components, colors, typography, and behaviors across all Layer5 projects.
+
+- **Color Palette**: Use colors defined in `assets/scss/_variables_project.scss`
+  - Primary: `#00b39f` (teal/green)
+  - Secondary: `#3C494F` (dark gray)
+  - Refer to the Sistent design system for the complete color palette
+- **Typography**: Follow Qanelas Soft font family and typography scale
+- **Components**: Ensure UI components match Sistent design patterns
+- **Behaviors**: Interactive elements should follow Sistent interaction patterns
+- **Documentation**: [Sistent site](https://layer5.io/projects/sistent) provides
+  detailed guidelines
+
+When making style changes, always verify they align with the Sistent design
+system to maintain consistency across Layer5 properties.
+
 ### Creating New Archetypes
 
 - Add new content type templates in `/archetypes/`
@@ -153,6 +175,8 @@ Since this is a theme module, testing requires:
 
 ## Resources
 
+- **Layer5 Sistent Design System**: [Sistent](https://layer5.io/projects/sistent)
+  | [GitHub](https://github.com/layer5io/sistent)
 - **Main Documentation**: [Layer5 Academy Docs](https://docs.layer5.io/cloud/academy/)
 - **Starter Template**: [academy-example](https://github.com/layer5io/academy-example)
 - **Hugo Documentation**: [gohugo.io](https://gohugo.io/)
