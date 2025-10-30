@@ -10,6 +10,7 @@ type: "test" # Type of the content, in this case, a test ( required for the test
 
 questions:
   # Multiple Choice Question (Single Answer)
+  # NOTE: The 'marks' field must be a positive number (greater than 0). Negative or zero values will cause a build error.
   - id: "q1"
     text: "What keyword is used to define a function in Go?"
     type: "mcq"

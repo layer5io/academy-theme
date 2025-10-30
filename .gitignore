@@ -24,5 +24,6 @@ resources/
 
 #hugo 
 .hugo_build.lock
+content/
 
 .DS_Store

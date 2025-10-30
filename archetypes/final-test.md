@@ -10,6 +10,7 @@ final: true # Indicates that this test is the final exam and must be completed t
 
 questions:
   # Multiple Choice Question (Single Answer)
+  # NOTE: The 'marks' field must be a positive number (greater than 0). Negative or zero values will cause a build error.
   - id: "q1"
     text: "What keyword is used to define a function in Go?"
     type: "mcq"
