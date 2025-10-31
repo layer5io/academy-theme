@@ -39,6 +39,20 @@
   "type" .Parent.Type
 ) nil) -}}
 
+
+{{- $nextPage := dict -}}
+{{- if .PrevInSection -}}
+  {{- $next := .PrevInSection -}}
+  {{- $nextPage = dict
+      "id" (partial "id.html" $next)
+      "title" $next.Title
+      "relPermalink" $next.RelPermalink
+      "type" $next.Type
+  -}}
+{{- end -}}
+
+
+
 {{- return (dict
   "id" (partial "id.html" .)
   "title" .Title
@@ -65,4 +79,5 @@
   "prerequisites" $prerequisites
   "total_marks" $total
   "parent" $parent
+  "next_page" $nextPage
 ) -}}
