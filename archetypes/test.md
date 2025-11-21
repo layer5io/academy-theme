@@ -12,7 +12,7 @@ questions:
   # Multiple Choice Question (Single Answer)
   - id: "q1"
     text: "What keyword is used to define a function in Go?"
-    type: "multiple-answers"
+    type: "multiple_answers"
     marks: 2
     explanation: "The 'func' keyword is used to declare functions in Go, similar to how 'function' is used in JavaScript."
     options:

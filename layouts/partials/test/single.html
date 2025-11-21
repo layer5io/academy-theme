@@ -20,6 +20,14 @@
   {{- $questionIds =  $questionIds | append  (string $id)  -}}
 {{- end -}}
 
+<!-- Validate: marks must be positive (greater than 0) -->
+{{- range $index, $question := $p.questions -}}
+  {{- $marks := or $question.marks 0 -}}
+  {{- if le $marks 0 -}}
+    {{- errorf "Question %d (id: %s) has invalid marks value '%v'. Marks must be greater than 0. Please update the 'marks' field with a positive number. [ %s ]" (add $index 1) $question.id $marks $.File.Path -}}
+  {{- end -}}
+{{- end -}}
+
 {{- $numberOfQuestionSets := div (len $p.questions) $totalQuestionsPerSet -}}
 
 {{- $total := 0 -}}
