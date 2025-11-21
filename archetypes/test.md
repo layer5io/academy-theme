@@ -12,7 +12,7 @@ questions:
   # Multiple Choice Question (Single Answer)
   - id: "q1"
     text: "What keyword is used to define a function in Go?"
-    type: "mcq"
+    type: "multiple-answers"
     marks: 2
     explanation: "The 'func' keyword is used to declare functions in Go, similar to how 'function' is used in JavaScript."
     options:
@@ -49,8 +49,7 @@ questions:
   # Multiple Choice Question (Multiple Answers)
   - id: "q4"
     text: "What are the purposes of the 'defer' keyword in Go? (Select all that apply)"
-    type: "mcq"
-    multiple_answers: true
+    type: "multiple-answers"
     marks: 2
     explanation: "The defer keyword is commonly used to delay function execution until the surrounding function returns, often used for cleanup tasks like closing files."
     options:
