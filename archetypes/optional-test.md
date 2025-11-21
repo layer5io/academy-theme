@@ -13,7 +13,7 @@ questions:
   # NOTE: The 'marks' field must be a positive number (greater than 0). Negative or zero values will cause a build error.
   - id: "q1"
     text: "What keyword is used to define a function in Go?"
-    type: "mcq"
+    type: "multiple_answers"
     marks: 2
     explanation: "The 'func' keyword is used to declare functions in Go, similar to how 'function' is used in JavaScript."
     options:
