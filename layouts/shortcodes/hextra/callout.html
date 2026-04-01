@@ -1,0 +1,46 @@
+{{- /*
+  Hextra callout shortcode (Bootstrap 5 port).
+
+  @param {string} type  The type of callout: default, info, warning, error, important.
+  @param {string} emoji Optional emoji to display instead of an icon.
+  @param {string} icon  Optional icon name (from data/hextra/icons.yaml).
+
+  @example {{< hextra/callout type="info" >}}Some informational text.{{< /hextra/callout >}}
+*/ -}}
+
+{{- $type := .Get "type" | default "default" -}}
+{{- $emoji := .Get "emoji" -}}
+{{- $icon := .Get "icon" -}}
+
+{{- /* Map callout types to Bootstrap alert classes and default icons. */ -}}
+{{- $styles := newScratch -}}
+{{- $styles.Set "default"   (dict "icon" "light-bulb"          "alertClass" "alert-success"  ) -}}
+{{- $styles.Set "info"      (dict "icon" "information-circle"   "alertClass" "alert-info"     ) -}}
+{{- $styles.Set "warning"   (dict "icon" "exclamation"          "alertClass" "alert-warning"  ) -}}
+{{- $styles.Set "error"     (dict "icon" "ban"                  "alertClass" "alert-danger"   ) -}}
+{{- $styles.Set "important" (dict "icon" "exclamation-circle"   "alertClass" "alert-primary"  ) -}}
+
+{{- $style := or ($styles.Get $type) ($styles.Get "default") -}}
+
+{{- if and (not $emoji) (not $icon) -}}
+  {{- $icon = $style.icon -}}
+{{- end -}}
+
+{{- $content := .InnerDeindent | markdownify -}}
+
+<div class="hextra-callout alert {{ $style.alertClass }} d-flex align-items-start" role="alert">
+  <div class="flex-shrink-0 me-2">
+    {{- with $emoji -}}
+      <span class="hextra-callout-emoji" style="font-family: 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; font-size: 1.25rem;">
+        {{- . -}}
+      </span>
+    {{- else -}}
+      {{- with $icon -}}
+        {{- partial "hextra/utils/icon.html" (dict "name" . "attributes" `height="1.2em" class="d-inline-block align-middle"`) -}}
+      {{- end -}}
+    {{- end -}}
+  </div>
+  <div class="flex-grow-1 hextra-callout-content">
+    {{- $content -}}
+  </div>
+</div>

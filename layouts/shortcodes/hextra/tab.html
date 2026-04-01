@@ -1,0 +1,25 @@
+{{- /*
+  Hextra tab shortcode (Bootstrap 5 port).
+  Must be nested inside {{< hextra/tabs >}}.
+
+  @param {string} name      Tab label.
+  @param {bool}   selected  Whether this tab is selected by default.
+
+  @example {{< hextra/tab name="Go" >}}Go content{{< /hextra/tab >}}
+*/ -}}
+
+{{- $name := .Get "name" | default (printf "Tab %d" .Ordinal) -}}
+{{- $selected := .Get "selected" -}}
+
+{{- if .Parent.Get "defaultIndex" -}}
+  {{- $selected = eq .Ordinal (int (.Parent.Get "defaultIndex")) -}}
+{{- end -}}
+
+{{- $tabs := .Parent.Store.Get "tabs" | default slice -}}
+{{ .Parent.Store.Set "tabs" ($tabs | append (dict
+    "id" .Ordinal
+    "name" $name
+    "content" .InnerDeindent
+    "selected" $selected
+  ))
+-}}

@@ -1,0 +1,86 @@
+{{- /*
+  Hextra Jupyter Notebook shortcode (Bootstrap 5 port).
+  Renders a Jupyter notebook (.ipynb) as code blocks and markdown.
+
+  @param {string} 0  Path or URL of the Jupyter notebook.
+
+  @example {{% hextra/jupyter "notebook.ipynb" %}}
+*/ -}}
+
+{{- $path := .Get 0 -}}
+{{- $data := "" -}}
+{{- $page := .Page -}}
+
+{{- $isLocal := not (urls.Parse $path).Scheme -}}
+{{- $isPage := and (eq .Page.Kind "page") (not .Page.BundleType) -}}
+
+{{- if (not $isLocal) -}}
+  {{- with resources.GetRemote $path -}}
+    {{- with unmarshal .Content -}}{{- $data = . -}}{{- end -}}
+  {{- else -}}
+    {{- errorf "Remote resource not found: %s" $path -}}
+  {{- end -}}
+{{- else if (not $isPage) -}}
+  {{- with .Page.Resources.Get $path -}}
+    {{- with unmarshal .Content -}}{{- $data = . -}}{{- end -}}
+  {{- else -}}
+    {{- errorf "Local resource not found: %s" $path -}}
+  {{- end -}}
+{{- else -}}
+  {{- with resources.Get $path -}}
+    {{- with unmarshal .Content -}}{{- $data = . -}}{{- end -}}
+  {{- else -}}
+    {{- errorf "Local resource not found: %s" $path -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $language := index $data "metadata" "language_info" "name" | default "python" -}}
+
+{{- with index $data "cells" -}}
+  {{- range $cell := . -}}
+    {{- if eq (index $cell "cell_type") "code" -}}
+      {{- $source := index $cell "source" -}}
+      {{- $sourceContent := (cond (reflect.IsSlice $source) (delimit $source "") $source) -}}
+{{- with ($sourceContent | strings.Chomp) -}}
+{{ (printf "\n\n```%s\n%s\n```\n" $language .) | safeHTML -}}
+{{- end -}}
+
+      <div class="hextra-jupyter-code-cell mb-3">
+        {{- $outputs := index $cell "outputs" -}}
+        {{- with $outputs -}}
+          <div class="hextra-jupyter-outputs border rounded p-2 bg-body-tertiary small overflow-auto" style="max-height: 50vh;">
+            {{- range $output := . -}}
+              {{- if eq (index $output "output_type") "display_data" -}}
+                {{- $imgData := index $output "data" -}}
+                {{- $image := index $imgData "image/png" -}}
+                {{- if $image -}}
+                  <img src="data:image/png;base64,{{- $image -}}" alt="Jupyter output" class="img-fluid" />
+                {{- end -}}
+              {{- else if eq (index $output "output_type") "stream" -}}
+                {{- $text := index $output "text" -}}
+                {{- $textContent := (cond (reflect.IsSlice $text) (delimit $text "") $text) -}}
+                <pre class="mb-0 p-1">{{- $textContent -}}</pre>
+              {{- else if eq (index $output "output_type") "execute_result" -}}
+                {{- $resultData := index $output "data" -}}
+                {{- $text := index $resultData "text/plain" -}}
+                {{- $textContent := (cond (reflect.IsSlice $text) (delimit $text "") $text) -}}
+                <pre class="mb-0 p-1">{{- $textContent -}}</pre>
+                {{- $html := index $resultData "text/html" -}}
+                {{- if $html -}}
+                  {{- $htmlText := delimit $html "" -}}
+                  <div class="mt-1">
+                    {{- $htmlText | safeHTML -}}
+                  </div>
+                {{- end -}}
+              {{- end -}}
+            {{- end -}}
+          </div>
+        {{- end -}}
+      </div>
+    {{- else if eq (index $cell "cell_type") "markdown" -}}
+        {{- $source := index $cell "source" }}
+        {{- $sourceContent := (cond (reflect.IsSlice $source) (delimit $source "") $source) }}
+{{ (printf "\n%s\n" $sourceContent) | safeHTML }}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

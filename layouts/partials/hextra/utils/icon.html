@@ -1,0 +1,14 @@
+{{/* Render raw SVG icon from site.Data.hextra.icons */}}
+{{- $icon := index site.Data.hextra.icons .name -}}
+
+{{- if not $icon -}}
+  {{ errorf "hextra icon %q not found in data/hextra/icons.yaml" .name }}
+{{- end -}}
+
+{{- $icon = $icon | safeHTML -}}
+
+{{- if .attributes -}}
+  {{- $icon = replaceRE "<svg" (printf "<svg %s" .attributes) $icon -}}
+{{- end -}}
+
+{{- return ($icon | safeHTML) -}}

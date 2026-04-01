@@ -1,0 +1,29 @@
+{{- /*
+  Hextra glossary term shortcode.
+  Wraps a term in an <abbr> tag with its definition as a tooltip.
+  Definitions are sourced from data/<lang>/termbase.yaml.
+
+  @param {string} entry  The glossary abbreviation or term (named or positional).
+
+  @example {{< hextra/term entry="API" >}}
+  @example {{< hextra/term "API" >}}
+*/ -}}
+
+{{- $entry := .Get "entry" | default (.Get 0) -}}
+{{- $entryLower := lower $entry -}}
+{{- $match := dict -}}
+
+{{- range (index .Site.Data .Site.Language.Lang "termbase") -}}
+  {{- if or (eq (lower .abbr) $entryLower) (eq (lower .term) $entryLower) -}}
+    {{- $match = . -}}
+    {{- break -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with $match }}
+  <abbr title="{{ .definition | plainify }}">
+    {{- $entry -}}
+  </abbr>
+{{- else }}
+  {{- $entry -}}
+{{- end }}

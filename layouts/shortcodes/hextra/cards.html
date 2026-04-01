@@ -1,0 +1,13 @@
+{{- /*
+  Hextra cards container shortcode (Bootstrap 5 port).
+
+  @param {int} cols  Number of columns (default 3).
+
+  @example {{< hextra/cards cols="3" >}}{{< hextra/card ... >}}{{< /hextra/cards >}}
+*/ -}}
+
+{{- $cols := .Get "cols" | default 3 -}}
+
+<div class="hextra-cards row row-cols-1 row-cols-md-2 row-cols-lg-{{ $cols }} g-4 mt-3 mb-4">
+  {{- .Inner -}}
+</div>

@@ -1,0 +1,16 @@
+{{- /*
+  Hextra steps shortcode (Bootstrap 5 port).
+  Renders a numbered step list using CSS counters.
+
+  @example {{% hextra/steps %}}
+  ### Step One
+  Content for step one.
+
+  ### Step Two
+  Content for step two.
+  {{% /hextra/steps %}}
+*/ -}}
+
+<div class="hextra-steps ms-3 mb-5 ps-4 border-start">
+  {{- .Inner -}}
+</div>

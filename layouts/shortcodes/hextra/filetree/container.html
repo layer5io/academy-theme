@@ -1,0 +1,38 @@
+{{- /*
+  Hextra filetree container shortcode (Bootstrap 5 port).
+
+  @example {{< hextra/filetree/container >}}
+    {{< hextra/filetree/folder name="src" >}}
+      {{< hextra/filetree/file name="main.go" >}}
+    {{< /hextra/filetree/folder >}}
+  {{< /hextra/filetree/container >}}
+*/ -}}
+
+<div class="hextra-filetree mt-3 mb-3 user-select-none small text-body">
+  <div class="d-inline-block border rounded px-3 py-2">
+    <ul class="list-unstyled mb-0">
+      {{- .InnerDeindent -}}
+    </ul>
+  </div>
+</div>
+
+{{- /* Include filetree toggle script once per page. */ -}}
+{{- if not (.Page.Store.Get "hextraFiletreeLoaded") -}}
+  {{- .Page.Store.Set "hextraFiletreeLoaded" true -}}
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.hextra-filetree-folder').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var open=btn.getAttribute('aria-expanded')==='true';
+      var st=open?'closed':'open';
+      btn.querySelectorAll('[data-state]').forEach(function(el){
+        el.style.display=(el.dataset.state===st)?'':'none';
+      });
+      var ul=btn.nextElementSibling;
+      if(ul){ul.style.display=st==='open'?'':'none';}
+      btn.setAttribute('aria-expanded',st==='open');
+    });
+  });
+});
+</script>
+{{- end -}}

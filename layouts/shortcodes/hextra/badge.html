@@ -1,0 +1,61 @@
+{{- /*
+  Hextra badge shortcode (Bootstrap 5 port).
+
+  @param {string} content  Badge text.
+  @param {string} color    Color name: gray, green, blue, yellow, red, purple, orange, indigo, amber (default: gray).
+  @param {string} link     Optional URL to wrap badge in a link.
+  @param {string} icon     Optional icon name.
+
+  Positional form: {{< hextra/badge "Badge text" >}}
+
+  @example {{< hextra/badge content="New" color="green" >}}
+*/ -}}
+
+{{- /* Map Hextra / semantic color names to Bootstrap badge classes. */ -}}
+{{- $mapping := (dict
+  "gray"    "text-bg-secondary"
+  "green"   "text-bg-success"
+  "blue"    "text-bg-info"
+  "yellow"  "text-bg-warning"
+  "red"     "text-bg-danger"
+  "purple"  "text-bg-primary"
+  "indigo"  "text-bg-primary"
+  "orange"  "text-bg-warning"
+  "amber"   "text-bg-warning"
+  "default" "text-bg-secondary"
+  "tip"     "text-bg-success"
+  "info"    "text-bg-info"
+  "warning" "text-bg-warning"
+  "error"   "text-bg-danger"
+  "important" "text-bg-primary"
+  )
+-}}
+
+{{- if .IsNamedParams -}}
+  {{- $content := .Get "content" -}}
+  {{- $color := .Get "color" | default (.Get "type") | default "gray" -}}
+  {{- $link := .Get "link" | default "" -}}
+  {{- $icon := .Get "icon" | default "" -}}
+
+  {{- $badgeClass := index $mapping $color | default "text-bg-secondary" -}}
+
+  {{- if $link -}}
+    <a href="{{ $link }}" title="{{ $content | plainify }}" target="_blank" class="text-decoration-none">
+      <span class="hextra-badge badge rounded-pill {{ $badgeClass }}">
+        {{- with $icon }}{{ partial "hextra/utils/icon.html" (dict "name" . "attributes" `height="12" aria-hidden="true"`) }} {{ end -}}
+        {{- $content -}}
+      </span>
+    </a>
+  {{- else -}}
+    <span class="hextra-badge badge rounded-pill {{ $badgeClass }}">
+      {{- with $icon }}{{ partial "hextra/utils/icon.html" (dict "name" . "attributes" `height="12" aria-hidden="true"`) }} {{ end -}}
+      {{- $content -}}
+    </span>
+  {{- end -}}
+
+{{- else -}}
+  {{- $content := .Get 0 -}}
+  <span class="hextra-badge badge rounded-pill text-bg-secondary">
+    {{- $content -}}
+  </span>
+{{- end -}}
