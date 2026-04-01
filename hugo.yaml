@@ -56,6 +56,8 @@ markup:
     parser:
       attribute:
         block: true
+    renderer:
+      unsafe: true
   highlight:
     # See a complete list of available styles at https://xyproto.github.io/splash/docs/all.html
     # style: tango

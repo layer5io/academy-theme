@@ -2,15 +2,19 @@
   Hextra steps shortcode (Bootstrap 5 port).
   Renders a numbered step list using CSS counters.
 
-  @example {{% hextra/steps %}}
+  Use {{< >}} syntax (angle brackets) so the wrapper HTML is not
+  stripped by Goldmark's raw-HTML filter.  The inner Markdown is
+  rendered via .Page.RenderString.
+
+  @example {{< hextra/steps >}}
   ### Step One
   Content for step one.
 
   ### Step Two
   Content for step two.
-  {{% /hextra/steps %}}
+  {{< /hextra/steps >}}
 */ -}}
 
 <div class="hextra-steps ms-3 mb-5 ps-4 border-start">
-  {{- .Inner -}}
+  {{- .InnerDeindent | .Page.RenderString -}}
 </div>
