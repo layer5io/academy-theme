@@ -13,10 +13,14 @@
 {{- $entryLower := lower $entry -}}
 {{- $match := dict -}}
 
-{{- range (index .Site.Data .Site.Language.Lang "termbase") -}}
-  {{- if or (eq (lower .abbr) $entryLower) (eq (lower .term) $entryLower) -}}
-    {{- $match = . -}}
-    {{- break -}}
+{{- with index .Site.Data .Site.Language.Lang -}}
+  {{- with index . "termbase" -}}
+    {{- range . -}}
+      {{- if or (eq (lower .abbr) $entryLower) (eq (lower .term) $entryLower) -}}
+        {{- $match = . -}}
+        {{- break -}}
+      {{- end -}}
+    {{- end -}}
   {{- end -}}
 {{- end -}}
 

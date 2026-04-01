@@ -12,10 +12,10 @@
 
 <li class="d-flex flex-column">
   <button class="hextra-filetree-folder btn btn-sm btn-link text-start text-decoration-none text-body p-0 d-inline-flex align-items-center py-1" aria-expanded="{{ if eq $state "open" }}true{{ else }}false{{ end }}">
-    <span data-state="{{ $state }}"{{ if eq $state "open" }} style="display:none"{{ end }}>
+    <span data-state="closed"{{ if eq $state "open" }} style="display:none"{{ end }}>
       {{- partial "hextra/utils/icon.html" (dict "name" "folder" "attributes" `width="1em" aria-hidden="true"`) -}}
     </span>
-    <span data-state="{{ $state }}"{{ if eq $state "closed" }} style="display:none"{{ end }}>
+    <span data-state="open"{{ if eq $state "closed" }} style="display:none"{{ end }}>
       {{- partial "hextra/utils/icon.html" (dict "name" "folder-open" "attributes" `width="1em" aria-hidden="true"`) -}}
     </span>
     <span class="ms-1">{{ $name }}</span>

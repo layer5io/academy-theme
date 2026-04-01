@@ -45,19 +45,13 @@
   {{- if not $found -}}
     {{- if hasPrefix $castFile "/" -}}
       {{- $castFile = relURL (strings.TrimPrefix "/" $castFile) -}}
-      {{- $found = true -}}
     {{- else -}}
       {{- $castFile = relURL $castFile -}}
-      {{- $found = true -}}
     {{- end -}}
-  {{- end -}}
-
-  {{- if not $found -}}
-    {{- errorf "Asciinema cast file not found: %s. Ensure the file exists in assets, static/, or provide a URL." $castFile -}}
   {{- end -}}
 {{- end -}}
 
-{{- /* Build marker configuration */ -}}
+{{- /* Build marker configuration using jsonify for proper escaping */ -}}
 {{- $markerConfig := "" -}}
 {{- if $markers -}}
   {{- $markerParts := slice -}}
@@ -67,21 +61,21 @@
     {{- if $colonIndex -}}
       {{- $pair := split $item ":" -}}
       {{- if ge (len $pair) 2 -}}
-        {{- $time := printf "%.1f" (float (trim (index $pair 0) " ")) -}}
+        {{- $time := float (trim (index $pair 0) " ") -}}
         {{- $label := trim (index $pair 1) " " -}}
-        {{- $markerParts = $markerParts | append (printf "[%s,\"%s\"]" $time $label) -}}
+        {{- $markerParts = $markerParts | append (slice $time $label) -}}
       {{- end -}}
     {{- else -}}
-      {{- $markerParts = $markerParts | append (printf "%.1f" (float $item)) -}}
+      {{- $markerParts = $markerParts | append (float $item) -}}
     {{- end -}}
   {{- end -}}
-  {{- $markerConfig = printf "[%s]" (delimit $markerParts ",") -}}
+  {{- $markerConfig = $markerParts | jsonify -}}
 {{- end -}}
 
 {{- /* Mark page as using asciinema for conditional script loading */ -}}
 {{- .Page.Store.Set "hasAsciinema" true -}}
 
-<div class="asciinema-player"
+<div class="hextra-asciinema-player"
      role="region"
      aria-label="{{ (T "terminalRecording") | default "Terminal recording" }}"
      data-cast-file="{{ $castFile }}"
@@ -90,5 +84,26 @@
      data-autoplay="{{ $autoplay }}"
      data-loop="{{ $loop }}"
      {{- if ne $poster "" }} data-poster="{{ $poster | safeURL }}"{{- end -}}
-     {{- if $markerConfig }} data-markers="{{ $markerConfig | safeJS }}"{{- end -}}>
+     {{- if $markerConfig }} data-markers='{{ $markerConfig }}'{{- end -}}>
 </div>
+
+{{- /* Include asciinema-player assets once per page */ -}}
+{{- if not (.Page.Store.Get "hextraAsciinemaLoaded") -}}
+  {{- .Page.Store.Set "hextraAsciinemaLoaded" true -}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/asciinema-player@3/dist/bundle/asciinema-player.css">
+<script src="https://cdn.jsdelivr.net/npm/asciinema-player@3/dist/bundle/asciinema-player.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded',function(){
+  document.querySelectorAll('.hextra-asciinema-player').forEach(function(el){
+    var opts={};
+    if(el.dataset.theme) opts.theme=el.dataset.theme;
+    if(el.dataset.speed) opts.speed=parseFloat(el.dataset.speed);
+    if(el.dataset.autoplay==='true') opts.autoPlay=true;
+    if(el.dataset.loop==='true') opts.loop=true;
+    if(el.dataset.poster) opts.poster=el.dataset.poster;
+    if(el.dataset.markers){try{opts.markers=JSON.parse(el.dataset.markers);}catch(e){}}
+    AsciinemaPlayer.create(el.dataset.castFile,el,opts);
+  });
+});
+</script>
+{{- end -}}

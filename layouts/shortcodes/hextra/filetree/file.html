@@ -11,6 +11,6 @@
 <li class="d-flex align-items-center py-1">
   <span class="d-inline-flex align-items-center">
     {{- partial "hextra/utils/icon.html" (dict "name" "document-text" "attributes" `width="1em" aria-hidden="true"`) -}}
-    <span class="ms-1">{{ $name | markdownify }}</span>
+    <span class="ms-1">{{ $name | plainify }}</span>
   </span>
 </li>

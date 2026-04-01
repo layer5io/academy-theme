@@ -40,7 +40,7 @@
   {{- $badgeClass := index $mapping $color | default "text-bg-secondary" -}}
 
   {{- if $link -}}
-    <a href="{{ $link }}" title="{{ $content | plainify }}" target="_blank" class="text-decoration-none">
+    <a href="{{ $link }}" title="{{ $content | plainify }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
       <span class="hextra-badge badge rounded-pill {{ $badgeClass }}">
         {{- with $icon }}{{ partial "hextra/utils/icon.html" (dict "name" . "attributes" `height="12" aria-hidden="true"`) }} {{ end -}}
         {{- $content -}}

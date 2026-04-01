@@ -9,7 +9,7 @@
 */ -}}
 
 {{- $name := .Get "name" | default (printf "Tab %d" .Ordinal) -}}
-{{- $selected := .Get "selected" -}}
+{{- $selected := eq (.Get "selected") "true" -}}
 
 {{- if .Parent.Get "defaultIndex" -}}
   {{- $selected = eq .Ordinal (int (.Parent.Get "defaultIndex")) -}}

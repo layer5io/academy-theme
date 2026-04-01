@@ -51,18 +51,23 @@
 {{- $external := strings.HasPrefix $link "http" -}}
 {{- $href := cond (strings.HasPrefix $link "/") ($link | relURL) $link -}}
 
+{{- $cardContent := "" -}}
+{{- $tagHtml := "" -}}
+{{- with $tag -}}
+  {{- $tagHtml = printf `<span class="hextra-card-tag position-absolute top-0 end-0 mt-1 me-1 badge rounded-pill%s">%s</span>` (cond (ne $tagColor "") (printf " text-bg-%s" $tagColor) " text-bg-secondary") . -}}
+{{- end -}}
+
 <div class="col">
-  <a class="hextra-card card h-100 text-decoration-none border shadow-sm position-relative"
-    {{- if $link }}
+  {{- if $link -}}
+    <a class="hextra-card card h-100 text-decoration-none border shadow-sm position-relative"
       href="{{ $href }}"
-      {{ with $external }}target="_blank" rel="noreferrer"{{ end -}}
-    {{- end -}}
-  >
-    {{- with $tag }}
-      <span class="hextra-card-tag position-absolute top-0 end-0 mt-1 me-1 badge rounded-pill{{ with $tagColor }} text-bg-{{ . }}{{ else }} text-bg-secondary{{ end }}">
-        {{- . -}}
-      </span>
-    {{- end -}}
+      {{ with $external }}target="_blank" rel="noopener noreferrer"{{ end -}}
+    >
+  {{- else -}}
+    <div class="hextra-card card h-100 border shadow-sm position-relative">
+  {{- end -}}
+
+    {{ $tagHtml | safeHTML }}
 
     {{- with $image -}}
       <img
@@ -90,5 +95,10 @@
         <p class="card-text text-body-secondary small">{{ . | markdownify }}</p>
       {{- end -}}
     </div>
-  </a>
+
+  {{- if $link -}}
+    </a>
+  {{- else -}}
+    </div>
+  {{- end -}}
 </div>
