@@ -1,0 +1,19 @@
+{{- /*
+  Hextra PDF embed shortcode (Bootstrap 5 port).
+
+  @param {string} 0  Path to the PDF file (positional).
+
+  @example {{< hextra/pdf "path/to/file.pdf" >}}
+*/ -}}
+
+{{- $path := .Get 0 -}}
+{{- $url := partial "hextra/utils/file-path" (dict "page" .Page "path" $path) -}}
+
+<div class="hextra-pdf ratio" style="--bs-aspect-ratio: 141.4%;">
+  <iframe
+    src="{{ $url | safeURL }}"
+    frameborder="0"
+    title="{{ (T "pdfViewer") | default "PDF viewer" }}"
+    loading="lazy"
+  ></iframe>
+</div>

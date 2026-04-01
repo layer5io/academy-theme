@@ -1,0 +1,24 @@
+{{- /*
+  Hextra icon shortcode (Bootstrap 5 port).
+  Renders an inline SVG icon from data/hextra/icons.yaml.
+
+  @param {string} name        Icon name (named or positional param).
+  @param {string} attributes  Extra SVG attributes (default "height=1em").
+
+  @example {{< hextra/icon name="github" >}}
+  @example {{< hextra/icon "github" >}}
+*/ -}}
+
+{{- $name := .Get "name" | default (.Get 0) -}}
+{{- $icon := index site.Data.hextra.icons $name -}}
+{{- $attributes := .Get "attributes" | default "height=1em" }}
+
+{{- if not $icon -}}
+  {{ errorf "hextra icon %q not found in data/hextra/icons.yaml" $name }}
+{{- end -}}
+
+{{- $icon = replaceRE "<svg" (printf "<svg %s" $attributes) $icon -}}
+
+<span class="hextra-icon d-inline-block align-text-bottom">
+  {{- $icon | safeHTML -}}
+</span>
