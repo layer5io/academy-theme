@@ -1,0 +1,144 @@
+// ============================================================================
+// Hextra shortcodes – custom styles for Bootstrap 5 port
+// ============================================================================
+
+// ---------------------------------------------------------------------------
+// Callout
+// ---------------------------------------------------------------------------
+.hextra-callout {
+  border-left-width: 4px !important;
+
+  .hextra-callout-content {
+    > :first-child {
+      margin-top: 0;
+    }
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Card
+// ---------------------------------------------------------------------------
+.hextra-cards {
+  .hextra-card {
+    color: inherit;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+
+    &:hover {
+      border-color: $primary;
+      box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
+      color: inherit;
+    }
+
+    .hextra-card-icon svg {
+      width: 1.5rem;
+      color: rgba(0, 0, 0, 0.2);
+      transition: color 0.3s ease;
+    }
+
+    &:hover .hextra-card-icon svg {
+      color: currentColor;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Details
+// ---------------------------------------------------------------------------
+.hextra-details {
+  > summary {
+    // Remove default marker / triangle in all browsers.
+    &::marker,
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+
+  .hextra-details-chevron {
+    transition: transform 0.2s ease;
+    flex-shrink: 0;
+  }
+
+  &[open] > summary .hextra-details-chevron {
+    transform: rotate(90deg);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Steps
+// ---------------------------------------------------------------------------
+.hextra-steps {
+  counter-reset: step;
+  border-color: $border-color;
+
+  :where(h2, h3, h4, h5, h6):not(.no-step-marker) {
+    counter-increment: step;
+    position: relative;
+
+    &::before {
+      content: counter(step);
+      position: absolute;
+      width: 33px;
+      height: 33px;
+      border-radius: 50%;
+      background-color: $light;
+      border: 4px solid $body-bg;
+      color: $secondary;
+      font-size: 1rem;
+      font-weight: normal;
+      text-align: center;
+      line-height: 25px;
+      left: -41px;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Tabs – extend Bootstrap nav-tabs styling
+// ---------------------------------------------------------------------------
+.hextra-tabs-wrapper {
+  margin-bottom: 1rem;
+}
+
+// ---------------------------------------------------------------------------
+// FileTree
+// ---------------------------------------------------------------------------
+.hextra-filetree {
+  .hextra-filetree-folder {
+    border: none;
+    background: none;
+    font-size: inherit;
+
+    &:hover {
+      opacity: 0.6;
+    }
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Jupyter
+// ---------------------------------------------------------------------------
+.hextra-jupyter-code-cell {
+  .hextra-jupyter-outputs {
+    scrollbar-width: thin;
+
+    pre {
+      font-size: 0.75rem;
+      overflow: auto;
+      max-width: 100%;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// PDF
+// ---------------------------------------------------------------------------
+.hextra-pdf {
+  min-height: 32rem;
+}

@@ -1,0 +1,19 @@
+{{- /*
+  Hextra include shortcode.
+  Renders the content of another page inline using RenderShortcodes.
+  You must call this shortcode with the {{% %}} notation.
+
+  @param {string} 0  Path to the page relative to the content directory.
+
+  @example {{% hextra/include "docs/shared/setup-instructions" %}}
+*/}}
+
+{{- with .Get 0 }}
+  {{- with site.GetPage . }}
+    {{- .RenderShortcodes }}
+  {{- else }}
+    {{- errorf "The %q shortcode was unable to find %q. See %s" $.Name . $.Position }}
+  {{- end }}
+{{- else }}
+  {{- errorf "The %q shortcode requires a positional parameter indicating the path of the file to include. See %s" .Name .Position }}
+{{- end }}

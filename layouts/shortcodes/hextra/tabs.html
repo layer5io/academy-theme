@@ -1,0 +1,104 @@
+{{- /*
+  Hextra tabs shortcode (Bootstrap 5 port).
+  Uses Bootstrap 5 nav-tabs and tab-content with optional cross-page sync.
+
+  @example {{< hextra/tabs >}}
+    {{< hextra/tab name="Tab 1" >}}Content 1{{< /hextra/tab >}}
+    {{< hextra/tab name="Tab 2" >}}Content 2{{< /hextra/tab >}}
+  {{< /hextra/tabs >}}
+*/ -}}
+
+{{- /* Force inner content to be evaluated so tab shortcodes populate the Store. */ -}}
+{{- .Inner -}}
+
+{{- /* Read sync configuration. */ -}}
+{{- $enableSync := false -}}
+{{- if or (eq .Page.Params.tabs.sync false) (eq .Page.Params.tabs.sync true) -}}
+  {{- $enableSync = .Page.Params.tabs.sync -}}
+{{- else -}}
+  {{- $enableSync = site.Params.page.tabs.sync | default false -}}
+{{- end -}}
+
+{{- $tabs := ($.Store.Get "tabs") | default slice -}}
+
+{{- if eq (len $tabs) 0 -}}
+  {{ errorf "hextra/tabs must contain at least one hextra/tab" }}
+{{- end -}}
+
+{{- /* Determine which tab is selected (default to first). */ -}}
+{{- $selectedIndex := 0 -}}
+{{- $dataTabGroup := slice -}}
+{{- range $i, $item := $tabs -}}
+  {{- $dataTabGroup = $dataTabGroup | append ($item.name) -}}
+  {{- if $item.selected -}}
+    {{- $selectedIndex = $i -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $globalID := printf "hextra-tabs-%02v" .Ordinal -}}
+
+{{- /* Tab navigation */ -}}
+<div class="hextra-tabs-wrapper">
+  <ul class="nav nav-tabs mt-3" id="{{ $globalID }}" role="tablist"{{- if $enableSync }} data-hextra-tab-group="{{ delimit $dataTabGroup `,` }}"{{- end }}>
+    {{- range $i, $item := $tabs -}}
+      <li class="nav-item" role="presentation">
+        <button
+          class="nav-link{{ if eq $i $selectedIndex }} active{{ end }}"
+          id="{{ $globalID }}-tab-{{ $item.id }}"
+          data-bs-toggle="tab"
+          data-bs-target="#{{ $globalID }}-panel-{{ $item.id }}"
+          type="button"
+          role="tab"
+          aria-controls="{{ $globalID }}-panel-{{ $item.id }}"
+          aria-selected="{{ if eq $i $selectedIndex }}true{{ else }}false{{ end }}"
+        >
+          {{- $item.name -}}
+        </button>
+      </li>
+    {{- end -}}
+  </ul>
+
+  {{- /* Tab content panels */ -}}
+  <div class="tab-content" id="{{ $globalID }}-content">
+    {{- range $i, $item := $tabs -}}
+      <div
+        class="tab-pane fade{{ if eq $i $selectedIndex }} show active{{ end }}"
+        id="{{ $globalID }}-panel-{{ $item.id }}"
+        role="tabpanel"
+        aria-labelledby="{{ $globalID }}-tab-{{ $item.id }}"
+        tabindex="0"
+      >
+        {{- $item.content | markdownify -}}
+      </div>
+    {{- end -}}
+  </div>
+</div>
+
+{{- /* Include tab-sync script once per page when sync is enabled. */ -}}
+{{- if $enableSync -}}
+  {{- if not (.Page.Store.Get "hextraTabSyncLoaded") -}}
+    {{- .Page.Store.Set "hextraTabSyncLoaded" true -}}
+<script>
+(function(){
+  function syncTabs(btn){
+    var nav=btn.closest('[data-hextra-tab-group]');
+    if(!nav)return;
+    var grp=nav.dataset.hextraTabGroup,idx=Array.from(nav.querySelectorAll('[data-bs-toggle="tab"]')).indexOf(btn);
+    localStorage.setItem('hextra-tab-'+encodeURIComponent(grp),idx);
+    document.querySelectorAll('[data-hextra-tab-group="'+grp+'"]').forEach(function(n){
+      if(n===nav)return;
+      var t=n.querySelectorAll('[data-bs-toggle="tab"]');
+      if(t[idx])new bootstrap.Tab(t[idx]).show();
+    });
+  }
+  document.querySelectorAll('[data-hextra-tab-group]').forEach(function(nav){
+    var k=encodeURIComponent(nav.dataset.hextraTabGroup),s=localStorage.getItem('hextra-tab-'+k);
+    if(s!==null){var t=nav.querySelectorAll('[data-bs-toggle="tab"]');if(t[+s])new bootstrap.Tab(t[+s]).show();}
+  });
+  document.querySelectorAll('[data-hextra-tab-group] [data-bs-toggle="tab"]').forEach(function(b){
+    b.addEventListener('shown.bs.tab',function(){syncTabs(b);});
+  });
+})();
+</script>
+  {{- end -}}
+{{- end -}}

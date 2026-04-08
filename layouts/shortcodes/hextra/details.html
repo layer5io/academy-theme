@@ -1,0 +1,21 @@
+{{- /*
+  Hextra details/accordion shortcode (Bootstrap 5 port).
+
+  @param {string} title   Summary text (supports Markdown).
+  @param {string} closed  "true" to render collapsed (default: open).
+
+  @example {{< hextra/details title="Click to expand" >}}Hidden content{{< /hextra/details >}}
+*/ -}}
+
+{{- $title := .Get "title" | default "" -}}
+{{- $closed := eq (.Get "closed") "true" | default false -}}
+
+<details class="hextra-details card mb-3 mt-3" {{ if not $closed }}open{{ end }}>
+  <summary class="card-header d-flex align-items-center fw-bold" role="button" style="cursor: pointer; list-style: none;">
+    <svg class="hextra-details-chevron me-2 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16" aria-hidden="true"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>
+    {{ $title | markdownify }}
+  </summary>
+  <div class="card-body">
+    {{ .InnerDeindent | markdownify }}
+  </div>
+</details>

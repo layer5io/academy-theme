@@ -1,0 +1,104 @@
+{{- /*
+  Hextra card shortcode (Bootstrap 5 port).
+
+  @param {string} link       URL the card links to.
+  @param {string} title      Card title.
+  @param {string} icon       Icon name (from data/hextra/icons.yaml).
+  @param {string} subtitle   Card subtitle / description.
+  @param {string} image      Image URL or path.
+  @param {string} alt        Alt text for image (defaults to title).
+  @param {string} method     Image processing method (default "Resize").
+  @param {string} options    Image processing options (default "800x webp q80").
+  @param {string} imageStyle Inline CSS for the image.
+  @param {string} tag        Optional badge tag text.
+  @param {string} tagColor   Badge color name.
+
+  @example {{< hextra/card link="/" title="My Card" subtitle="Description" >}}
+*/ -}}
+
+{{- $link := .Get "link" -}}
+{{- $title := .Get "title" -}}
+{{- $icon := .Get "icon" -}}
+{{- $subtitle := .Get "subtitle" -}}
+{{- $image := .Get "image" -}}
+{{- $alt := .Get "alt" | default $title -}}
+{{- $width := 0 -}}
+{{- $height := 0 -}}
+{{- $imageStyle := .Get "imageStyle" -}}
+{{- $tag := .Get "tag" -}}
+{{- $tagColor := .Get "tagColor" | default (.Get "tagType") | default "" -}}
+
+{{/* Image processing */}}
+{{- $method := .Get "method" | default "Resize" | humanize -}}
+{{- $options := .Get "options" | default "800x webp q80" -}}
+{{- $process := .Get "process" | default (printf "%s %s" $method $options) -}}
+
+{{- if and $image (not (urls.Parse $image).Scheme) -}}
+  {{- with or (.Page.Resources.Get $image) (resources.Get $image) -}}
+    {{- if (not (eq .MediaType.SubType "svg")) -}}
+      {{- $processed := .Process $process -}}
+      {{- $width = $processed.Width -}}
+      {{- $height = $processed.Height -}}
+      {{- $image = $processed.RelPermalink -}}
+    {{- end -}}
+  {{ else }}
+    {{- if hasPrefix $image "/" -}}
+      {{- $image = relURL (strings.TrimPrefix "/" $image) -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $external := strings.HasPrefix $link "http" -}}
+{{- $href := cond (strings.HasPrefix $link "/") ($link | relURL) $link -}}
+
+{{- $cardContent := "" -}}
+{{- $tagHtml := "" -}}
+{{- with $tag -}}
+  {{- $tagHtml = printf `<span class="hextra-card-tag position-absolute top-0 end-0 mt-1 me-1 badge rounded-pill%s">%s</span>` (cond (ne $tagColor "") (printf " text-bg-%s" $tagColor) " text-bg-secondary") . -}}
+{{- end -}}
+
+<div class="col">
+  {{- if $link -}}
+    <a class="hextra-card card h-100 text-decoration-none border shadow-sm position-relative"
+      href="{{ $href }}"
+      {{ with $external }}target="_blank" rel="noopener noreferrer"{{ end -}}
+    >
+  {{- else -}}
+    <div class="hextra-card card h-100 border shadow-sm position-relative">
+  {{- end -}}
+
+    {{ $tagHtml | safeHTML }}
+
+    {{- with $image -}}
+      <img
+        alt="{{ $alt }}"
+        class="card-img-top"
+        loading="lazy"
+        decoding="async"
+        src="{{ $image | safeURL }}"
+        {{ with $width }}width="{{ . }}"{{ end }}
+        {{ with $height }}height="{{ . }}"{{ end }}
+        {{ with $imageStyle }}style="{{ . | safeCSS }}"{{ end }}
+      />
+    {{- end -}}
+
+    <div class="card-body">
+      <h5 class="card-title d-flex align-items-center gap-2 mb-1">
+        {{- with $icon }}
+          <span class="hextra-card-icon">
+            {{- partial "hextra/utils/icon.html" (dict "name" $icon "attributes" `height="1.2em"`) -}}
+          </span>
+        {{- end -}}
+        {{- $title -}}
+      </h5>
+      {{- with $subtitle -}}
+        <p class="card-text text-body-secondary small">{{ . | markdownify }}</p>
+      {{- end -}}
+    </div>
+
+  {{- if $link -}}
+    </a>
+  {{- else -}}
+    </div>
+  {{- end -}}
+</div>
