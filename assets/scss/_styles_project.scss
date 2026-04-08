@@ -73,11 +73,13 @@ body {
     }
   }
 
-  .highlight[filename] {
+  .highlight[filename],
+  .hextra-asciinema-player[filename] {
     margin-top: 2rem;
   }
 
-  .highlight[filename]::before {
+  .highlight[filename]::before,
+  .hextra-asciinema-player[filename]::before {
     content: attr(filename);
     display: block;
     padding: 0.5rem 0.75rem;
@@ -92,7 +94,8 @@ body {
     border-top-right-radius: 0.5rem;
   }
 
-  .highlight[filename] pre {
+  .highlight[filename] pre,
+  .hextra-asciinema-player[filename] pre {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
   }
