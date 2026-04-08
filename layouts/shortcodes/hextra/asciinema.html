@@ -20,6 +20,7 @@
 {{- $loop := .Get "loop" | default false -}}
 {{- $poster := .Get "poster" | default "" -}}
 {{- $markers := .Get "markers" | default "" -}}
+{{- $filename := .Get "filename" | default "" -}}
 
 {{- /* Handle file path: support local files, absolute paths, and remote URLs */ -}}
 {{- $isLocal := not (urls.Parse $castFile).Scheme -}}
@@ -84,7 +85,8 @@
      data-autoplay="{{ $autoplay }}"
      data-loop="{{ $loop }}"
      {{- if ne $poster "" }} data-poster="{{ $poster | safeURL }}"{{- end -}}
-     {{- if $markerConfig }} data-markers='{{ $markerConfig }}'{{- end -}}>
+     {{- if $markerConfig }} data-markers='{{ $markerConfig }}'{{- end -}}
+     {{- if $filename }} filename="{{ $filename }}"{{- end -}}>
 </div>
 
 {{- /* Include asciinema-player assets once per page */ -}}

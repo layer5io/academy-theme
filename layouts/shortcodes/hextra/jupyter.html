@@ -10,6 +10,9 @@
 
 {{- $path := .Get 0 -}}
 {{- $allowUnsafeHTML := eq (.Get "allowUnsafeHTML") "true" -}}
+{{- $filename := .Get "filename" -}}
+{{- $fileAttr := "" -}}
+{{- if $filename -}}{{- $fileAttr = printf " {filename=\"%s\"}" $filename -}}{{- end -}}
 {{- $data := "" -}}
 {{- $page := .Page -}}
 
@@ -44,7 +47,7 @@
       {{- $source := index $cell "source" -}}
       {{- $sourceContent := (cond (reflect.IsSlice $source) (delimit $source "") $source) -}}
 {{- with ($sourceContent | strings.Chomp) -}}
-{{ (printf "\n\n```%s\n%s\n```\n" $language .) | safeHTML -}}
+{{ (printf "\n\n```%s%s\n%s\n```\n" $language $fileAttr .) | safeHTML -}}
 {{- end -}}
 
       <div class="hextra-jupyter-code-cell mb-3">
