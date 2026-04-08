@@ -100,6 +100,27 @@ body {
     border-top-right-radius: 0;
   }
 
+  // Support for plain <code> blocks with filename attribute
+  code[filename] {
+    display: block;
+    margin-top: 2rem;
+  }
+
+  code[filename]::before {
+    content: attr(filename);
+    display: block;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #5f6b7a;
+    background: #eef3fb;
+    border: 1px solid var(--bs-border-color);
+    border-bottom: 0;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+  }
+
   img,
   .md__image img,
   img.md-image-responsive {
