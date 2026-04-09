@@ -6,6 +6,20 @@
 </head>
 
 <body class="td-{{ .Kind }}{{ with .Page.Params.body_class }} {{ . }}{{ end }}">
+    {{ if hugo.IsServer }}
+<div style="
+  background: #fffbea;
+  border-bottom: 2px solid #f0c040;
+  color: #7a5c00;
+  font-family: monospace;
+  font-size: 13px;
+  padding: 8px 16px;
+  text-align: center;
+  z-index: 9999;
+">
+  ⚠️ <strong>Dev Mode:</strong> Quiz is using the <em>local JS evaluator</em>. Results will not be saved or synced with the backend.
+</div>
+{{ end }}
     <div class="td-main">
         <main class="" role="main">
             {{ block "main" . }}{{ end }}
