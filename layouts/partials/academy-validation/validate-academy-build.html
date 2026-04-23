@@ -1,0 +1,39 @@
+{{- $site := .Site -}}
+{{- $validationKey := "academy-theme-build-validation-ran" -}}
+{{- if not ($site.Store.Get $validationKey) -}}
+  {{- $site.Store.Set $validationKey true -}}
+
+  {{- partial "academy-validation/validate-academy-build-paths.html" (dict "site" $site) -}}
+  {{- partial "academy-validation/collect-content-health.html" (dict "site" $site) -}}
+  {{- $report := $site.Store.Get "academy-theme-content-health-report" -}}
+  {{- $validationMode := "warn" -}}
+  {{- with $site.Params.academy.validationMode -}}
+    {{- $validationMode = printf "%v" . | strings.TrimSpace | lower -}}
+  {{- end -}}
+
+  {{- $warnedRegistryNotConfigured := false -}}
+  {{- $warnedRegistryUnavailable := false -}}
+  {{- range $report.items -}}
+    {{- if eq .status "broken" -}}
+      {{- $message := "" -}}
+      {{- if eq .contentID "" -}}
+        {{- $message = printf "Missing Content ID at %s" .sourcePath -}}
+      {{- else -}}
+        {{- $message = printf "Invalid Content ID '%s' at %s" .contentID .sourcePath -}}
+      {{- end -}}
+      {{- if eq $validationMode "error" -}}
+        {{- errorf "%s" $message -}}
+      {{- else if ne $validationMode "off" -}}
+        {{- warnf "%s" $message -}}
+      {{- end -}}
+    {{- else if and (eq .status "unchecked") (ne $validationMode "off") -}}
+      {{- if and (eq .registryStatus "not_configured") (not $warnedRegistryNotConfigured) -}}
+        {{- warnf "Content ID validation is not configured. Add the API endpoint as params.academy.registryURL in hugo.yaml to configure." -}}
+        {{- $warnedRegistryNotConfigured = true -}}
+      {{- else if and (ne .registryStatus "not_configured") (not $warnedRegistryUnavailable) -}}
+        {{- warnf "Registry unavailable at %s" .registryURL -}}
+        {{- $warnedRegistryUnavailable = true -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}

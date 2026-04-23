@@ -1,0 +1,20 @@
+{{- $dir := .dir -}}
+{{- $base := .base -}}
+{{- $label := .label -}}
+{{- with try (os.ReadDir $dir) -}}
+  {{- if not .Err -}}
+    {{- range .Value -}}
+      {{- $path := path.Join $dir .Name -}}
+      {{- if .IsDir -}}
+        {{- partial "academy-validation/validate-academy-build-paths-walk.html" (dict "dir" $path "base" $base "label" $label) -}}
+      {{- else -}}
+        {{- $relative := strings.TrimPrefix (printf "%s/" $base) $path -}}
+        {{- $parts := split $relative "/" -}}
+        {{- $scope := index $parts 0 -}}
+        {{- if and $scope (not (partial "academy-validation/validate-academy-org-id.html" $scope)) -}}
+          {{- warnf "%s found outside the organization directory: %s." $label $path -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
