@@ -1,6 +1,7 @@
 {{- $dir := .dir -}}
 {{- $base := .base -}}
 {{- $label := .label -}}
+{{- $contentStructureURL := "https://github.com/layer5io/academy-theme#academy-theme" -}}
 {{- with try (os.ReadDir $dir) -}}
   {{- if not .Err -}}
     {{- range .Value -}}
@@ -12,7 +13,7 @@
         {{- $parts := split $relative "/" -}}
         {{- $scope := index $parts 0 -}}
         {{- if and $scope (not (partial "academy-validation/validate-academy-org-id.html" $scope)) -}}
-          {{- warnf "%s found outside the organization directory: %s." $label $path -}}
+          {{- warnf "%s found outside the organization directory: %s. For more info checkout the content structure at %s" $label $path $contentStructureURL -}}
         {{- end -}}
       {{- end -}}
     {{- end -}}

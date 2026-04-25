@@ -25,6 +25,50 @@ In addition to this core structure, the following content types are available:
   final-test)
 - **Certification** - Certification programs
 
+### Where Content Should Live
+
+Keep publishable Academy content and any org-specific supporting files inside
+the organization directory. Files outside the org directory are not part of
+the publishable Academy content tree. Validation catches these cases, and the
+files may be skipped during publication or change shared site behavior in
+unexpected ways.
+
+Use this general layout:
+
+```text
+content/
+  learning-paths/
+    <org-id>/
+      _index.md
+      course-1/
+        _index.md
+        module-1/
+          _index.md
+  certifications/
+    <org-id>/
+      _index.md
+  challenges/
+    <org-id>/
+      _index.md
+layouts/
+  shortcodes/
+    <org-id>/
+      *.html
+static/
+  <org-id>/
+    ...
+data/
+  <org-id>/
+    ...
+```
+
+Put org-specific content, shortcodes, static files, and data under the org
+directory. If you place them elsewhere, the Academy may not publish them and
+the build can emit warnings or break shared assumptions for other content.
+
+Shared theme assets, icons, and reusable partials should stay in
+academy-theme itself rather than in a consuming org repository.
+
 ## ID Validation
 
 The theme checks publishable root Academy content during Hugo builds and emits
@@ -64,9 +108,9 @@ have not been checked against the registry.
 
 The registry response is cached once per org and registry URL in Hugo's site
 store during a build. The remote response uses a cache key scoped to the current
-Hugo process, so incremental rebuilds reuse the same response without relying on
-Hugo's default permanent `getresource` cache. Restart Hugo to force a fresh
-registry lookup during local authoring.
+Hugo process, so incremental rebuilds reuse the same response. Rebuild the
+site completely to refresh the cached registry API response for fresh ID
+lookups.
 
 The Instructor Toolkit surfaces the same build-generated report.
 

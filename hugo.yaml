@@ -85,6 +85,7 @@ params:
     taxonomyPageHeader: [tags, categories]
 
   academy:
+    domain: cloud.meshery.io
     registryURL: https://cloud.meshery.io/api/academy/curricula
 
   privacy_policy: https://policies.google.com/privacy

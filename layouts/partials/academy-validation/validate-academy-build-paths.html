@@ -1,6 +1,7 @@
 {{- $site := .site -}}
 {{- $state := newScratch -}}
 {{- $state.Set "hasOrgScopedAcademyContent" false -}}
+{{- $contentStructureURL := "https://github.com/layer5io/academy-theme#academy-theme" -}}
 
 {{- range $site.Pages -}}
   {{- if and .File (not .Draft) -}}
@@ -10,7 +11,7 @@
       {{- if partial "academy-validation/validate-academy-org-id.html" (index $parts 1) -}}
         {{- $state.Set "hasOrgScopedAcademyContent" true -}}
       {{- else -}}
-        {{- warnf "content found outside the organization directory: %s." $filePath -}}
+        {{- warnf "content found outside the organization directory: %s. For more info checkout the content structure at %s" $filePath $contentStructureURL -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}

@@ -2,33 +2,37 @@
 {{- $report := .Page.Site.Store.Get "academy-theme-content-health-report" -}}
 {{- $consoleURL := $report.consoleURL -}}
 {{- $items := $report.items -}}
-{{- $draftItems := where $items "status" "draft" -}}
-{{- $checkedItems := where $items "status" "ne" "draft" -}}
-{{- $problemItems := where $checkedItems "status" "ne" "good" -}}
+{{- $blockingItems := where $items "draft" false -}}
+{{- $problemItems := where $blockingItems "status" "ne" "good" -}}
 {{- $problemCount := len $problemItems -}}
 {{- $invalidItems := where $problemItems "status" "broken" -}}
 {{- $uncheckedItems := where $problemItems "status" "unchecked" -}}
+{{- $draftWarningItems := where $items "status" "draft_warning" -}}
 {{- $missingItems := where $invalidItems "contentID" "" -}}
 {{- $missingCount := len $missingItems -}}
 {{- $uncheckedCount := len $uncheckedItems -}}
 {{- $unregisteredCount := sub (len $invalidItems) $missingCount -}}
-{{- $draftCount := len $draftItems -}}
-{{- $publishable := and (gt (len $checkedItems) 0) (eq $problemCount 0) -}}
+{{- $draftWarningCount := len $draftWarningItems -}}
+{{- $publishable := and (gt (len $items) 0) (eq $problemCount 0) -}}
 
 <section class="academy-toolkit academy-toolkit--{{ $report.summary }}">
   <header class="academy-toolkit__header">
     <h2>ID Validation</h2>
   </header>
 
+  <p class="academy-toolkit__verdict {{ cond $publishable "academy-toolkit__verdict--good" "academy-toolkit__verdict--bad" }}">
+    {{- if $publishable -}}
+      <em>Ready to publish to the Academy.</em>
+    {{- else -}}
+      <em>Not ready to publish to the Academy.</em>
+    {{- end -}}
+  </p>
+
   {{- if eq (len $items) 0 -}}
     <p class="academy-toolkit__empty">No content found.</p>
-  {{- else if and (gt (len $checkedItems) 0) (eq $problemCount 0) -}}
+  {{- else if eq $problemCount 0 -}}
     <p class="academy-toolkit__summary academy-toolkit__summary--good">
-      <strong>All content IDs are registered.</strong>
-    </p>
-  {{- else if eq (len $checkedItems) 0 -}}
-    <p class="academy-toolkit__summary academy-toolkit__summary--good">
-      <strong>Draft pages are not validated until they are published.</strong>
+      <strong>All publishable content IDs are registered.</strong>
     </p>
   {{- else -}}
     <div class="academy-toolkit__summary-row">
@@ -54,8 +58,11 @@
         Fix the invalid IDs in the <a href="{{ $consoleURL }}" target="_blank" rel="noopener">Instructor Console</a> using the <a href="https://docs.layer5.io/cloud/academy/creating-content/instructor-console-guide/#using-the-content-creation-tool" target="_blank" rel="noopener">Content Creation Tool</a>.
       </p>
     {{- end -}}
+  {{- end -}}
 
+  {{- if ne (len $items) 0 -}}
     <p class="academy-toolkit__legend">
+      <span>⚠️ Draft page: Content ID is not registered or missing.</span>
       <span>❌ Content ID is not registered or missing.</span>
       <span>✅ Content ID is registered.</span>
     </p>
@@ -79,13 +86,17 @@
       </thead>
       <tbody>
         {{- range $items -}}
+          {{- $pageURL := .relPermalink -}}
+          {{- if and (eq .status "good") (ne .productionPermalink "") -}}
+            {{- $pageURL = .productionPermalink -}}
+          {{- end -}}
           <tr>
-            <th scope="row"><a href="{{ .relPermalink }}">{{ .title }}</a></th>
-            <td>{{ cond (eq .status "draft") "True" "False" }}</td>
+            <th scope="row"><a href="{{ $pageURL }}">{{ .title }}</a></th>
+            <td>{{ cond .draft "True" "False" }}</td>
             <td>{{ cond (ne .contentID "") .contentID "Missing ID" }}</td>
             <td>
-              {{- if eq .status "draft" -}}
-                N/A
+              {{- if eq .status "draft_warning" -}}
+                ⚠️
               {{- else if eq .status "good" -}}
                 ✅
               {{- else if eq .status "unchecked" -}}
@@ -100,19 +111,11 @@
     </table>
   {{- end -}}
 
-  {{- if and (gt $draftCount 0) (gt (len $checkedItems) 0) -}}
+  {{- if gt $draftWarningCount 0 -}}
     <p class="academy-toolkit__draft-note">
-      Draft pages are not validated until they are published.
+      Draft ID warnings do not block publishing, but fix missing or invalid IDs before publishing those draft pages.
     </p>
   {{- end -}}
-
-  <p class="academy-toolkit__verdict {{ cond $publishable "academy-toolkit__verdict--good" "academy-toolkit__verdict--bad" }}">
-    {{- if $publishable -}}
-      <em>Ready to publish to the Academy.</em>
-    {{- else -}}
-      <em>Not ready to publish to the Academy.</em>
-    {{- end -}}
-  </p>
 </section>
 
 <style>

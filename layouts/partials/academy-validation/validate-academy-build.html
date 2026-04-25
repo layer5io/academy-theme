@@ -14,14 +14,18 @@
   {{- $warnedRegistryNotConfigured := false -}}
   {{- $warnedRegistryUnavailable := false -}}
   {{- range $report.items -}}
-    {{- if eq .status "broken" -}}
+    {{- if or (eq .status "broken") (eq .status "draft_warning") -}}
       {{- $message := "" -}}
       {{- if eq .contentID "" -}}
         {{- $message = printf "Missing Content ID at %s" .sourcePath -}}
       {{- else -}}
-        {{- $message = printf "Invalid Content ID '%s' at %s" .contentID .sourcePath -}}
+        {{- $message = printf "Invalid Content ID '%s' at %s. Rebuild the site completely to refresh the cached registry response." .contentID .sourcePath -}}
       {{- end -}}
-      {{- if eq $validationMode "error" -}}
+      {{- if eq .status "draft_warning" -}}
+        {{- if ne $validationMode "off" -}}
+          {{- warnf "Draft warning: %s" $message -}}
+        {{- end -}}
+      {{- else if eq $validationMode "error" -}}
         {{- errorf "%s" $message -}}
       {{- else if ne $validationMode "off" -}}
         {{- warnf "%s" $message -}}
