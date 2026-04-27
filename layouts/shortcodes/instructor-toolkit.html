@@ -1,0 +1,234 @@
+{{- partial "academy-validation/collect-content-health.html" (dict "site" .Page.Site) -}}
+{{- $report := .Page.Site.Store.Get "academy-theme-content-health-report" -}}
+{{- $consoleURL := $report.consoleURL -}}
+{{- $items := $report.items -}}
+{{- $blockingItems := where $items "draft" false -}}
+{{- $problemItems := where $blockingItems "status" "ne" "good" -}}
+{{- $problemCount := len $problemItems -}}
+{{- $invalidItems := where $problemItems "status" "broken" -}}
+{{- $uncheckedItems := where $problemItems "status" "unchecked" -}}
+{{- $draftWarningItems := where $items "status" "draft_warning" -}}
+{{- $missingItems := where $invalidItems "contentID" "" -}}
+{{- $missingCount := len $missingItems -}}
+{{- $uncheckedCount := len $uncheckedItems -}}
+{{- $unregisteredCount := sub (len $invalidItems) $missingCount -}}
+{{- $draftWarningCount := len $draftWarningItems -}}
+{{- $publishable := and (gt (len $items) 0) (eq $problemCount 0) -}}
+
+<section class="academy-toolkit academy-toolkit--{{ $report.summary }}">
+  <header class="academy-toolkit__header">
+    <h2>ID Validation</h2>
+  </header>
+
+  <p class="academy-toolkit__verdict {{ cond $publishable "academy-toolkit__verdict--good" "academy-toolkit__verdict--bad" }}">
+    {{- if $publishable -}}
+      <em>Ready to publish to the Academy.</em>
+    {{- else -}}
+      <em>Not ready to publish to the Academy.</em>
+    {{- end -}}
+  </p>
+
+  {{- if eq (len $items) 0 -}}
+    <p class="academy-toolkit__empty">No content found.</p>
+  {{- else if eq $problemCount 0 -}}
+    <p class="academy-toolkit__summary academy-toolkit__summary--good">
+      <strong>All publishable content IDs are registered.</strong>
+    </p>
+  {{- else -}}
+    <div class="academy-toolkit__summary-row">
+      <p class="academy-toolkit__summary academy-toolkit__summary--bad">
+        <strong>
+          {{- if gt $unregisteredCount 0 -}}
+            {{ $unregisteredCount }} content {{ cond (eq $unregisteredCount 1) "ID is" "IDs are" }} not registered.
+          {{- end -}}
+          {{- if gt $missingCount 0 -}}
+            {{- if gt $unregisteredCount 0 }} {{ end -}}
+            {{ $missingCount }} missing {{ cond (eq $missingCount 1) "ID" "IDs" }}.
+          {{- end -}}
+          {{- if gt $uncheckedCount 0 -}}
+            {{- if or (gt $unregisteredCount 0) (gt $missingCount 0) }} {{ end -}}
+            {{ $uncheckedCount }} content {{ cond (eq $uncheckedCount 1) "ID was" "IDs were" }} not checked.
+          {{- end -}}
+        </strong>
+      </p>
+    </div>
+
+    {{- if ne $consoleURL "" -}}
+      <p class="academy-toolkit__action">
+        Fix the invalid IDs in the <a href="{{ $consoleURL }}" target="_blank" rel="noopener">Instructor Console</a> using the <a href="https://docs.layer5.io/cloud/academy/creating-content/instructor-console-guide/#using-the-content-creation-tool" target="_blank" rel="noopener">Content Creation Tool</a>.
+      </p>
+    {{- end -}}
+  {{- end -}}
+
+  {{- if ne (len $items) 0 -}}
+    <p class="academy-toolkit__legend">
+      <span>⚠️ Draft page: Content ID is not registered or missing.</span>
+      <span>❌ Content ID is not registered or missing.</span>
+      <span>✅ Content ID is registered.</span>
+    </p>
+  {{- end -}}
+
+  {{- if ne (len $items) 0 -}}
+    <table class="academy-toolkit__table">
+      <colgroup>
+        <col class="academy-toolkit__col-page">
+        <col class="academy-toolkit__col-draft">
+        <col class="academy-toolkit__col-id">
+        <col class="academy-toolkit__col-status">
+      </colgroup>
+      <thead>
+        <tr>
+          <th scope="col">Page</th>
+          <th scope="col">Draft</th>
+          <th scope="col">Content ID</th>
+          <th scope="col">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {{- range $items -}}
+          {{- $pageURL := .relPermalink -}}
+          {{- if and (eq .status "good") (ne .productionPermalink "") -}}
+            {{- $pageURL = .productionPermalink -}}
+          {{- end -}}
+          <tr>
+            <th scope="row"><a href="{{ $pageURL }}">{{ .title }}</a></th>
+            <td>{{ cond .draft "True" "False" }}</td>
+            <td>{{ cond (ne .contentID "") .contentID "Missing ID" }}</td>
+            <td>
+              {{- if eq .status "draft_warning" -}}
+                ⚠️
+              {{- else if eq .status "good" -}}
+                ✅
+              {{- else if eq .status "unchecked" -}}
+                Not checked
+              {{- else -}}
+                ❌
+              {{- end -}}
+            </td>
+          </tr>
+        {{- end -}}
+      </tbody>
+    </table>
+  {{- end -}}
+
+  {{- if gt $draftWarningCount 0 -}}
+    <p class="academy-toolkit__draft-note">
+      Draft ID warnings do not block publishing, but fix missing or invalid IDs before publishing those draft pages.
+    </p>
+  {{- end -}}
+</section>
+
+<style>
+  .academy-toolkit {
+    max-width: 960px;
+    margin-top: 1.5rem;
+    color: #182126;
+  }
+
+  .academy-toolkit__header {
+    margin-bottom: 0.75rem;
+  }
+
+  .academy-toolkit h2 {
+    margin: 0;
+    font-size: 1.45rem;
+  }
+
+  .academy-toolkit__empty {
+    margin: 0;
+    color: #52616b;
+  }
+
+  .academy-toolkit__summary-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    align-items: center;
+    margin-bottom: 0.75rem;
+  }
+
+  .academy-toolkit__summary {
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+  }
+
+  .academy-toolkit__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.25rem;
+    margin: 0 0 0.75rem;
+    color: #52616b;
+    font-size: 0.95rem;
+  }
+
+  .academy-toolkit__legend span {
+    white-space: nowrap;
+  }
+
+  .academy-toolkit__draft-note {
+    margin: 0 0 0.75rem;
+    color: #52616b;
+    font-style: italic;
+  }
+
+  .academy-toolkit__action {
+    margin: 0 0 0.75rem;
+    color: #52616b;
+  }
+
+  .academy-toolkit__verdict {
+    margin: 0.9rem 0 0;
+    font-weight: 700;
+  }
+
+  .academy-toolkit__table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .academy-toolkit__table th:nth-child(3),
+  .academy-toolkit__table td:nth-child(3) {
+    padding-right: 4rem !important; /* Forces a minimum gap of 4rem */
+  }
+
+  .academy-toolkit__col-draft {
+    width: 10%;
+  }
+
+  .academy-toolkit__table th,
+  .academy-toolkit__table td {
+    padding: 0.55rem 0.75rem;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .academy-toolkit__table thead th {
+    color: #52616b;
+    font-size: 0.85rem;
+    font-weight: 700;
+  }
+
+  .academy-toolkit__table tbody th {
+    font-weight: 500;
+  }
+
+  .academy-toolkit__table tbody th a {
+    color: inherit;
+    font-weight: inherit;
+    text-decoration: none;
+  }
+
+  .academy-toolkit__table tbody th a:hover,
+  .academy-toolkit__table tbody th a:focus {
+    text-decoration: underline;
+  }
+
+  .academy-toolkit__table tbody td {
+    color: #52616b;
+  }
+
+  .academy-toolkit__table tbody td:last-child {
+    white-space: nowrap;
+  }
+</style>

@@ -1,0 +1,53 @@
+{{- $site := .site -}}
+{{- $orgID := .orgID -}}
+{{- $registryURL := .registryURL | default "" | printf "%v" | strings.TrimSpace -}}
+{{- $cacheKey := printf "academy-theme-registry-ids-%s-%s" $orgID (md5 $registryURL) -}}
+{{- if not ($site.Store.Get $cacheKey) -}}
+
+{{- if eq $registryURL "" -}}
+  {{- $result := dict "status" "not_configured" "ids" (slice) "message" "Content ID validation is not configured." -}}
+  {{- $site.Store.Set $cacheKey $result -}}
+{{- else -}}
+  {{- $separator := cond (in $registryURL "?") "&" "?" -}}
+  {{- $url := printf "%s%sorgId=%s" $registryURL $separator $orgID -}}
+  {{- $registeredIDs := slice -}}
+  {{- $result := dict "status" "ok" "ids" $registeredIDs "message" "" "url" $url -}}
+  {{- $remoteCacheEpochKey := "academy-theme-registry-cache-epoch" -}}
+  {{- if not ($site.Store.Get $remoteCacheEpochKey) -}}
+    {{- $site.Store.Set $remoteCacheEpochKey (now.Format "20060102150405") -}}
+  {{- end -}}
+  {{- $remoteCacheKey := printf "academy-theme-registry-ids/%s/%s/%s" (md5 $registryURL) $orgID ($site.Store.Get $remoteCacheEpochKey) -}}
+  {{- $remote := try (resources.GetRemote $url (dict "headers" (dict "Accept" "application/json") "key" $remoteCacheKey "timeout" "10s")) -}}
+
+  {{- if $remote.Err -}}
+    {{- $result = dict "status" "unavailable" "ids" (slice) "message" (printf "Unable to load the Academy registry for org '%s'." $orgID) "url" $url -}}
+  {{- else -}}
+    {{- $payloadResult := try ($remote.Value.Content | transform.Unmarshal) -}}
+    {{- if $payloadResult.Err -}}
+      {{- $result = dict "status" "unavailable" "ids" (slice) "message" (printf "The Academy registry response for org '%s' could not be parsed as JSON." $orgID) "url" $url -}}
+    {{- else -}}
+      {{- $payload := $payloadResult.Value -}}
+      {{- $records := slice -}}
+      {{- if reflect.IsSlice $payload -}}
+        {{- $records = $payload -}}
+      {{- else -}}
+        {{- with index $payload "data" -}}
+          {{- $records = . -}}
+        {{- end -}}
+      {{- end -}}
+      {{- range $records -}}
+        {{- with index . "id" -}}
+          {{- $id := printf "%v" . | strings.TrimSpace -}}
+          {{- if ne $id "" -}}
+            {{- $registeredIDs = $registeredIDs | append $id -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+      {{- $result = dict "status" "ok" "ids" $registeredIDs "message" "" "url" $url -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- $site.Store.Set $cacheKey $result -}}
+{{- end -}}
+
+{{- end -}}
