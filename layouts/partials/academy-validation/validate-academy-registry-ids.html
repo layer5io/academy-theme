@@ -9,7 +9,7 @@
   {{- $site.Store.Set $cacheKey $result -}}
 {{- else -}}
   {{- $separator := cond (in $registryURL "?") "&" "?" -}}
-  {{- $url := printf "%s%sorgId=%s" $registryURL $separator $orgID -}}
+  {{- $url := printf "%s%sorgId=%s&status=ready,not_ready" $registryURL $separator $orgID -}}
   {{- $registeredIDs := slice -}}
   {{- $result := dict "status" "ok" "ids" $registeredIDs "message" "" "url" $url -}}
   {{- $remoteCacheEpochKey := "academy-theme-registry-cache-epoch" -}}
