@@ -17,7 +17,7 @@
     {{- $site.Store.Set $remoteCacheEpochKey (now.Format "20060102150405") -}}
   {{- end -}}
   {{- $remoteCacheKey := printf "academy-theme-registry-ids/%s/%s/%s" (md5 $registryURL) $orgID ($site.Store.Get $remoteCacheEpochKey) -}}
-  {{- $remote := try (resources.GetRemote $url (dict "headers" (dict "Accept" "application/json") "key" $remoteCacheKey "timeout" "10s")) -}}
+  {{- $remote := try (resources.GetRemote $url (dict "headers" (dict "Accept" "application/json") "key" $remoteCacheKey "timeout" "20s")) -}}
 
   {{- if $remote.Err -}}
     {{- $result = dict "status" "unavailable" "ids" (slice) "message" (printf "Unable to load the Academy registry for org '%s'." $orgID) "url" $url -}}

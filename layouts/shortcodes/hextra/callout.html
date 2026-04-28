@@ -36,7 +36,7 @@
       </span>
     {{- else -}}
       {{- with $icon -}}
-        {{- partial "hextra/utils/icon.html" (dict "name" . "attributes" `height="1.2em" class="d-inline-block align-middle"`) -}}
+        {{- partial "hextra/utils/icon.html" (dict "name" . "attributes" `height="1.2em" class="d-inline-block align-middle"` "page" $.Page) -}}
       {{- end -}}
     {{- end -}}
   </div>
