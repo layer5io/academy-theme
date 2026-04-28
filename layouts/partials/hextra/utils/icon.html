@@ -1,8 +1,31 @@
-{{/* Render raw SVG icon from site.Data.hextra.icons */}}
-{{- $icon := index site.Data.hextra.icons .name -}}
+{{/* Render raw SVG icon from org-scoped data first, then shared theme data. */}}
+{{- $icon := "" -}}
+{{- with .page -}}
+  {{- with .File -}}
+    {{- $segments := split .Path "/" -}}
+    {{- if ge (len $segments) 2 -}}
+      {{- $orgID := index $segments 1 -}}
+      {{- with index hugo.Data $orgID -}}
+        {{- with index . "hextra" -}}
+          {{- with index . "icons" -}}
+            {{- $icon = index . $.name -}}
+          {{- end -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 
 {{- if not $icon -}}
-  {{ errorf "hextra icon %q not found in data/hextra/icons.yaml" .name }}
+  {{- with index hugo.Data "hextra" -}}
+    {{- with index . "icons" -}}
+      {{- $icon = index . $.name -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if not $icon -}}
+  {{ errorf "hextra icon %q not found in data/<orgID>/hextra/icons.yaml or data/hextra/icons.yaml" .name }}
 {{- end -}}
 
 {{- $icon = $icon | safeHTML -}}
