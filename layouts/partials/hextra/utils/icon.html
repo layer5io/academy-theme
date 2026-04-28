@@ -1,34 +1,27 @@
 {{/* Render raw SVG icon from org-scoped data first, then shared theme data. */}}
 {{- $icon := "" -}}
+{{- $orgID := "" -}}
 {{- with .page -}}
   {{- with .File -}}
-    {{- $segments := split .Path "/" -}}
+    {{- $segments := split (strings.Trim .Dir "/") "/" -}}
     {{- if ge (len $segments) 2 -}}
-      {{- $orgID := index $segments 1 -}}
-      {{- with index hugo.Data $orgID -}}
-        {{- with index . "hextra" -}}
-          {{- with index . "icons" -}}
-            {{- $icon = index . $.name -}}
-          {{- end -}}
-        {{- end -}}
+      {{- $orgID = index $segments 1 -}}
+      {{- with index hugo.Data $orgID "hextra" "icons" -}}
+        {{- $icon = index . $.name -}}
       {{- end -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 
 {{- if not $icon -}}
-  {{- with index hugo.Data "hextra" -}}
-    {{- with index . "icons" -}}
-      {{- $icon = index . $.name -}}
-    {{- end -}}
+  {{- with index hugo.Data "hextra" "icons" -}}
+    {{- $icon = index . $.name -}}
   {{- end -}}
 {{- end -}}
 
 {{- if not $icon -}}
-  {{ errorf "hextra icon %q not found in data/<orgID>/hextra/icons.yaml or data/hextra/icons.yaml" .name }}
+  {{ errorf "hextra icon %q not found in data/%s/hextra/icons.yaml or data/hextra/icons.yaml" .name (or $orgID "<orgID>") }}
 {{- end -}}
-
-{{- $icon = $icon | safeHTML -}}
 
 {{- if .attributes -}}
   {{- $icon = replaceRE "<svg" (printf "<svg %s" .attributes) $icon -}}
