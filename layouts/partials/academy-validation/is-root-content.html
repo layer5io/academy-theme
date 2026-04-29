@@ -1,0 +1,11 @@
+{{- $page := . -}}
+{{- $isRootContent := false -}}
+{{- if $page.File -}}
+  {{- $parts := split $page.File.Path "/" -}}
+  {{- if and (eq (len $parts) 4) (eq (index $parts 0) "learning-paths") (eq (index $parts 3) "_index.md") -}}
+    {{- $isRootContent = true -}}
+  {{- else if and (eq (len $parts) 4) (in (slice "certifications" "challenges") (index $parts 0)) (in (slice "_index.md" "index.md") (index $parts 3)) -}}
+    {{- $isRootContent = true -}}
+  {{- end -}}
+{{- end -}}
+{{- if $isRootContent -}}true{{- end -}}

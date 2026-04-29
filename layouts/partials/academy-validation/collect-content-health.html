@@ -1,0 +1,167 @@
+{{- $site := .site -}}
+{{- $cacheKey := "academy-theme-content-health-report" -}}
+{{- if not ($site.Store.Get $cacheKey) -}}
+
+{{- $registryURL := "" -}}
+{{- with $site.Params.academy.registryURL -}}
+  {{- $registryURL = printf "%v" . | strings.TrimSpace -}}
+{{- end -}}
+
+{{- $consoleURL := "" -}}
+{{- with $site.Params.academy.consoleURL -}}
+  {{- $consoleURL = printf "%v" . | strings.TrimSpace -}}
+{{- end -}}
+{{- if eq $consoleURL "" -}}
+  {{- $consoleURL = "/academy/instructors-console" -}}
+{{- end -}}
+{{- $academyBaseURL := "" -}}
+{{- with $site.Params.academy.domain -}}
+  {{- $academyBaseURL = printf "%v" . | strings.TrimSpace -}}
+{{- else -}}
+  {{- with $site.Params.academy.baseURL -}}
+    {{- $academyBaseURL = printf "%v" . | strings.TrimSpace -}}
+  {{- else -}}
+    {{- with $site.Params.academy.consoleURL -}}
+      {{- $academyBaseURL = printf "%v" . | strings.TrimSpace -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+{{- if and (ne $academyBaseURL "") (not (hasPrefix $academyBaseURL "http://")) (not (hasPrefix $academyBaseURL "https://")) -}}
+  {{- $academyBaseURL = printf "https://%s" $academyBaseURL -}}
+{{- end -}}
+{{- $academyBaseURL = replaceRE `/academy/.*$` "" $academyBaseURL -}}
+{{- $academyBaseURL = strings.TrimSuffix "/" $academyBaseURL -}}
+{{- if and (ne $academyBaseURL "") (ne $consoleURL "") (not (hasPrefix $consoleURL "http://")) (not (hasPrefix $consoleURL "https://")) -}}
+  {{- $consoleURL = printf "%s/academy/instructors-console" $academyBaseURL -}}
+{{- end -}}
+
+{{- $validationMode := "warn" -}}
+{{- with $site.Params.academy.validationMode -}}
+  {{- $validationMode = printf "%v" . | strings.TrimSpace | lower -}}
+{{- end -}}
+{{- $registryValidationEnabled := ne $validationMode "off" -}}
+
+{{- $items := slice -}}
+{{- $good := 0 -}}
+{{- $broken := 0 -}}
+{{- $draft := 0 -}}
+{{- $draftWarning := 0 -}}
+{{- $unchecked := 0 -}}
+
+{{- range $site.Pages -}}
+  {{- if and .File (partial "academy-validation/is-root-content.html" .) -}}
+    {{- $filePath := .File.Path -}}
+    {{- $parts := split $filePath "/" -}}
+    {{- $orgID := cond (ge (len $parts) 2) (index $parts 1) "" -}}
+    {{- $contentID := "" -}}
+    {{- with .Params.id -}}
+      {{- $contentID = printf "%v" . | strings.TrimSpace -}}
+    {{- end -}}
+
+    {{- $title := .Title -}}
+    {{- if not $title -}}
+      {{- $title = replaceRE `[_-]+` " " (replaceRE `\.[^.]+$` "" (path.Base $filePath)) | title -}}
+    {{- end -}}
+
+    {{- $contentType := replace (index $parts 0) "-" " " | title -}}
+    {{- $status := "good" -}}
+    {{- $issue := "" -}}
+    {{- $fix := "" -}}
+    {{- $registryStatus := "" -}}
+    {{- $isDraft := or .Draft (eq (printf "%v" .Params.draft | lower) "true") -}}
+    {{- if not $isDraft -}}
+      {{- $sourcePath := printf "content/%s" $filePath -}}
+      {{- $source := try (os.ReadFile $sourcePath) -}}
+      {{- if not $source.Err -}}
+        {{- $frontMatter := index (findRE `(?s)^---\s.*?\s---` $source.Value 1) 0 | default "" -}}
+        {{- if gt (len (findRE `(?m)^draft:\s*true\s*$` $frontMatter 1)) 0 -}}
+          {{- $isDraft = true -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- if $isDraft -}}
+      {{- $draft = add $draft 1 -}}
+    {{- end -}}
+
+    {{- if not (partial "academy-validation/validate-academy-org-id.html" $orgID) -}}
+      {{- $status = "broken" -}}
+      {{- $issue = "Content is outside a valid organization directory." -}}
+      {{- $fix = "Move this root content under content/<type>/<org-id>/<slug>/." -}}
+    {{- else if eq $contentID "" -}}
+      {{- $status = "broken" -}}
+      {{- $issue = "Missing Content ID." -}}
+      {{- $fix = "Create or register this content in the Instructor Console, then add the returned ID to front matter." -}}
+    {{- else if not $registryValidationEnabled -}}
+      {{- $status = "unchecked" -}}
+      {{- $issue = "Content health validation is turned off." -}}
+      {{- $fix = "Enable Academy content health validation before publishing." -}}
+    {{- else -}}
+      {{- $registryCacheKey := printf "academy-theme-registry-ids-%s-%s" $orgID (md5 $registryURL) -}}
+      {{- partial "academy-validation/validate-academy-registry-ids.html" (dict "site" $site "orgID" $orgID "registryURL" $registryURL) -}}
+      {{- $registry := $site.Store.Get $registryCacheKey -}}
+      {{- $registryStatus = $registry.status -}}
+      {{- if ne $registry.status "ok" -}}
+        {{- $status = "unchecked" -}}
+        {{- $issue = $registry.message -}}
+        {{- $fix = "Configure params.academy.registryURL to check this ID against the Academy registry." -}}
+      {{- else if not (in $registry.ids $contentID) -}}
+        {{- $status = "broken" -}}
+        {{- $issue = printf "Content ID '%s' does not exist in the Academy registry for org '%s'." $contentID $orgID -}}
+        {{- $fix = "Use the registered ID from the Instructor Console, or create/register this content before publishing." -}}
+      {{- end -}}
+    {{- end -}}
+
+    {{- if and $isDraft (ne $status "good") -}}
+      {{- $status = "draft_warning" -}}
+      {{- if eq $issue "" -}}
+        {{- $issue = "Draft content could not be fully validated." -}}
+      {{- end -}}
+      {{- $fix = "This draft will not block publishing, but fix the ID before removing draft mode." -}}
+    {{- end -}}
+
+    {{- if eq $status "good" -}}
+      {{- $good = add $good 1 -}}
+    {{- else if eq $status "broken" -}}
+      {{- $broken = add $broken 1 -}}
+    {{- else if eq $status "unchecked" -}}
+      {{- $unchecked = add $unchecked 1 -}}
+    {{- else if eq $status "draft_warning" -}}
+      {{- $draftWarning = add $draftWarning 1 -}}
+    {{- end -}}
+
+    {{- $items = $items | append (dict
+      "title" $title
+      "contentType" $contentType
+      "sourcePath" $filePath
+      "relPermalink" .RelPermalink
+      "productionPermalink" (cond (ne $academyBaseURL "") (printf "%s/academy%s" $academyBaseURL .RelPermalink) "")
+      "orgID" $orgID
+      "contentID" $contentID
+      "status" $status
+      "issue" $issue
+      "fix" $fix
+      "draft" $isDraft
+      "registryStatus" $registryStatus
+      "registryURL" $registryURL
+    ) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $summary := "ready" -}}
+{{- if gt $broken 0 -}}
+  {{- $summary = "broken" -}}
+{{- else if gt $unchecked 0 -}}
+  {{- $summary = "unchecked" -}}
+{{- end -}}
+
+{{- $report := dict
+  "items" $items
+  "counts" (dict "good" $good "broken" $broken "draft" $draft "draftWarning" $draftWarning "unchecked" $unchecked "total" (len $items))
+  "summary" $summary
+  "registryURLConfigured" (ne $registryURL "")
+  "consoleURL" $consoleURL
+  "academyBaseURL" $academyBaseURL
+-}}
+{{- $site.Store.Set $cacheKey $report -}}
+{{- end -}}

@@ -86,7 +86,7 @@
       <h5 class="card-title d-flex align-items-center gap-2 mb-1">
         {{- with $icon }}
           <span class="hextra-card-icon">
-            {{- partial "hextra/utils/icon.html" (dict "name" $icon "attributes" `height="1.2em"`) -}}
+            {{- partial "hextra/utils/icon.html" (dict "name" $icon "attributes" `height="1.2em"` "page" $.Page) -}}
           </span>
         {{- end -}}
         {{- $title -}}

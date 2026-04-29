@@ -1,0 +1,24 @@
+{{- $site := .site -}}
+{{- $state := newScratch -}}
+{{- $state.Set "hasOrgScopedAcademyContent" false -}}
+{{- $contentStructureURL := "https://github.com/layer5io/academy-theme#academy-theme" -}}
+
+{{- range $site.Pages -}}
+  {{- if and .File (not .Draft) -}}
+    {{- $filePath := .File.Path -}}
+    {{- $parts := split $filePath "/" -}}
+    {{- if and (ge (len $parts) 3) (in (slice "learning-paths" "certifications" "challenges" "courses" "lessons" "pages" "curricula") (index $parts 0)) -}}
+      {{- if partial "academy-validation/validate-academy-org-id.html" (index $parts 1) -}}
+        {{- $state.Set "hasOrgScopedAcademyContent" true -}}
+      {{- else -}}
+        {{- warnf "content found outside the organization directory: %s. For more info checkout the content structure at %s" $filePath $contentStructureURL -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- if $state.Get "hasOrgScopedAcademyContent" -}}
+  {{- partial "academy-validation/validate-academy-build-paths-walk.html" (dict "dir" "layouts/shortcodes" "base" "layouts/shortcodes" "label" "shortcodes") -}}
+  {{- partial "academy-validation/validate-academy-build-paths-walk.html" (dict "dir" "static" "base" "static" "label" "static files") -}}
+  {{- partial "academy-validation/validate-academy-build-paths-walk.html" (dict "dir" "data" "base" "data" "label" "data files") -}}
+{{- end -}}
