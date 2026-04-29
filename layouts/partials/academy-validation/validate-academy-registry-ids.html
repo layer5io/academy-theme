@@ -11,7 +11,8 @@
   {{- $separator := cond (in $registryURL "?") "&" "?" -}}
   {{- $url := printf "%s%sorgId=%s&status=ready,not_ready" $registryURL $separator $orgID -}}
   {{- $registeredIDs := slice -}}
-  {{- $result := dict "status" "ok" "ids" $registeredIDs "message" "" "url" $url -}}
+  {{- $contentStatuses := dict -}}
+  {{- $result := dict "status" "ok" "ids" $registeredIDs "contentStatuses" $contentStatuses "message" "" "url" $url -}}
   {{- $remoteCacheEpochKey := "academy-theme-registry-cache-epoch" -}}
   {{- if not ($site.Store.Get $remoteCacheEpochKey) -}}
     {{- $site.Store.Set $remoteCacheEpochKey (now.Format "20060102150405") -}}
@@ -36,14 +37,20 @@
         {{- end -}}
       {{- end -}}
       {{- range $records -}}
-        {{- with index . "id" -}}
+        {{- $record := . -}}
+        {{- with index $record "id" -}}
           {{- $id := printf "%v" . | strings.TrimSpace -}}
           {{- if ne $id "" -}}
             {{- $registeredIDs = $registeredIDs | append $id -}}
+            {{- $contentStatus := "" -}}
+            {{- with index $record "status" -}}
+              {{- $contentStatus = printf "%v" . | strings.TrimSpace | lower -}}
+            {{- end -}}
+            {{- $contentStatuses = merge $contentStatuses (dict $id $contentStatus) -}}
           {{- end -}}
         {{- end -}}
       {{- end -}}
-      {{- $result = dict "status" "ok" "ids" $registeredIDs "message" "" "url" $url -}}
+      {{- $result = dict "status" "ok" "ids" $registeredIDs "contentStatuses" $contentStatuses "message" "" "url" $url -}}
     {{- end -}}
   {{- end -}}
 

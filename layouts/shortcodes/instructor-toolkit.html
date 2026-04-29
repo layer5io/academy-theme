@@ -16,15 +16,12 @@
 {{- $publishable := and (gt (len $items) 0) (eq $problemCount 0) -}}
 
 <section class="academy-toolkit academy-toolkit--{{ $report.summary }}">
-  <header class="academy-toolkit__header">
-    <h2>ID Validation</h2>
-  </header>
 
   <p class="academy-toolkit__verdict {{ cond $publishable "academy-toolkit__verdict--good" "academy-toolkit__verdict--bad" }}">
     {{- if $publishable -}}
-      <em>Ready to publish to the Academy.</em>
+      Ready to publish
     {{- else -}}
-      <em>Not ready to publish to the Academy.</em>
+      Not ready to publish
     {{- end -}}
   </p>
 
@@ -52,18 +49,12 @@
         </strong>
       </p>
     </div>
-
-    {{- if ne $consoleURL "" -}}
-      <p class="academy-toolkit__action">
-        Fix the invalid IDs in the <a href="{{ $consoleURL }}" target="_blank" rel="noopener">Instructor Console</a> using the <a href="https://docs.layer5.io/cloud/academy/creating-content/instructor-console-guide/#using-the-content-creation-tool" target="_blank" rel="noopener">Content Creation Tool</a>.
-      </p>
-    {{- end -}}
   {{- end -}}
 
   {{- if ne (len $items) 0 -}}
     <p class="academy-toolkit__legend">
-      <span>⚠️ Draft page: Content ID is not registered or missing.</span>
-      <span>❌ Content ID is not registered or missing.</span>
+      <span>{{- if ne $consoleURL "" -}}<a href="{{ $consoleURL }}" target="_blank" rel="noopener" aria-label="Open Instructor Console">⚠️</a>{{- else -}}⚠️{{- end -}} Draft page: Content ID is not registered or missing.</span>
+      <span>{{- if ne $consoleURL "" -}}<a href="{{ $consoleURL }}" target="_blank" rel="noopener" aria-label="Open Instructor Console">❌</a>{{- else -}}❌{{- end -}} Content ID is not registered or missing.</span>
       <span>✅ Content ID is registered.</span>
     </p>
   {{- end -}}
@@ -87,22 +78,36 @@
       <tbody>
         {{- range $items -}}
           {{- $pageURL := .relPermalink -}}
-          {{- if and (eq .status "good") (ne .productionPermalink "") -}}
+          {{- if and (eq .status "good") (eq .cloudStatus "ready") (ne .productionPermalink "") -}}
             {{- $pageURL = .productionPermalink -}}
           {{- end -}}
           <tr>
             <th scope="row"><a href="{{ $pageURL }}">{{ .title }}</a></th>
             <td>{{ cond .draft "True" "False" }}</td>
-            <td>{{ cond (ne .contentID "") .contentID "Missing ID" }}</td>
+            <td>
+              {{- if eq .status "good" -}}
+                {{ cond (ne .contentID "") .contentID "Missing ID" }}
+              {{- else if and (ne $consoleURL "") (or (eq .status "draft_warning") (eq .status "broken") (eq .status "unchecked")) -}}
+                <a href="{{ $consoleURL }}" target="_blank" rel="noopener" aria-label="Open Instructor Console">
+                  {{- if eq .contentID "" -}}
+                    Missing ID
+                  {{- else -}}
+                    {{ .contentID }}
+                  {{- end -}}
+                </a>
+              {{- else -}}
+                {{ cond (ne .contentID "") .contentID "Missing ID" }}
+              {{- end -}}
+            </td>
             <td>
               {{- if eq .status "draft_warning" -}}
-                ⚠️
+                {{- if ne $consoleURL "" -}}<a href="{{ $consoleURL }}" target="_blank" rel="noopener" aria-label="Open Instructor Console">⚠️</a>{{- else -}}⚠️{{- end -}}
               {{- else if eq .status "good" -}}
                 ✅
               {{- else if eq .status "unchecked" -}}
                 Not checked
               {{- else -}}
-                ❌
+                {{- if ne $consoleURL "" -}}<a href="{{ $consoleURL }}" target="_blank" rel="noopener" aria-label="Open Instructor Console">❌</a>{{- else -}}❌{{- end -}}
               {{- end -}}
             </td>
           </tr>
@@ -111,10 +116,16 @@
     </table>
   {{- end -}}
 
-  {{- if gt $draftWarningCount 0 -}}
-    <p class="academy-toolkit__draft-note">
-      Draft ID warnings do not block publishing, but fix missing or invalid IDs before publishing those draft pages.
+  {{- if and (gt $problemCount 0) (ne $consoleURL "") -}}
+    <p class="academy-toolkit__action">
+      Fix invalid IDs in the <a href="{{ $consoleURL }}" target="_blank" rel="noopener">Instructor Console</a> using the <a href="https://docs.layer5.io/cloud/academy/creating-content/instructor-console-guide/#using-the-content-creation-tool" target="_blank" rel="noopener">Content Creation tool</a>.
     </p>
+  {{- end -}}
+
+  {{- if gt $draftWarningCount 0 -}}
+    <blockquote class="academy-toolkit__draft-note">
+      <p>Note: Draft ID warnings do not block publishing, but fix missing or invalid IDs before publishing draft pages.</p>
+    </blockquote>
   {{- end -}}
 </section>
 
@@ -151,6 +162,7 @@
     display: inline-flex;
     align-items: center;
     margin: 0;
+    font-size: 1.15rem;
   }
 
   .academy-toolkit__legend {
@@ -166,20 +178,32 @@
     white-space: nowrap;
   }
 
-  .academy-toolkit__draft-note {
-    margin: 0 0 0.75rem;
-    color: #52616b;
-    font-style: italic;
+  .academy-toolkit__action {
+    margin: 0.85rem 0 0.75rem;
+    color: #182126;
+    font-size: 1rem;
   }
 
-  .academy-toolkit__action {
-    margin: 0 0 0.75rem;
-    color: #52616b;
+  .academy-toolkit__action a {
+    color: inherit;
   }
 
   .academy-toolkit__verdict {
-    margin: 0.9rem 0 0;
-    font-weight: 700;
+    margin: 0.9rem 0 0.25rem;
+    color: #182126;
+    font-size: 1.55rem;
+    font-weight: 800;
+    line-height: 1.2;
+  }
+
+  .academy-toolkit a {
+    color: #00b39f;
+    text-decoration: none;
+  }
+
+  .academy-toolkit a:hover,
+  .academy-toolkit a:focus {
+    color: rgba(0, 179, 159, 0.7);
   }
 
   .academy-toolkit__table {
@@ -214,18 +238,11 @@
   }
 
   .academy-toolkit__table tbody th a {
-    color: inherit;
     font-weight: inherit;
+  }
+
+  .academy-toolkit__table tbody td a {
     text-decoration: none;
-  }
-
-  .academy-toolkit__table tbody th a:hover,
-  .academy-toolkit__table tbody th a:focus {
-    text-decoration: underline;
-  }
-
-  .academy-toolkit__table tbody td {
-    color: #52616b;
   }
 
   .academy-toolkit__table tbody td:last-child {
