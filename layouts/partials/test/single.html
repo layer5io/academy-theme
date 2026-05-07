@@ -1,43 +1,62 @@
 {{- $p := .Params -}}
-{{- $prerequisites := partial "test/collect-prerequisites.html" . -}}
+{{- $rawPrerequisites := partial "test/collect-prerequisites.html" . -}}
 {{- $ctx := partial "resolve-tenant.html" . -}}
 {{- $orgId := $ctx.uuid -}}
-{{- $id := partial "id.html" . -}}
-
-{{- $totalQuestionsPerSet := $p.number_of_questions | default (len $p.questions) -}}
+{{- $rawQuestions := $p.questions | default (slice) -}}
+{{- $totalQuestionsPerSet := int (or $p.numberOfQuestions $p.number_of_questions (len $rawQuestions)) -}}
 
 <!-- Validate: TotalQuestions should be multiple of totalQuestionsPerSet -->
-{{- if ne (mod (len $p.questions) $totalQuestionsPerSet) 0 -}}
-  {{- errorf "Total questions (%d) is not a multiple of total_questions_per_set (%d) [ %s ]" (len $p.questions) $totalQuestionsPerSet .File.Path -}}
+{{- if ne (mod (len $rawQuestions) $totalQuestionsPerSet) 0 -}}
+  {{- errorf "Total questions (%d) is not a multiple of total_questions_per_set (%d) [ %s ]" (len $rawQuestions) $totalQuestionsPerSet .File.Path -}}
 {{- end -}}
 
 <!-- Validate all question ids are unique -->
 {{- $questionIds := (slice ) -}}
-{{- range $p.questions -}}
-  {{- if in $questionIds .id -}}
-    {{- errorf "Duplicate question id found: %s" .id -}}
+{{- $questions := slice -}}
+{{- range $index, $question := $rawQuestions -}}
+  {{- $questionKey := trim (printf "%v" (or $question.id (printf "question-%d" (add $index 1)))) " \n\r\t" -}}
+  {{- if in $questionIds $questionKey -}}
+    {{- errorf "Duplicate question id found: %s [ %s ]" $questionKey $.File.Path -}}
   {{- end -}}
-  {{- $questionIds =  $questionIds | append  (string $id)  -}}
+  {{- $questionIds =  $questionIds | append  $questionKey  -}}
+  {{- $questions = $questions | append (partial "test/normalize-question.html" (dict
+    "filePath" $.File.Path
+    "index" $index
+    "question" $question
+  )) -}}
 {{- end -}}
 
 <!-- Validate: marks must be positive (greater than 0) -->
-{{- range $index, $question := $p.questions -}}
+{{- range $index, $question := $rawQuestions -}}
   {{- $marks := or $question.marks 0 -}}
   {{- if le $marks 0 -}}
     {{- errorf "Question %d (id: %s) has invalid marks value '%v'. Marks must be greater than 0. Please update the 'marks' field with a positive number. [ %s ]" (add $index 1) $question.id $marks $.File.Path -}}
   {{- end -}}
 {{- end -}}
 
-{{- $numberOfQuestionSets := div (len $p.questions) $totalQuestionsPerSet -}}
+{{- $numberOfQuestionSets := div (len $rawQuestions) $totalQuestionsPerSet -}}
 
 {{- $total := 0 -}}
-{{- range first $totalQuestionsPerSet $p.questions -}}
+{{- range first $totalQuestionsPerSet $rawQuestions -}}
   {{- $total = add $total (or .marks 0) }}
 {{- end }}
 
-{{- $maxAttempts := or $p.max_attempts 0 -}}
+{{- $maxAttempts := int (or $p.maxAttempts $p.max_attempts 0) -}}
 {{- if and (eq $maxAttempts 0) (gt $numberOfQuestionSets 1) -}}
     {{ $maxAttempts = $numberOfQuestionSets -}}
+{{- end -}}
+
+{{- $timeLimit := int (or $p.timeLimit $p.time_limit 0) -}}
+{{- $passPercentage := or $p.passPercentage $p.pass_percentage 70 -}}
+
+{{- $prerequisites := slice -}}
+{{- range $rawPrerequisites -}}
+  {{- $prerequisites = $prerequisites | append (dict
+    "id" .id
+    "title" .title
+    "relPermalink" .relPermalink
+    "type" .type
+  ) -}}
 {{- end -}}
 
 {{- $parent := (cond (ne .Parent nil) (dict
@@ -76,16 +95,16 @@
   "date" (.Date | time.Format "2006-01-02")
   "lastmod" (.Lastmod | time.Format "2006-01-02")
   "draft" .Draft
-  "file_path" .File.Path
-  "max_attempts" $maxAttempts
-  "total_question_sets" $numberOfQuestionSets 
-  "total_questions_in_bank" (len $p.questions)
-  "pass_percentage" (or $p.pass_percentage 70)
-  "time_limit" (or $p.time_limit 0 | string)
-  "questions" $p.questions
-  "total_questions" $totalQuestionsPerSet
+  "filePath" .File.Path
+  "maxAttempts" $maxAttempts
+  "totalQuestionSets" $numberOfQuestionSets 
+  "totalQuestionsInBank" (len $rawQuestions)
+  "passPercentage" $passPercentage
+  "timeLimit" $timeLimit
+  "questions" $questions
+  "totalQuestions" $totalQuestionsPerSet
   "prerequisites" $prerequisites
-  "total_marks" $total
+  "totalMarks" $total
   "parent" $parent
-  "next_page" $nextPage
+  "nextPage" $nextPage
 ) -}}

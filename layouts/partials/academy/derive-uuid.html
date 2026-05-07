@@ -1,0 +1,13 @@
+{{- $scope := trim (printf "%v" .scope) " \n\r\t" -}}
+{{- $name := trim (printf "%v" .name) " \n\r\t" -}}
+{{- $digest := lower (sha1 (printf "academy-theme:%s:%s" $scope $name)) -}}
+{{- $variantSource := substr $digest 16 1 -}}
+{{- $variant := "b" -}}
+{{- if in "0123" $variantSource -}}
+  {{- $variant = "8" -}}
+{{- else if in "4567" $variantSource -}}
+  {{- $variant = "9" -}}
+{{- else if in "89ab" $variantSource -}}
+  {{- $variant = "a" -}}
+{{- end -}}
+{{- printf "%s-%s-5%s-%s%s-%s" (substr $digest 0 8) (substr $digest 8 4) (substr $digest 13 3) $variant (substr $digest 17 3) (substr $digest 20 12) -}}

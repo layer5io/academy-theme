@@ -1,0 +1,46 @@
+{{- $question := .question -}}
+{{- $index := .index -}}
+{{- $quizFilePath := printf "%v" .filePath -}}
+{{- $questionKey := trim (printf "%v" (or $question.id (printf "question-%d" (add $index 1)))) " \n\r\t" -}}
+{{- $questionScope := printf "%s#question:%s" $quizFilePath $questionKey -}}
+{{- $questionType := lower (replace (printf "%v" (or $question.type "single-answer")) "_" "-") -}}
+{{- $options := slice -}}
+{{- $correctOptionIds := slice -}}
+
+{{- range $optionIndex, $option := ($question.options | default (slice)) -}}
+  {{- $canonicalOption := partial "test/normalize-question-option.html" (dict
+    "index" $optionIndex
+    "option" $option
+    "questionScope" $questionScope
+  ) -}}
+  {{- $options = $options | append $canonicalOption -}}
+  {{- if $canonicalOption.isCorrect -}}
+    {{- $correctOptionIds = $correctOptionIds | append $canonicalOption.id -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $correctAnswer := trim (printf "%v" (or $question.correctAnswer $question.correct_answer "")) " \n\r\t" -}}
+{{- if eq $correctAnswer "" -}}
+  {{- if eq $questionType "multiple-answers" -}}
+    {{- $correctAnswer = delimit $correctOptionIds "," -}}
+  {{- else if gt (len $correctOptionIds) 0 -}}
+    {{- $correctAnswer = index $correctOptionIds 0 -}}
+  {{- end -}}
+{{- end -}}
+
+{{- $canonicalQuestion := dict
+  "id" (partial "academy/normalize-id.html" (dict "value" $questionKey "scope" $questionScope))
+  "text" (printf "%v" (or $question.text ""))
+  "type" $questionType
+  "marks" (int (or $question.marks 0))
+  "options" $options
+  "correctAnswer" $correctAnswer
+-}}
+
+{{- if or (eq $questionType "multiple-answers") (eq $questionType "single-answer") $question.multipleAnswers $question.multiple_answers -}}
+  {{- $canonicalQuestion = merge $canonicalQuestion (dict
+    "multipleAnswers" (or $question.multipleAnswers $question.multiple_answers (eq $questionType "multiple-answers"))
+  ) -}}
+{{- end -}}
+
+{{- return $canonicalQuestion -}}
