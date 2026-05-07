@@ -6,14 +6,17 @@
 {{- $questionType := lower (replace (printf "%v" (or $question.type "single-answer")) "_" "-") -}}
 {{- $options := slice -}}
 {{- $correctOptionIds := slice -}}
+{{- $optionIdMap := dict -}}
 
 {{- range $optionIndex, $option := ($question.options | default (slice)) -}}
+  {{- $optionKey := trim (printf "%v" (or $option.id (printf "option-%d" (add $optionIndex 1)))) " \n\r\t" -}}
   {{- $canonicalOption := partial "test/normalize-question-option.html" (dict
     "index" $optionIndex
     "option" $option
     "questionScope" $questionScope
   ) -}}
   {{- $options = $options | append $canonicalOption -}}
+  {{- $optionIdMap = merge $optionIdMap (dict $optionKey $canonicalOption.id) -}}
   {{- if $canonicalOption.isCorrect -}}
     {{- $correctOptionIds = $correctOptionIds | append $canonicalOption.id -}}
   {{- end -}}
@@ -25,6 +28,25 @@
     {{- $correctAnswer = delimit $correctOptionIds "," -}}
   {{- else if gt (len $correctOptionIds) 0 -}}
     {{- $correctAnswer = index $correctOptionIds 0 -}}
+  {{- end -}}
+{{- else if or (eq $questionType "multiple-answers") (eq $questionType "single-answer") -}}
+  {{- $normalizedAnswers := slice -}}
+  {{- range (split $correctAnswer ",") -}}
+    {{- $answer := trim . " \n\r\t" -}}
+    {{- if ne $answer "" -}}
+      {{- if isset $optionIdMap $answer -}}
+        {{- $normalizedAnswers = $normalizedAnswers | append (index $optionIdMap $answer) -}}
+      {{- else -}}
+        {{- $normalizedAnswers = $normalizedAnswers | append $answer -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if eq $questionType "multiple-answers" -}}
+    {{- $correctAnswer = delimit $normalizedAnswers "," -}}
+  {{- else if gt (len $normalizedAnswers) 0 -}}
+    {{- $correctAnswer = index $normalizedAnswers 0 -}}
+  {{- else -}}
+    {{- $correctAnswer = "" -}}
   {{- end -}}
 {{- end -}}
 

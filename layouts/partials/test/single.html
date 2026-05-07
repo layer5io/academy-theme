@@ -5,6 +5,13 @@
 {{- $rawQuestions := $p.questions | default (slice) -}}
 {{- $totalQuestionsPerSet := int (or $p.numberOfQuestions $p.number_of_questions (len $rawQuestions)) -}}
 
+{{- if le (len $rawQuestions) 0 -}}
+  {{- errorf "Tests must define at least one question before quiz JSON can be generated [ %s ]" .File.Path -}}
+{{- end -}}
+{{- if le $totalQuestionsPerSet 0 -}}
+  {{- errorf "numberOfQuestions/number_of_questions must be greater than 0 for tests (got %d) [ %s ]" $totalQuestionsPerSet .File.Path -}}
+{{- end -}}
+
 <!-- Validate: TotalQuestions should be multiple of totalQuestionsPerSet -->
 {{- if ne (mod (len $rawQuestions) $totalQuestionsPerSet) 0 -}}
   {{- errorf "Total questions (%d) is not a multiple of total_questions_per_set (%d) [ %s ]" (len $rawQuestions) $totalQuestionsPerSet .File.Path -}}
@@ -83,7 +90,7 @@
 {{- return (dict
   "id" (partial "id.html" .)
   "title" .Title
-  "org_id" $orgId
+  "orgId" $orgId
   "final" (partial "test/is-final.html" .)
   "description" (.Content | safeHTML)
   "slug" .Slug
