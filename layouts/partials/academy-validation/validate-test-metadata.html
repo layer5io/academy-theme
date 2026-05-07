@@ -1,0 +1,50 @@
+{{- $page := . -}}
+{{- $p := $page.Params -}}
+{{- $validationMode := "warn" -}}
+{{- with $page.Site.Params.academy.validationMode -}}
+  {{- $validationMode = printf "%v" . | strings.TrimSpace | lower -}}
+{{- end -}}
+
+{{- $questionIds := slice -}}
+{{- range $p.questions -}}
+  {{- $questionID := printf "%v" (or .id "") -}}
+  {{- if eq (strings.TrimSpace $questionID) "" -}}
+    {{- $message := printf "Question id is required [ %s ]" $page.File.Path -}}
+    {{- if eq $validationMode "error" -}}
+      {{- errorf "%s" $message -}}
+    {{- else if ne $validationMode "off" -}}
+      {{- warnf "%s" $message -}}
+    {{- end -}}
+  {{- end -}}
+  {{- if in $questionIds $questionID -}}
+    {{- $message := printf "Duplicate question id found: %s [ %s ]" $questionID $page.File.Path -}}
+    {{- if eq $validationMode "error" -}}
+      {{- errorf "%s" $message -}}
+    {{- else if ne $validationMode "off" -}}
+      {{- warnf "%s" $message -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $questionIds = $questionIds | append $questionID -}}
+
+  {{- $optionIds := slice -}}
+  {{- range .options -}}
+    {{- $optionID := printf "%v" (or .id "") -}}
+    {{- if eq (strings.TrimSpace $optionID) "" -}}
+      {{- $message := printf "Option id is required for question id: %s [ %s ]" $questionID $page.File.Path -}}
+      {{- if eq $validationMode "error" -}}
+        {{- errorf "%s" $message -}}
+      {{- else if ne $validationMode "off" -}}
+        {{- warnf "%s" $message -}}
+      {{- end -}}
+    {{- end -}}
+    {{- if in $optionIds $optionID -}}
+      {{- $message := printf "Duplicate option id found: %s for question id: %s [ %s ]" $optionID $questionID $page.File.Path -}}
+      {{- if eq $validationMode "error" -}}
+        {{- errorf "%s" $message -}}
+      {{- else if ne $validationMode "off" -}}
+        {{- warnf "%s" $message -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $optionIds = $optionIds | append $optionID -}}
+  {{- end -}}
+{{- end -}}

@@ -1,0 +1,14 @@
+{{- $value := printf "%v" . -}}
+{{- $value = strings.TrimSpace $value | lower -}}
+{{- $uuidPattern := `^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$` -}}
+{{- if eq (len (findRE $uuidPattern $value)) 1 -}}
+  {{- $value -}}
+{{- else -}}
+  {{- $hex := "" -}}
+  {{- if eq (len (findRE `^[0-9a-f]{32}$` $value)) 1 -}}
+    {{- $hex = $value -}}
+  {{- else -}}
+    {{- $hex = md5 $value -}}
+  {{- end -}}
+  {{- printf "%s-%s-%s-%s-%s" (substr $hex 0 8) (substr $hex 8 4) (substr $hex 12 4) (substr $hex 16 4) (substr $hex 20 12) -}}
+{{- end -}}

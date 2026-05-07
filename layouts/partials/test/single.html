@@ -3,21 +3,15 @@
 {{- $ctx := partial "resolve-tenant.html" . -}}
 {{- $orgId := $ctx.uuid -}}
 {{- $id := partial "id.html" . -}}
+{{- $quizID := partial "uuid.html" $id -}}
+{{- $pageKey := printf "%s:%s" .File.Path .RelPermalink -}}
+{{- partial "academy-validation/validate-test-metadata.html" . -}}
 
 {{- $totalQuestionsPerSet := $p.number_of_questions | default (len $p.questions) -}}
 
 <!-- Validate: TotalQuestions should be multiple of totalQuestionsPerSet -->
 {{- if ne (mod (len $p.questions) $totalQuestionsPerSet) 0 -}}
   {{- errorf "Total questions (%d) is not a multiple of total_questions_per_set (%d) [ %s ]" (len $p.questions) $totalQuestionsPerSet .File.Path -}}
-{{- end -}}
-
-<!-- Validate all question ids are unique -->
-{{- $questionIds := (slice ) -}}
-{{- range $p.questions -}}
-  {{- if in $questionIds .id -}}
-    {{- errorf "Duplicate question id found: %s" .id -}}
-  {{- end -}}
-  {{- $questionIds =  $questionIds | append  (string $id)  -}}
 {{- end -}}
 
 <!-- Validate: marks must be positive (greater than 0) -->
@@ -40,29 +34,33 @@
     {{ $maxAttempts = $numberOfQuestionSets -}}
 {{- end -}}
 
-{{- $parent := (cond (ne .Parent nil) (dict
-  "id" (partial "id.html" .Parent)
-  "title" .Parent.Title
-  "relPermalink" .Parent.RelPermalink
-  "type" .Parent.Type
-) nil) -}}
+{{- $parent := (cond (ne .Parent nil) (partial "test/parent.html" .Parent) nil) -}}
 
 
 {{- $nextPage := dict -}}
 {{- if .PrevInSection -}}
   {{- $next := .PrevInSection -}}
-  {{- $nextPage = dict
-      "id" (partial "id.html" $next)
-      "title" $next.Title
-      "relPermalink" $next.RelPermalink
-      "type" $next.Type
-  -}}
+  {{- $nextPage = partial "test/parent.html" $next -}}
+{{- end -}}
+
+{{- $questions := slice -}}
+{{- range $index, $question := $p.questions -}}
+  {{- $questions = $questions | append (partial "test/question.html" (dict "question" $question "pageKey" $pageKey "index" $index)) -}}
+{{- end -}}
+
+{{- $normalizedPrerequisites := slice -}}
+{{- range $prereq := $prerequisites -}}
+  {{- $normalizedPrerequisites = $normalizedPrerequisites | append (dict
+    "id" (partial "uuid.html" $prereq.id)
+    "title" $prereq.title
+    "relPermalink" $prereq.relPermalink
+    "type" $prereq.type
+  ) -}}
 {{- end -}}
 
 
-
 {{- return (dict
-  "id" (partial "id.html" .)
+  "id" $quizID
   "title" .Title
   "org_id" $orgId
   "final" (partial "test/is-final.html" .)
@@ -77,15 +75,15 @@
   "lastmod" (.Lastmod | time.Format "2006-01-02")
   "draft" .Draft
   "file_path" .File.Path
-  "max_attempts" $maxAttempts
-  "total_question_sets" $numberOfQuestionSets 
-  "total_questions_in_bank" (len $p.questions)
-  "pass_percentage" (or $p.pass_percentage 70)
-  "time_limit" (or $p.time_limit 0 | string)
-  "questions" $p.questions
-  "total_questions" $totalQuestionsPerSet
-  "prerequisites" $prerequisites
-  "total_marks" $total
+  "maxAttempts" $maxAttempts
+  "totalQuestionSets" $numberOfQuestionSets 
+  "totalQuestionsInBank" (len $p.questions)
+  "passPercentage" (or $p.pass_percentage 70)
+  "timeLimit" (or $p.time_limit 0)
+  "questions" $questions
+  "totalQuestions" $totalQuestionsPerSet
+  "prerequisites" $normalizedPrerequisites
+  "totalMarks" $total
   "parent" $parent
-  "next_page" $nextPage
+  "nextPage" $nextPage
 ) -}}

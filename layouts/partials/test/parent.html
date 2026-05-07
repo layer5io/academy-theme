@@ -1,0 +1,7 @@
+{{- $page := . -}}
+{{- return (dict
+  "id" (partial "uuid.html" (partial "id.html" $page))
+  "title" $page.Title
+  "relPermalink" $page.RelPermalink
+  "type" $page.Type
+) -}}

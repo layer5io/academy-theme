@@ -1,0 +1,21 @@
+{{- $ctx := . -}}
+{{- $option := $ctx.option -}}
+{{- $questionKey := $ctx.questionKey -}}
+{{- $pageKey := $ctx.pageKey -}}
+{{- $index := $ctx.index -}}
+{{- $sourceID := or $option.id (printf "option-%d" (add $index 1)) -}}
+{{- $stableKey := printf "%s:question:%s:option:%s" $pageKey $questionKey $sourceID -}}
+{{- $isCorrect := false -}}
+{{- with $option.isCorrect -}}
+  {{- $isCorrect = . -}}
+{{- else -}}
+  {{- with $option.is_correct -}}
+    {{- $isCorrect = . -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return (dict
+  "id" (partial "uuid.html" $stableKey)
+  "text" (or $option.text "")
+  "isCorrect" $isCorrect
+) -}}

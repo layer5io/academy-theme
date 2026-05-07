@@ -1,0 +1,28 @@
+{{- $ctx := . -}}
+{{- $question := $ctx.question -}}
+{{- $pageKey := $ctx.pageKey -}}
+{{- $index := $ctx.index -}}
+{{- $sourceID := or $question.id (printf "question-%d" (add $index 1)) -}}
+{{- $questionKey := printf "%s:question:%s" $pageKey $sourceID -}}
+{{- $options := slice -}}
+{{- range $optionIndex, $option := $question.options -}}
+  {{- $options = $options | append (partial "test/question-option.html" (dict "option" $option "questionKey" $sourceID "pageKey" $pageKey "index" $optionIndex)) -}}
+{{- end -}}
+{{- $correctAnswer := or $question.correctAnswer $question.correct_answer "" -}}
+{{- $out := dict
+  "id" (partial "uuid.html" $questionKey)
+  "text" (or $question.text "")
+  "type" (or $question.type "")
+  "marks" (or $question.marks 0)
+  "options" $options
+  "correctAnswer" $correctAnswer
+-}}
+{{- with $question.multipleAnswers -}}
+  {{- $out = merge $out (dict "multipleAnswers" .) -}}
+{{- else -}}
+  {{- with $question.multiple_answers -}}
+    {{- $out = merge $out (dict "multipleAnswers" .) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return $out -}}
