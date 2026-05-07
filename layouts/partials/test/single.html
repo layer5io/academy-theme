@@ -54,7 +54,7 @@
 {{- end -}}
 
 {{- $timeLimit := int (or $p.timeLimit $p.time_limit 0) -}}
-{{- $passPercentage := or $p.passPercentage $p.pass_percentage 70 -}}
+{{- $passPercentage := int (or $p.passPercentage $p.pass_percentage 70) -}}
 
 {{- $prerequisites := slice -}}
 {{- range $rawPrerequisites -}}

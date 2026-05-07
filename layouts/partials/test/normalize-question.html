@@ -55,6 +55,8 @@
   "text" (printf "%v" (or $question.text ""))
   "type" $questionType
   "marks" (int (or $question.marks 0))
+  "explanation" (printf "%v" (or $question.explanation ""))
+  "caseSensitive" (or $question.caseSensitive $question.case_sensitive false)
   "options" $options
   "correctAnswer" $correctAnswer
 -}}
