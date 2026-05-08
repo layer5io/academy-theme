@@ -1,4 +1,5 @@
 {{ define "main" }}
+{{ partial "academy-validation/validate-learning-path-structure.html" (dict "page" .) }}
 <div class="td-content">
    <h1>{{ .Title }}</h1>
    {{ with .Params.description }}<div class="lead">{{ . | markdownify }}</div>{{ end }}

@@ -1,6 +1,3 @@
-{{- $id := .Params.id -}}
-{{- if $id -}}
-  {{- $id -}}
-{{- else -}}
-  {{- .RelPermalink | md5 -}}
-{{- end -}}
+{{- $id := .Params.id | default .RelPermalink -}}
+{{- $scope := or .File.Path .RelPermalink -}}
+{{- partial "academy/normalize-id.html" (dict "value" $id "scope" $scope) -}}
