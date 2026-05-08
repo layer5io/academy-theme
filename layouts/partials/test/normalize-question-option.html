@@ -1,0 +1,10 @@
+{{- $option := .option -}}
+{{- $index := .index -}}
+{{- $questionScope := printf "%v" .questionScope -}}
+{{- $optionKey := trim (printf "%v" (or $option.id (printf "option-%d" (add $index 1)))) " \n\r\t" -}}
+
+{{- return (dict
+  "id" (partial "academy/normalize-id.html" (dict "value" $optionKey "scope" (printf "%s#option:%s" $questionScope $optionKey)))
+  "text" (printf "%v" (or $option.text ""))
+  "isCorrect" (or $option.isCorrect $option.is_correct false)
+) -}}

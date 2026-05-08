@@ -69,6 +69,22 @@ the build can emit warnings or break shared assumptions for other content.
 Shared theme assets, icons, and reusable partials should stay in
 academy-theme itself rather than in a consuming org repository.
 
+## Quiz JSON contract
+
+Quiz JSON emitted by the `test` layouts is normalized toward the
+`meshery/schemas` academy Quiz contract. The generated JSON now uses
+canonical quiz/question field names, numeric `timeLimit`, hyphenated question
+types, and UUIDs for page, parent, question, and option IDs.
+
+Authors can still keep front matter ergonomic:
+
+- page, question, and option `id` values may stay short slugs;
+- legacy snake_case quiz keys such as `pass_percentage`, `time_limit`,
+  `max_attempts`, `correct_answer`, and `is_correct` are still accepted in
+  front matter during the transition;
+- emitted UUIDs are derived deterministically from the content file path plus
+  the authored ID, so repeated builds produce stable values.
+
 ## ID Validation
 
 The theme checks publishable root Academy content during Hugo builds and emits
