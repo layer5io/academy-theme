@@ -1,8 +1,9 @@
 
 {{- /* learning-path.json.html */ -}}
+{{- partial "academy-validation/validate-learning-path-structure.html" (dict "page" .) -}}
 {{- $ctx := partial "resolve-tenant.html" . -}}
 {{- $uuid := $ctx.uuid -}}
-{{- $level := partial "validate-level.html" . -}}
+{{- $level := partial "academy-validation/validate-level.html" . -}}
 {{- $banner_url := partial "resolve-local-resource.html" (dict "page" . "path" .Params.Banner) -}}
 {{- $id := partial "id.html" . -}}
 

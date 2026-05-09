@@ -42,13 +42,13 @@
   {{- if $link -}}
     <a href="{{ $link }}" title="{{ $content | plainify }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none">
       <span class="hextra-badge badge rounded-pill {{ $badgeClass }}">
-        {{- with $icon }}{{ partial "hextra/utils/icon.html" (dict "name" . "attributes" `height="12" aria-hidden="true"`) }} {{ end -}}
+        {{- with $icon }}{{ partial "hextra/utils/icon.html" (dict "name" . "attributes" `height="12" aria-hidden="true"` "page" $.Page) }} {{ end -}}
         {{- $content -}}
       </span>
     </a>
   {{- else -}}
     <span class="hextra-badge badge rounded-pill {{ $badgeClass }}">
-      {{- with $icon }}{{ partial "hextra/utils/icon.html" (dict "name" . "attributes" `height="12" aria-hidden="true"`) }} {{ end -}}
+      {{- with $icon }}{{ partial "hextra/utils/icon.html" (dict "name" . "attributes" `height="12" aria-hidden="true"` "page" $.Page) }} {{ end -}}
       {{- $content -}}
     </span>
   {{- end -}}

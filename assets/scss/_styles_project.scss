@@ -290,6 +290,19 @@ a:not([href]):not([class]):hover {
       background-color: rgba($primary, 0.1);
       color: dark;
     }
+
+    &.academy-sidebar-toolkit {
+      color: $dark;
+      font-weight: $font-weight-bold;
+    }
+
+    &.active.academy-sidebar-toolkit {
+      border: 2px solid $lightslategray !important;
+      padding: 0.25rem;
+      padding-left: 0.5rem !important;
+      background-color: rgba($primary, 0.1);
+      color: $dark;
+    }
   }
 }
 

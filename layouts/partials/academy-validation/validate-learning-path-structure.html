@@ -1,0 +1,46 @@
+{{- $page := .page -}}
+{{- $mode := default "validate" .mode -}}
+
+{{- if eq $mode "has-meaningful-descendant-content" -}}
+  {{- $children := $page.Pages -}}
+  {{- $state := newScratch -}}
+  {{- $state.Set "hasMeaningfulContent" false -}}
+
+  {{- range $children -}}
+    {{- if and (not .Draft) (not ($state.Get "hasMeaningfulContent")) -}}
+      {{- if ne (trim .Plain " \n\r\t") "" -}}
+        {{- $state.Set "hasMeaningfulContent" true -}}
+      {{- else if eq (trim (partial "academy-validation/validate-learning-path-structure.html" (dict "page" . "mode" "has-meaningful-descendant-content")) " \n\r\t") "true" -}}
+        {{- $state.Set "hasMeaningfulContent" true -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+
+  {{- if $state.Get "hasMeaningfulContent" -}}true{{- else -}}false{{- end -}}
+{{- else -}}
+  {{- $validationKey := "academy-theme-learning-path-structure-validated" -}}
+  {{- if and (not $page.Draft) (not ($page.Scratch.Get $validationKey)) -}}
+    {{- $page.Scratch.Set $validationKey true -}}
+    {{- if and $page.IsSection $page.File (eq $page.Section "learning-paths") -}}
+      {{- $segments := split $page.File.Path "/" -}}
+      {{- $isLearningPathRoot := false -}}
+      {{- if and (eq $page.File.LogicalName "_index.md") (eq (len $segments) 4) -}}
+        {{- $isLearningPathRoot = and (eq (index $segments 0) "learning-paths") (eq (index $segments 3) "_index.md") -}}
+      {{- end -}}
+      {{- if $isLearningPathRoot -}}
+        {{- $children := where $page.Pages "Draft" "ne" true -}}
+        {{- if eq (len $children) 0 -}}
+          {{- $content := trim $page.Plain " \n\r\t" -}}
+          {{- $message := printf "Learning path structure in %s: root _index.md should not be the only content file." $page.File.Path -}}
+          {{- if ne $content "" -}}
+            {{- warnf "%s Move learning content to a child page, keep _index.md for metadata and overview only." $message -}}
+          {{- else -}}
+            {{- warnf "%s Add at least one child page or section beneath the learning path directory." $message -}}
+          {{- end -}}
+        {{- else if ne (trim (partial "academy-validation/validate-learning-path-structure.html" (dict "page" $page "mode" "has-meaningful-descendant-content")) " \n\r\t") "true" -}}
+          {{- warnf "Learning path structure in %s: add meaningful content to at least one child page or section." $page.File.Path -}}
+        {{- end -}}
+      {{- end -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
