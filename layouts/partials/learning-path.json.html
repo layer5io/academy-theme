@@ -30,7 +30,25 @@
     "detailed_description": {{ .Content | safeHTML | jsonify }},
     "banner": {{ $banner_url | jsonify }},
     "badge": {{ partial "badge.html" (dict "page" . "badge" .Params.badge "curriculaId" $id ) | jsonify }},
-    "certificate": {{ .Params.certificate | jsonify }},
+    {{- $certificate := .Params.certificate -}}
+    {{- if $certificate }}
+      {{- $authorities := slice -}}
+      {{- range or (index $certificate "issuingAuthorities") (index $certificate "issuingauthorities") (index $certificate "issuing_authorities") }}
+        {{- $authorities = $authorities | append (dict
+          "name" (index . "name")
+          "role" (index . "role")
+          "signatureUrl" (or (index . "signatureUrl") (index . "signatureurl") (index . "signature_url"))
+        ) -}}
+      {{- end }}
+      {{- $certificateJSON := dict
+        "title" (index $certificate "title")
+        "expiresIn" (or (index $certificate "expiresIn") (index $certificate "expiresin") (index $certificate "expires_in"))
+        "issuingAuthorities" $authorities
+      -}}
+    "certificate": {{ $certificateJSON | jsonify }},
+    {{- else }}
+    "certificate": null,
+    {{- end }}
     "permalink": {{ .RelPermalink | jsonify }},
     "categories": {{ .Params.Categories | jsonify }},
     "tags": {{ .Params.Tags | jsonify }},
