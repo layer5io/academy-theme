@@ -25,6 +25,7 @@ resources/
 #hugo 
 .hugo_build.lock
 content/*
+!content/_index.md
 !content/instructor-toolkit.md
 
 .DS_Store
