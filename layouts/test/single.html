@@ -347,11 +347,13 @@
 
 {{ $test := partial "test/single.html" . }}
 {{ $tesAbsPath := .RelPermalink }}
+{{ $curriculaRoot := .RelPermalink | strings.TrimSuffix "/" | strings.TrimSuffix "/test" }}
 
 <script>
-    const testId = {{ $test.id | jsonify }};
-    const testAbsPath = "{{$tesAbsPath}}";
-    const build = {{ $build | jsonify }};
+    const testId = {{ $test.id | jsonify | safeJS }};
+    const testAbsPath = {{ $tesAbsPath | jsonify | safeJS }};
+    const build = {{ $build | jsonify | safeJS }};
+    const curriculaRoot = {{ $curriculaRoot | jsonify | safeJS }};
 
 
     // Event Listeners
@@ -376,8 +378,6 @@
     // Initialize when context is ready
     window.addEventListener("academyContextReady", () => {
         if (isProdBuild && window.academyContext?.RegistrationData?.id) {
-            // redirect to test page 
-            const curriculaRoot = {{ .RelPermalink | strings.TrimSuffix "/" | jsonify }};
             window.location.replace(`${curriculaRoot}/test?id=${testId}&registration_id=${window.academyContext?.RegistrationData?.id}&test_abs_path=${testAbsPath}`);
             return;
         }
