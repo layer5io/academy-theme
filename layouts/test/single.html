@@ -349,9 +349,9 @@
 {{ $tesAbsPath := .RelPermalink }}
 
 <script>
-    const testId = {{ $test.id | jsonify }};
+    const testId = {{$test.id}};
     const testAbsPath = "{{$tesAbsPath}}";
-    const build = {{ $build | jsonify }};
+    const build = {{$build}};
 
 
     // Event Listeners
@@ -377,7 +377,7 @@
     window.addEventListener("academyContextReady", () => {
         if (isProdBuild && window.academyContext?.RegistrationData?.id) {
             // redirect to test page 
-            const curriculaRoot = {{ .RelPermalink | strings.TrimSuffix "/" | jsonify }};
+            const curriculaRoot = window.location.pathname.split("/").slice(0, 5).join("/");
             window.location.replace(`${curriculaRoot}/test?id=${testId}&registration_id=${window.academyContext?.RegistrationData?.id}&test_abs_path=${testAbsPath}`);
             return;
         }
