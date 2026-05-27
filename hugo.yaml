@@ -46,7 +46,7 @@ imaging:
 # Language configuration
 languages:
   en:
-    languageName: English
+    label: English
     title: Layer5 Academy
     params:
       description: A Docsy example site
@@ -64,13 +64,13 @@ markup:
     # Uncomment if you want your chosen highlight style used for code blocks without a specified language
     # guessSyntax: true
     noClasses: false
-    style: github 
+    style: github
 
 # Everything below this are Site Params
 
 # Comment out if you don't want the "print entire section" link enabled.
 outputs:
-  section: [HTML, print, RSS,JSON]
+  section: [HTML, print, RSS, JSON]
   page: [HTML, JSON]
 
 params:

@@ -29,8 +29,25 @@
       let idx = null; // Lunr index
       const resultDetails = new Map(); // Will hold the data for the search results (titles and summaries)
   
+      function normalizeSearchDocs(payload) {
+        if (Array.isArray(payload)) {
+          return payload;
+        }
+        if (payload && Array.isArray(payload.data)) {
+          return payload.data;
+        }
+        return [];
+      }
+
       // Set up for an Ajax call to request the JSON data file that is created by Hugo's build process
       $.ajax($searchInput.data('offline-search-index-json-src')).then((data) => {
+        const docs = normalizeSearchDocs(data);
+
+        if (docs.length === 0) {
+          console.warn('Offline search index payload is empty or invalid.');
+          return;
+        }
+
         idx = lunr(function () {
           this.ref('ref');
   
@@ -44,7 +61,7 @@
           this.field('description', { boost: 2 });
           this.field('body');
   
-          data.forEach((doc) => {
+          docs.forEach((doc) => {
             this.add(doc);
   
             resultDetails.set(doc.ref, {
@@ -55,6 +72,8 @@
         });
   
         $searchInput.trigger('change');
+      }).catch((err) => {
+        console.error('Failed to load offline search index:', err);
       });
   
       const render = ($targetSearchInput) => {
