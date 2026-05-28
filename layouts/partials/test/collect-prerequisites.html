@@ -18,7 +18,7 @@
 {{- if (eq $isFinal true) -}}
 
     {{- range $ctx.Parent.Pages -}}
-      {{- if and (in (slice "course" "module" "test") .Type) (ne $ctx .) -}}
+      {{- if and (eq .Type "test") (ne $ctx .) -}}
         {{- if eq (.Params.is_optional | default false) false -}}
           {{ $id := partial "id.html" . }}
           {{- $item := dict
