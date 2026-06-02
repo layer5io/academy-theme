@@ -11,7 +11,7 @@
 
 {{- if and $page_ctx $resource_path -}}
   {{- with $page_ctx.Resources.GetMatch $resource_path -}}
-    {{- $resolved_url = .Permalink -}}
+    {{- $resolved_url = .RelPermalink -}}
   {{- end -}}
 {{- end -}}
 
