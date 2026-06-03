@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html itemscope itemtype="http://schema.org/WebPage" lang="{{ .Site.Language.Lang }}" class="no-js">
+<html itemscope itemtype="http://schema.org/WebPage" lang="{{ site.Language.Name }}" class="no-js">
 
 <head>
   {{ partial "head.html" . }}
@@ -20,7 +20,7 @@
         <main class="col-12 col-md-9 col-xl-8" role="main">
           {{ partial "version-banner.html" . }}
           <div class="page-header d-flex justify-content-between align-items-center">
-            {{ if not .Site.Params.ui.breadcrumb_disable }}
+            {{ if not site.Params.ui.breadcrumb_disable }}
             <div class="breadcrumb-container">
               {{ partial "breadcrumb.html" . }}
             </div>
