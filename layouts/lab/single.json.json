@@ -5,13 +5,13 @@
   "description": {{ .Content | plainify | jsonify }},
   "weight": {{ $p.weight | jsonify }},
   "type": "lab",
-  "starter_catalog_link": {{ $p.starter_catalog_link | jsonify }},
-  "starter_embed_link": {
+  "starterCatalogLink": {{ $p.starter_catalog_link | jsonify }},
+  "starterEmbedLink": {
     "src": {{ $p.starter_embed_link.src | jsonify }},
     "id": {{ $p.starter_embed_link.id | jsonify }}
   },
-  "answer_catalog_link": {{ $p.answer_catalog_link | jsonify }},
-  "answer_embed_link": {
+  "answerCatalogLink": {{ $p.answer_catalog_link | jsonify }},
+  "answerEmbedLink": {
     "src": {{ $p.answer_embed_link.src | jsonify }},
     "id": {{ $p.answer_embed_link.id | jsonify }}
   }
