@@ -22,6 +22,9 @@
 
 //main sections
 .td-main main {
+  background-color: $body-bg;
+  color: $body-color;
+
   @include media-breakpoint-up(md) {
     padding-top: 4rem;
     padding-left: 1rem;
@@ -35,6 +38,9 @@ body {
 
 // Main Middle Body
 .td-content {
+  background-color: $body-bg;
+  color: $body-color;
+
   h2 {
     color: $dark;
   }
