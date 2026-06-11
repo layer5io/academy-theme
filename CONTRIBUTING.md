@@ -55,7 +55,7 @@ To develop this theme locally, you can link it to a Hugo site (like the [academy
     ```
 
 4. **Run the Server**
-    Now, when you run `make site` from within your site's directory, the NPM-managed local Hugo binary will be used and it will use your local theme files instead of fetching the remote module, allowing you to see your changes live.
+    Now, when you run `make site` from within your site's directory, the NPM-managed local Hugo binary will use your local theme files instead of fetching the remote module, allowing you to see your changes live.
 
 ## Updating the Theme
 

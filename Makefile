@@ -49,7 +49,7 @@ build-preview:
 	hugo --baseURL=$(BASEURL)
 
 ## Empty build cache and run site on your local machine.
-clean: check-deps
+clean:
 	npm run clean
 	$(MAKE) site
 
