@@ -176,6 +176,17 @@ The Instructor Toolkit surfaces the same build-generated report.
 - The `usestatic` shortcode is deprecated and should not be used in new
   content.
 
+## Local Development
+
+To develop and test the theme locally, you no longer need a global Hugo installation. Ensure you have Node.js and npm installed, then use the provided Make targets:
+
+```bash
+make setup  # Installs the local hugo-extended binary and other dependencies
+make site   # Runs the local development server
+```
+
+For more details, see the [Contributor Guide](CONTRIBUTING.md).
+
 ## Contributor Guide and Resources
 
 - 📚 [Instructions for contributing to academy-example][contrib]

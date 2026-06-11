@@ -25,23 +25,33 @@ include .github/build/Makefile.show-help.mk
 setup:
 	npm install
 
+## Verify required commands and local dependencies are present.
+check-deps:
+	@echo "Checking if 'npm' and local 'hugo' binary are present..."
+	@command -v npm > /dev/null || { echo "Error: 'npm' not found. Please install Node.js and npm."; exit 1; }
+	@test -x node_modules/.bin/hugo || { echo "Error: Hugo binary not found in node_modules. Please run 'make setup' first."; exit 1; }
+	@echo "Dependencies check passed."
+
 ## Run site on your local machine with draft and future content enabled.
-site: check-go
-	hugo server -D -F
+site: check-deps check-go
+	npm run dev:site
+
+## Run site on your local machine in serve mode (without file watching).
+serve: check-deps check-go
+	npm run dev:serve
 
 ## Build site on your local machine.
-build:
-	hugo
+build: check-deps check-go
+	npm run dev:build
 
 ## Build site for local consumption
 build-preview:
 	hugo --baseURL=$(BASEURL)
 
 ## Empty build cache and run site on your local machine.
-clean: 
-	hugo --cleanDestinationDir
-	make setup
-	make site
+clean: check-deps
+	npm run clean
+	$(MAKE) site
 
 ## Fix Markdown linting issues
 lint-fix:
@@ -63,4 +73,4 @@ check-go:
 	@command -v go > /dev/null || (echo "Go is not installed. Please install it before proceeding."; exit 1)
 	@echo "Go is installed."
 
-.PHONY: setup site build build-preview clean lint-fix check-go
+.PHONY: setup check-deps build build-preview site serve clean check-go lint-fix
