@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>Academy on Layer5 Academy</title><link>https://layer5io.github.io/academy-theme/pr-preview/pr-210/</link><description>Recent content in Academy on Layer5 Academy</description><generator>Hugo</generator><language>en</language><atom:link href="https://layer5io.github.io/academy-theme/pr-preview/pr-210/index.xml" rel="self" type="application/rss+xml"/><item><title>Instructor Toolkit</title><link>https://layer5io.github.io/academy-theme/pr-preview/pr-210/instructor-toolkit/</link><pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate><guid>https://layer5io.github.io/academy-theme/pr-preview/pr-210/instructor-toolkit/</guid><description>&lt;section class="academy-toolkit academy-toolkit--ready"&gt;
+
+ &lt;p class="academy-toolkit__verdict academy-toolkit__verdict--bad"&gt;Not ready to publish&lt;/p&gt;&lt;p class="academy-toolkit__empty"&gt;No content found.&lt;/p&gt;&lt;/section&gt;
+
+&lt;style&gt;
+ .academy-toolkit {
+ max-width: 960px;
+ margin-top: 1.5rem;
+ color: #182126;
+ }
+
+ .academy-toolkit__header {
+ margin-bottom: 0.75rem;
+ }
+
+ .academy-toolkit h2 {
+ margin: 0;
+ font-size: 1.45rem;
+ }
+
+ .academy-toolkit__empty {
+ margin: 0;
+ color: #52616b;
+ }
+
+ .academy-toolkit__summary-row {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 0.75rem 1rem;
+ align-items: center;
+ margin-bottom: 0.75rem;
+ }
+
+ .academy-toolkit__summary {
+ display: inline-flex;
+ align-items: center;
+ margin: 0;
+ font-size: 1.15rem;
+ }
+
+ .academy-toolkit__legend {
+ display: flex;
+ flex-wrap: wrap;
+ gap: 0.5rem 1.25rem;
+ margin: 0 0 0.75rem;
+ color: #52616b;
+ font-size: 0.95rem;
+ }
+
+ .academy-toolkit__legend span {
+ white-space: nowrap;
+ }
+
+ .academy-toolkit__action {
+ margin: 0.85rem 0 0.75rem;
+ color: #182126;
+ font-size: 1rem;
+ }
+
+ .academy-toolkit__action a {
+ color: #00b39f;
+ }
+
+ .academy-toolkit__verdict {
+ margin: 0.9rem 0 0.25rem;
+ font-size: 1.55rem;
+ font-weight: 800;
+ line-height: 1.2;
+ }
+
+ .academy-toolkit a {
+ color: #00b39f;
+ text-decoration: none;
+ }
+
+ .academy-toolkit a:hover,
+ .academy-toolkit a:focus {
+ color: rgba(0, 179, 159, 0.7);
+ }
+
+ .academy-toolkit__table {
+ width: 100%;
+ border-collapse: collapse;
+ }
+
+ .academy-toolkit__table th:nth-child(3),
+ .academy-toolkit__table td:nth-child(3) {
+ padding-right: 4rem !important; 
+ }
+
+ .academy-toolkit__col-draft {
+ width: 10%;
+ }
+
+ .academy-toolkit__table th,
+ .academy-toolkit__table td {
+ padding: 0.55rem 0.75rem;
+ text-align: left;
+ vertical-align: top;
+ }
+
+ .academy-toolkit__table thead th {
+ color: #52616b;
+ font-size: 0.85rem;
+ font-weight: 700;
+ }
+
+ .academy-toolkit__table tbody th {
+ font-weight: 500;
+ }
+
+ .academy-toolkit__table tbody th a {
+ font-weight: inherit;
+ }
+
+ .academy-toolkit__table tbody td a {
+ text-decoration: none;
+ }
+
+ .academy-toolkit__table tbody td:last-child {
+ white-space: nowrap;
+ }
+&lt;/style&gt;</description></item></channel></rss>
