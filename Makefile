@@ -19,7 +19,7 @@ include .github/build/Makefile.show-help.mk
 # Academy Theme Development Targets
 #----------------------------------------------------------------------------
 ## ------------------------------------------------------------
----LOCAL_BUILDS: Show help for available targets
+----LOCAL_BUILDS: Show help for available targets
 
 ## Install dependencies on your local machine.
 setup:
@@ -53,6 +53,9 @@ clean:
 	npm run clean
 	$(MAKE) site
 
+## ------------------------------------------------------------
+----MAINTENANCE: Show help for available targets
+
 ## Fix Markdown linting issues
 lint-fix:
 	@echo "Checking for markdownlint-cli2..."
@@ -63,9 +66,6 @@ lint-fix:
 	}
 	@echo "Running markdownlint-cli2 --fix..."
 	@markdownlint-cli2 --fix "**/*.md" "#node_modules" "#public" "#resources"
-
-## ------------------------------------------------------------
----MAINTENANCE: Show help for available targets
 
 ## Verify Go is installed locally.
 check-go:
