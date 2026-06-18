@@ -45,7 +45,7 @@
     {{ $orgId := index $pathSegments (add $offset 1) }}
     {{ $pathSlug := index $pathSegments (add $offset 2) }}
 
-    {{ if or (eq $toplevel "learning-paths") (eq $toplevel "challenges") }}
+    {{ if or (eq $toplevel "learning-paths") (eq $toplevel "challenges") (eq $toplevel "certifications") }}
 
         {{ $currentPathRootURL := printf "/%s/%s/%s/" $toplevel $orgId $pathSlug }}
 
