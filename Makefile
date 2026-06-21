@@ -31,7 +31,7 @@ site: check-go
 
 ## Build site on your local machine.
 build:
-	hugo build
+	hugo
 
 ## Build site for local consumption
 build-preview:

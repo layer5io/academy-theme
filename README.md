@@ -15,11 +15,6 @@ For comprehensive documentation, visit the
 
 Common make targets for developing the Academy theme:
 
-- **Clean up and verify Go module dependencies**
-  ```bash
-  make check-go
-  ```
-
 - **Install necessary tools and modules**
   ```bash
   make setup
@@ -50,7 +45,7 @@ Common make targets for developing the Academy theme:
   make lint-fix
   ```
 
-- **Verify Go is installed before starting the local site**
+- **Verify Go is installed locally**
   ```bash
   make check-go
   ```
