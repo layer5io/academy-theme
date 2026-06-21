@@ -1,5 +1,4 @@
 .DEFAULT_GOAL := show-help
-# See <https://gist.github.com/klmr/575726c7e05d8780505a> for explanation.
 .PHONY: show-help
 show-help:
-	@echo "$$(tput bold)Please specify a build target. The choices are:$$(tput sgr0)";echo;sed -ne"/^## /{h;s/.*//;:d" -e"H;n;s/^## //;td" -e"s/:.*//;G;s/\\n## /---/;s/\\n/ /g;p;}" ${MAKEFILE_LIST}|LC_ALL='C' sort -f|awk -F --- -v n=$$(tput cols) -v i=19 -v a="$$(tput setaf 6)" -v z="$$(tput sgr0)" '{printf"%s%*s%s ",a,-i,$$1,z;m=split($$2,w," ");l=n-i;for(j=1;j<=m;j++){l-=length(w[j])+1;if(l<= 0){l=n-i-length(w[j])-1;printf"\n%*s ",-i," ";}printf"%s ",w[j];}printf"\n";}'|more $(shell test $(shell uname) == Darwin && echo '-Xr')
+	@echo "$$(tput bold)Please specify a build target. The choices are:$$(tput sgr0)";echo;awk -v cols=$$(tput cols) -v width=19 -v a="$$(tput setaf 6)" -v b="$$(tput bold)" -v z="$$(tput sgr0)" 'BEGIN{w=width} /^##@/{title=substr($$0,5);line="----"title;pad=w-length(line);if(pad<0)pad=0;fill=cols-length(line)-pad;dashes="";for(i=0;i<fill;i++)dashes=dashes"-";printf"%s%s%*s%s%s\n",b,line,pad,"",dashes,z;next} /^## /{desc=substr($$0,4);next} /^[a-zA-Z0-9_.-]+:/{if(desc!=""){target=$$0;sub(/:.*/,"",target);printf"%s%-19s%s %s\n",a,target,z,desc;desc=""}}' ${MAKEFILE_LIST}
