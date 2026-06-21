@@ -12,7 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+include .github/build/Makefile.core.mk
 include .github/build/Makefile.show-help.mk
+
+#----------------------------------------------------------------------------
+# Academy Theme Development Targets
+#----------------------------------------------------------------------------
+## ------------------------------------------------------------
+---LOCAL_BUILDS: Show help for available targets
 
 ## Install dependencies on your local machine.
 setup:
@@ -25,6 +32,10 @@ site: check-go
 ## Build site on your local machine.
 build:
 	hugo
+
+## Build site for local consumption
+build-preview:
+	hugo --baseURL=$(BASEURL)
 
 ## Empty build cache and run site on your local machine.
 clean: 
@@ -43,10 +54,13 @@ lint-fix:
 	@echo "Running markdownlint-cli2 --fix..."
 	@markdownlint-cli2 --fix "**/*.md" "#node_modules" "#public" "#resources"
 
+## ------------------------------------------------------------
+---MAINTENANCE: Show help for available targets
 
+## Verify Go is installed locally.
 check-go:
 	@echo "Checking if Go is installed..."
 	@command -v go > /dev/null || (echo "Go is not installed. Please install it before proceeding."; exit 1)
 	@echo "Go is installed."
 
-.PHONY: setup build site clean check-go
+.PHONY: setup site build build-preview clean lint-fix check-go
