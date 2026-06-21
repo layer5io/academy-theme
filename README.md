@@ -1,3 +1,9 @@
+[![Layer5](https://img.shields.io/badge/Layer5-Academy-00B39F?style=for-the-badge)](https://layer5.io)
+
+[![Hugo](https://img.shields.io/badge/Hugo-Framework-FF4088?logo=hugo&logoColor=white)](https://gohugo.io/)
+
+# Academy Theme
+
 # Academy Theme
 
 Reusable Hugo theme module that powers the Layer5 Academy. This module provides
