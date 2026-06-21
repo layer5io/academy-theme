@@ -4,7 +4,6 @@
 
 # Academy Theme
 
-# Academy Theme
 
 Reusable Hugo theme module that powers the Layer5 Academy. This module provides
 the layouts, shortcodes, and partials to get academy up and running.
