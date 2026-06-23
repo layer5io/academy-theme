@@ -1,15 +1,8 @@
 {{/*
   Renders the organization ID (UUID) of the current page's organization.
-
   Academy content is organized as content/<type>/<orgID>/... so this
   shortcode extracts the orgID at file path segment index 1.
-
-  The page must reside inside a valid org directory (a UUID-named segment)
-  for the shortcode to locate the ID. If the orgID cannot be determined,
-  a fallback message is rendered instead.
-
   Usage: {{</* org-id */>}}
-
   Example output:
   <code class="org-id">550e8400-e29b-41d4-a716-446655440000</code>
 */}}
@@ -19,8 +12,8 @@
   {{- if ge (len $parts) 2 -}}
     {{- $candidate := index $parts 1 -}}
     {{- if gt (len (findRE `^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$` $candidate)) 0 -}}
-      {{- $orgID = $candidate -}}
+      {{- $orgID = lower $candidate -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
-{{- if $orgID -}}<code class="org-id">{{ $orgID }}</code>{{- else -}}<code class="org-id org-id--not-found">(org ID not found)</code>{{- end -}}
+{{- if $orgID -}}<code class="org-id">{{ $orgID }}</code>{{- else -}}<code class="org-id org-id--not-found">{{ i18n "org_id_not_found" | default "(org ID not found)" }}</code>{{- end -}}
