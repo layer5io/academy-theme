@@ -15,6 +15,45 @@ The recommended approach to use this theme is through the
 For comprehensive documentation, visit the
 [official Academy documentation](https://docs.layer5.io/cloud/academy/).
 
+## Development Commands
+
+Common make targets for developing the Academy theme:
+
+- **Install necessary tools and modules**
+  ```bash
+  make setup
+  ```
+
+- **Start the local Hugo development server**
+  ```bash
+  make site
+  ```
+
+- **Build the site for production**
+  ```bash
+  make build
+  ```
+
+- **Build the site for local consumption with custom base URL**
+  ```bash
+  make build-preview
+  ```
+
+- **Clean the Hugo cache and restart local setup**
+  ```bash
+  make clean
+  ```
+
+- **Fix Markdown linting issues**
+  ```bash
+  make lint-fix
+  ```
+
+- **Verify Go is installed locally**
+  ```bash
+  make check-go
+  ```
+
 ## Content Structure
 
 The Academy uses the following content hierarchy:
