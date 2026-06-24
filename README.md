@@ -1,3 +1,7 @@
+[![Layer5](https://img.shields.io/badge/Layer5-Academy-00B39F?style=for-the-badge)](https://layer5.io)
+
+[![Hugo](https://img.shields.io/badge/Hugo-Framework-FF4088?logo=hugo&logoColor=white)](https://gohugo.io/)
+
 # Academy Theme
 
 Reusable Hugo theme module that powers the Layer5 Academy. This module provides
@@ -10,6 +14,45 @@ The recommended approach to use this theme is through the
 
 For comprehensive documentation, visit the
 [official Academy documentation](https://docs.layer5.io/cloud/academy/).
+
+## Development Commands
+
+Common make targets for developing the Academy theme:
+
+- **Install necessary tools and modules**
+  ```bash
+  make setup
+  ```
+
+- **Start the local Hugo development server**
+  ```bash
+  make site
+  ```
+
+- **Build the site for production**
+  ```bash
+  make build
+  ```
+
+- **Build the site for local consumption with custom base URL**
+  ```bash
+  make build-preview
+  ```
+
+- **Clean the Hugo cache and restart local setup**
+  ```bash
+  make clean
+  ```
+
+- **Fix Markdown linting issues**
+  ```bash
+  make lint-fix
+  ```
+
+- **Verify Go is installed locally**
+  ```bash
+  make check-go
+  ```
 
 ## Content Structure
 

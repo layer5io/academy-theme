@@ -1,0 +1,11 @@
+{{- /*
+  org-id: outputs the organization UUID from the current learning-path page's directory.
+  Path structure under content/: learning-paths/{orgID}/...
+  Usage: {{< org-id >}}
+*/ -}}
+{{- if .Page.File -}}
+  {{- $parts := split .Page.File.Dir "/" -}}
+  {{- if and (ge (len $parts) 2) (eq (index $parts 0) "learning-paths") -}}
+    {{- index $parts 1 -}}
+  {{- end -}}
+{{- end -}}

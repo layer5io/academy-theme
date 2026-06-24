@@ -36,22 +36,20 @@
     {{ $offset := 1 }}
 
     {{ if eq (index $pathSegments 1) "academy" }}
-    {{ $offset = 2 }} 
+    {{ $offset = 2 }}
     {{ end }}
 
     {{ if ge (len $pathSegments) (add $offset 4) }}
-    
+
     {{ $toplevel := index $pathSegments $offset }}
     {{ $orgId := index $pathSegments (add $offset 1) }}
     {{ $pathSlug := index $pathSegments (add $offset 2) }}
 
-    {{ if or (eq $toplevel "learning-paths") (eq $toplevel "challenges") }}
+    {{ if or (eq $toplevel "learning-paths") (eq $toplevel "challenges") (eq $toplevel "certifications") }}
 
         {{ $currentPathRootURL := printf "/%s/%s/%s/" $toplevel $orgId $pathSlug }}
 
-        {{ if eq $offset 2 }}
-            {{ $currentPathRootURL = printf "/%s%s" (index $pathSegments 1) $currentPathRootURL }}
-        {{ end }}
+
 
         {{ $currentPathRootPage := .Site.GetPage $currentPathRootURL }}
 
