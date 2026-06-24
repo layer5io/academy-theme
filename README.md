@@ -1,11 +1,25 @@
-[![Layer5](https://img.shields.io/badge/Layer5-Academy-00B39F?style=for-the-badge)](https://layer5.io)
+<p align="center">
+  <img src=".github/readme/images/layer5-light-no-trim.svg"  width="40%" alt="Layer5 Logo">
+</p>
 
-[![Hugo](https://img.shields.io/badge/Hugo-Framework-FF4088?logo=hugo&logoColor=white)](https://gohugo.io/)
+<h1 align="center">Academy Theme</h1>
 
-# Academy Theme
+<p align="center">
+  Reusable Hugo theme module that powers the Layer5 Academy. This module provides
+  the layouts, shortcodes, and partials to get academy up and running.
+</p>
 
-Reusable Hugo theme module that powers the Layer5 Academy. This module provides
-the layouts, shortcodes, and partials to get academy up and running.
+<p align="center">
+  <a href="https://layer5.io">
+    <img src="https://img.shields.io/badge/Layer5-Academy-00B39F?style=for-the-badge" alt="Layer5 Academy">
+  </a>
+  <a href="https://gohugo.io/">
+    <img src="https://img.shields.io/badge/Hugo-Framework-FF4088?logo=hugo&logoColor=white&style=for-the-badge" alt="Hugo">
+  </a>
+  <a href="LICENSE">
+  <img src="https://img.shields.io/badge/License-Apache%202.0-blue?style=for-the-badge" alt="Apache 2.0 License">
+  </a>
+</p>
 
 ## Getting Started
 
@@ -182,13 +196,52 @@ The Instructor Toolkit surfaces the same build-generated report.
 
 ## Contributor Guide and Resources
 
-- 📚 [Instructions for contributing to academy-example][contrib]
-  - Academy-template [documentation][docs], [example][example], and
-    [theme][theme]
-- 🎨 Wireframes and [designs for Layer5 site][figma] in Figma
-  ([open invite][figma-invite])
-- 🙋🏾🙋🏼 Questions: [Layer5 Discussion Forum][forum] and
-  [Layer5 Community Slack][slack]
+## Community & Contributions
+
+We warmly welcome contributions of all kinds! Whether you're improving documentation, enhancing the theme, fixing bugs, or proposing new features, your contributions help make the Academy ecosystem better for everyone.
+
+Before getting started, please review the project's [contributing guidelines][contrib].
+
+Contributors are expected to follow the [CNCF Code of Conduct](https://github.com/cncf/foundation/blob/master/code-of-conduct.md).
+
+### Helpful Resources
+
+* 📚 Academy [documentation][docs], [example][example], and [theme][theme]
+* 🎨 Layer5 [designs and wireframes][figma] in Figma ([open invite][figma-invite])
+* 🙋🏾🙋🏼 Connect through the [Layer5 Discussion Forum][forum] and [Layer5 Community Slack][slack]
+
+<p>
+<a href="https://slack.layer5.io">
+
+<picture align="right">
+  <source media="(prefers-color-scheme: dark)" srcset=".github/readme/images/slack-dark-128.png">
+  <source media="(prefers-color-scheme: light)" srcset=".github/readme/images/slack-128.png">
+  <img src=".github/readme/images/slack-128.png"
+       width="120"
+       align="right"
+       alt="Join Layer5 Slack">
+</picture>
+
+</a>
+
+<a href="https://layer5.io/community">
+  <img src=".github/readme/images/community.svg"
+       width="140"
+       align="left"
+       style="margin-right:10px;"
+       alt="Layer5 Community">
+</a>
+
+✔️ <strong>Join</strong> the Layer5 Slack Community.<br />
+✔️ <strong>Discuss</strong> in the Community Forum.<br />
+✔️ <strong>Explore</strong> the Community Handbook.<br />
+✔️ <strong>Start</strong> with the Newcomer's Guide.<br />
+
+</p>
+
+<br clear="both" />
+
+---
 
 [contrib]: https://github.com/layer5io/academy-example/blob/master/CONTRIBUTING.md
 [docs]: https://docs.layer5.io/cloud/academy/
@@ -198,3 +251,4 @@ The Instructor Toolkit surfaces the same build-generated report.
 [figma-invite]: https://www.figma.com/team_invite/redeem/GvB8SudhEOoq3JOvoLaoMs
 [forum]: https://discuss.layer5.io
 [slack]: http://slack.layer5.io
+
