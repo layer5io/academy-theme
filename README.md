@@ -194,8 +194,6 @@ The Instructor Toolkit surfaces the same build-generated report.
 - The `usestatic` shortcode is deprecated and should not be used in new
   content.
 
-## Contributor Guide and Resources
-
 ## Community & Contributions
 
 We warmly welcome contributions of all kinds! Whether you're improving documentation, enhancing the theme, fixing bugs, or proposing new features, your contributions help make the Academy ecosystem better for everyone.
@@ -243,7 +241,7 @@ Contributors are expected to follow the [CNCF Code of Conduct](https://github.co
 
 ---
 
-[contrib]: https://github.com/layer5io/academy-example/blob/master/CONTRIBUTING.md
+[contrib]: CONTRIBUTING.md
 [docs]: https://docs.layer5.io/cloud/academy/
 [example]: https://github.com/layer5io/academy-example/
 [theme]: https://github.com/layer5io/academy-theme/
