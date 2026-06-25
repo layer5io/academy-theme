@@ -2,22 +2,22 @@
   <img src=".github/readme/images/layer5-light-no-trim.svg"  width="40%" alt="Layer5 Logo">
 </p>
 
-<h1 align="center">
+<h1 align="left">
   <img
     src=".github/readme/images/academy-layer5-light.png"
     width="50"
     alt="Academy"
-    align="center"
+    align="left"
   />
   Academy Theme
 </h1>
 
-<p align="center">
+<p align="left">
   Reusable Hugo theme module that powers the Layer5 Academy. This module provides
   the layouts, shortcodes, and partials to get academy up and running.
 </p>
 
-<p align="center">
+<p align="left">
   <a href="https://layer5.io/learn/academy"><img src="https://img.shields.io/badge/Layer5-Academy-00B39F?style=for-the-badge" alt="Layer5 Academy"></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/layer5io/academy-theme?style=for-the-badge" alt="Apache 2.0 License"></a>
   <a href="https://gohugo.io/"><img src="https://img.shields.io/badge/Hugo-Framework-FF4088?logo=hugo&logoColor=white&style=for-the-badge" alt="Hugo"></a>
