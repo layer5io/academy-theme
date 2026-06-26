@@ -30,7 +30,7 @@ jobs:
       - name: Checkout academy-theme code
         uses: actions/setup-go@v5
         with:
-          go-version: '1.24'
+          go-version: '1.26.4'
 
       - name: Checkout dependent repo
         uses: actions/checkout@v4
