@@ -26,7 +26,17 @@ information on using pull requests.
 
 To develop this theme locally, you can link it to a Hugo site (like the [academy starter template](https://github.com/layer5io/academy-example)) using a `replace` directive in the site's `go.mod` file.
 
-1. **Directory Setup**
+**Prerequisites:** You must have Node.js and npm installed. You do not need to install Hugo globally; the required `hugo-extended` binary is managed locally via npm.
+
+1. **Setup Dependencies**
+
+    Install the necessary local dependencies (including the local Hugo binary) by running:
+
+    ```bash
+    make setup
+    ```
+
+2. **Directory Setup**
 
     Ensure you have cloned both this theme repository and your Hugo site repository into the same parent directory. Your folder structure should look like this:
 
@@ -36,7 +46,7 @@ To develop this theme locally, you can link it to a Hugo site (like the [academy
     └── academy-theme/  <-- This theme project
     ```
 
-2. **Modify `go.mod`**
+3. **Modify `go.mod`**
 
     In your site's (`academy-example/`) `go.mod` file, add the following `replace` directive to point to your local theme folder:
 
@@ -44,8 +54,8 @@ To develop this theme locally, you can link it to a Hugo site (like the [academy
     replace github.com/layer5io/academy-theme => ../academy-theme
     ```
 
-3. **Run the Server**
-    Now, when you run `make site` from within your site's directory, Hugo will use your local theme files instead of fetching the remote module, allowing you to see your changes live.
+4. **Run the Server**
+    Now, when you run `make site` from within your site's directory, the NPM-managed local Hugo binary will use your local theme files instead of fetching the remote module, allowing you to see your changes live.
 
 ## Updating the Theme
 
