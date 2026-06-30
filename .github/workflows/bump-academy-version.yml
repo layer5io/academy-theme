@@ -20,17 +20,15 @@ jobs:
           - meshery-extensions/digitalocean-academy
           - meshery-extensions/tcslabs-academy
     steps:
-
-      - name: Setup Hugo (Extended)
-        uses: peaceiris/actions-hugo@v2
-        with:
-          hugo-version: '0.158.0'
-          extended: true
-
-      - name: Checkout academy-theme code
+      - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version: '1.24'
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
       - name: Checkout dependent repo
         uses: actions/checkout@v4
@@ -40,29 +38,32 @@ jobs:
           path: dependent
           ref: master
 
+      - name: Install dependencies
+        run: |
+          cd dependent
+          make setup
+
       - name: Update dependency in go.mod
         run: |
           cd dependent
           make theme-update
-          # go mod edit -require=github.com/layer5io/academy-theme@${{ github.event.release.tag_name }}
-          # go mod tidy
 
-      - name: Create Pull pull-requests
+      - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
           path: dependent
           token: ${{ secrets.GH_ACCESS_TOKEN }}
-          branch: update-academy-theme-${{ github.event.release.tag_name }}
-          title: '[Automated] Update academy-theme to ${{ github.event.release.tag_name }}'
+          branch: update-academy-theme-${{ github.event.release.tag_name || 'latest' }}
+          title: "[Automated] Update academy-theme to ${{ github.event.release.tag_name || 'latest' }}"
           body: |
-            This PR updates the academy-theme dependency to the latest release version ${{ github.event.release.tag_name }}.
+            This PR updates the academy-theme dependency to the latest release version ${{ github.event.release.tag_name || 'latest' }}.
 
             Changes:
             - Updated go.mod
             - Regenerated go.sum
 
             Auto-generated based upon release of a new version of layer5io/academy-theme.
-          commit-message: Update academy-theme to ${{ github.event.release.tag_name }}
+          commit-message: Update academy-theme to ${{ github.event.release.tag_name || 'latest' }}
           committer: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           signoff: true
