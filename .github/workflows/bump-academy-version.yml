@@ -26,7 +26,7 @@ jobs:
         with:
           repository: ${{ matrix.dependent-repo }}
           token: ${{ secrets.GH_ACCESS_TOKEN }}
-          ref: master
+          ref: feature/banana-three-join/makefile-pkg-json-standardize
 
       - name: Setup Node
         uses: actions/setup-node@v4
