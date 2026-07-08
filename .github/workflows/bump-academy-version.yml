@@ -21,7 +21,7 @@ jobs:
           - meshery-extensions/tcslabs-academy
     steps:
       - name: Checkout dependent repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ matrix.dependent-repo }}
           token: ${{ secrets.GH_ACCESS_TOKEN }}
@@ -31,11 +31,13 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
 
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
           go-version-file: 'go.mod'
+          cache: true
 
       - name: Install dependencies
         run: make setup
