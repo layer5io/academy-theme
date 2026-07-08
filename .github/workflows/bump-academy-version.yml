@@ -12,14 +12,13 @@ jobs:
     strategy:
       matrix:
         dependent-repo:
-          - banana-three-join/exoscale-academy
-          # - layer5io/layer5-academy
-          # - layer5io/exoscale-academy
-          # - layer5io/academy-build
-          # - layer5io/academy-example
-          # - meshery-extensions/meshery-academy
-          # - meshery-extensions/digitalocean-academy
-          # - meshery-extensions/tcslabs-academy
+          - layer5io/layer5-academy
+          - layer5io/exoscale-academy
+          - layer5io/academy-build
+          - layer5io/academy-example
+          - meshery-extensions/meshery-academy
+          - meshery-extensions/digitalocean-academy
+          - meshery-extensions/tcslabs-academy
     steps:
       - name: Checkout dependent repo
         uses: actions/checkout@v4
@@ -67,6 +66,6 @@ jobs:
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           signoff: true
           delete-branch: true
-          # labels: pr/dependencies
-          # assignees: l5io
+          labels: pr/dependencies
+          assignees: l5io
           draft: false
