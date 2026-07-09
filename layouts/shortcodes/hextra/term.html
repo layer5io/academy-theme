@@ -13,7 +13,7 @@
 {{- $entryLower := lower $entry -}}
 {{- $match := dict -}}
 
-{{- with index .Site.Data .Site.Language.Lang -}}
+{{- with index hugo.Data site.Language.Name -}}
   {{- with index . "termbase" -}}
     {{- range . -}}
       {{- if or (eq (lower .abbr) $entryLower) (eq (lower .term) $entryLower) -}}

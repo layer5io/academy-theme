@@ -5,7 +5,7 @@ on:
     types: [published]
 
   workflow_dispatch:
-  
+
 jobs:
   bump:
     runs-on: ubuntu-latest
@@ -17,7 +17,8 @@ jobs:
           - layer5io/academy-build
           - layer5io/academy-example
           - meshery-extensions/meshery-academy
-          - layer5io/digitalocean-academy
+          - meshery-extensions/digitalocean-academy
+          - meshery-extensions/tcslabs-academy
     steps:
 
       - name: Setup Hugo (Extended)
@@ -25,8 +26,8 @@ jobs:
         with:
           hugo-version: '0.158.0'
           extended: true
-          
-      - name: Checkout academy-theme code 
+
+      - name: Checkout academy-theme code
         uses: actions/setup-go@v5
         with:
           go-version: '1.24'
