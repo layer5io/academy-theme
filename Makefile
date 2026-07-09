@@ -43,11 +43,6 @@ check-go:
 	@command -v go > /dev/null || { echo "Go is not installed. Please install it before proceeding."; exit 1; }
 	@echo "Go is installed."
 
-## Update the academy-theme package to latest version
-theme-update: check-go check-deps
-	@echo "Updating to latest academy-theme..."
-	npm run update:theme
-
 # ---------------------------------------------------------------------------
 # LOCAL BUILDS: Show help for available targets
 # ---------------------------------------------------------------------------

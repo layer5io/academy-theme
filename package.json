@@ -1,13 +1,13 @@
 {
-  "name": "docsy-example-site",
+  "name": "academy-theme",
   "version": "0.12.0",
   "version.next": "0.12.1-dev-unreleased",
-  "description": "Example site that uses Docsy theme for technical documentation.",
-  "repository": "github:google/docsy-example",
-  "homepage": "https://example.docsy.dev",
-  "author": "Docsy Authors",
+  "description": "Example site for Academy Theme",
+  "repository": "github:layer5io/academy-theme",
+  "homepage": "https://cloud.layer5.io/academy",
+  "author": "Layer5 Authors",
   "license": "Apache-2.0",
-  "bugs": "https://github.com/google/docsy-example/issues",
+  "bugs": "https://github.com/layer5io/academy-theme/issues",
   "private": true,
   "spelling": "cSpell:ignore docsy hugo htmltest precheck postbuild rtlcss -",
   "scripts": {
@@ -16,7 +16,6 @@
     "_build": "npm run _hugo-dev",
     "_site": "npm run _hugo-dev -- --minify server",
     "_check:links": "echo \"Skipped: go run github.com/wjdp/htmltest@${HTMLTEST_VERSION:-latest} -s\"",
-    "_local": "npx cross-env HUGO_MODULE_WORKSPACE=exoscale-academy.work",
     "build": "npm run _build",
     "build:preview": "npm run _hugo-dev -- --minify --baseURL \"${DEPLOY_PRIME_URL:-/}\"",
     "build:production": "npm run _hugo -- --minify --gc",
@@ -24,7 +23,6 @@
     "site:no-watch": "npm run _hugo-dev -- --minify --watch=false server",
     "clean": "rm -Rf public/* resources",
     "make:public": "git init -b main public",
-    "local": "npm run _local -- npm run",
     "check:links": "npm run _check:links",
     "precheck:links": "npm run build",
     "postbuild:preview": "npm run _check:links",
@@ -34,18 +32,16 @@
     "format:check": "prettier --check .",
     "update:pkg:dep": "npm install --save-dev autoprefixer@latest postcss-cli@latest",
     "update:pkg:hugo": "npm install --save-dev --save-exact hugo-extended@latest",
-    "update:pkgs": "npx npm-check-updates -u",
-    "update:theme": "hugo mod get github.com/layer5io/academy-theme"
+    "update:pkgs": "npx npm-check-updates -u"
   },
   "devDependencies": {
-    "autoprefixer": "^10.4.27",
-    "cross-env": "^7.0.3",
-    "hugo-extended": "0.158.0",
-    "postcss": "^8.5.12",
-    "postcss-cli": "^11.0.1",
-    "prettier": "3.8.3",
-    "rtlcss": "^4.3.0"
-  },
+  "autoprefixer": "^10.5.0",
+  "hugo-extended": "0.158.0",
+  "postcss": "^8.5.15",
+  "postcss-cli": "^11.0.1",
+  "prettier": "3.8.3",
+  "rtlcss": "^4.3.0"
+},
   "optionalDependencies": {
     "npm-check-updates": "^18.0.1"
   },

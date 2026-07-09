@@ -64,7 +64,7 @@ markup:
     # Uncomment if you want your chosen highlight style used for code blocks without a specified language
     # guessSyntax: true
     noClasses: false
-    style: github 
+    style: github
 
 # Everything below this are Site Params
 
@@ -205,8 +205,6 @@ params:
         desc: Discuss development issues around the project
 
 module:
-  # Uncomment the next line to build and serve using local docsy clone declared in the named Hugo workspace:
-  # workspace: docsy.work
   hugoVersion:
     extended: true
     min: 0.156.0
