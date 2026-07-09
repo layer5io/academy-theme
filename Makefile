@@ -106,5 +106,4 @@ lint-fix:
 	format-check \
 	lint-fix \
 	check-deps \
-	check-go \
-	theme-update
+	check-go 
