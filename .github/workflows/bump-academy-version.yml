@@ -20,49 +20,50 @@ jobs:
           - meshery-extensions/digitalocean-academy
           - meshery-extensions/tcslabs-academy
     steps:
-
-      - name: Setup Hugo (Extended)
-        uses: peaceiris/actions-hugo@v2
-        with:
-          hugo-version: '0.158.0'
-          extended: true
-
-      - name: Checkout academy-theme code
-        uses: actions/setup-go@v5
-        with:
-          go-version: '1.24'
-
       - name: Checkout dependent repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ${{ matrix.dependent-repo }}
           token: ${{ secrets.GH_ACCESS_TOKEN }}
-          path: dependent
           ref: master
 
-      - name: Update dependency in go.mod
-        run: |
-          cd dependent
-          make theme-update
-          # go mod edit -require=github.com/layer5io/academy-theme@${{ github.event.release.tag_name }}
-          # go mod tidy
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
 
-      - name: Create Pull pull-requests
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: Install dependencies
+        run: make setup
+
+      - name: Update dependency in go.mod
+        id: bump
+        run: |
+          make theme-update
+          version=$(go list -m -f '{{.Version}}' github.com/layer5io/academy-theme)
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Create Pull Request
         uses: peter-evans/create-pull-request@v7
         with:
-          path: dependent
           token: ${{ secrets.GH_ACCESS_TOKEN }}
-          branch: update-academy-theme-${{ github.event.release.tag_name }}
-          title: '[Automated] Update academy-theme to ${{ github.event.release.tag_name }}'
+          branch: update-academy-theme-${{ steps.bump.outputs.version }}
+          title: "[Automated] Update academy-theme to ${{ steps.bump.outputs.version }}"
           body: |
-            This PR updates the academy-theme dependency to the latest release version ${{ github.event.release.tag_name }}.
+            This PR updates the academy-theme dependency to the latest release version ${{ steps.bump.outputs.version }}.
 
             Changes:
             - Updated go.mod
             - Regenerated go.sum
 
             Auto-generated based upon release of a new version of layer5io/academy-theme.
-          commit-message: Update academy-theme to ${{ github.event.release.tag_name }}
+          commit-message: Update academy-theme to ${{ steps.bump.outputs.version }}
           committer: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
           signoff: true
