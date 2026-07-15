@@ -176,11 +176,11 @@ Registry lookups are scoped to root learning paths, challenges, and
 certifications. Nested course/module/page/test IDs are not checked against the
 Cloud curriculum registry.
 
-Validation respects the build's draft mode. Draft content is only validated
-when the build actually renders it (`hugo --buildDrafts`); those drafts are
-checked softly and never block publishing. When draft mode is off, draft
-modules are not part of the build and are skipped entirely — they are neither
-checked against the registry nor reported as warnings.
+Validation respects the build's draft mode. Draft root content is only
+validated when the build actually renders it (`hugo --buildDrafts`); those
+drafts are checked softly and never block publishing. When draft mode is off,
+draft root content is not part of the build and is skipped entirely — it is
+neither checked against the registry nor reported as warnings.
 
 If `params.academy.registryURL` is not configured, the build prints one
 configuration warning and does not report existing IDs as invalid because they

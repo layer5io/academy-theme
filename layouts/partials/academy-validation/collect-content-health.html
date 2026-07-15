@@ -69,10 +69,12 @@
     {{- $fix := "" -}}
     {{- $registryStatus := "" -}}
     {{- $cloudStatus := "" -}}
-    {{- /* A page only carries a Hugo draft flag inside $site.Pages when the build
-           itself included drafts (hugo --buildDrafts). Treat that as "draft mode on"
-           for this content: it is being rendered, so validate it softly below. */ -}}
-    {{- $draftBuilt := or .Draft (eq (printf "%v" .Params.draft | lower) "true") -}}
+    {{- /* .Draft is Hugo's build-aware draft state: a page only carries it inside
+           $site.Pages when the build itself rendered drafts (hugo --buildDrafts).
+           Treat that as "draft mode on" for this content and validate it softly below.
+           $isDraft additionally covers content marked draft in front matter on disk;
+           when such content is not being built it is skipped rather than validated. */ -}}
+    {{- $draftBuilt := .Draft -}}
     {{- $isDraft := $draftBuilt -}}
     {{- if not $isDraft -}}
       {{- $sourcePath := printf "content/%s" $filePath -}}
