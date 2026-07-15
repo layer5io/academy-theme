@@ -69,7 +69,11 @@
     {{- $fix := "" -}}
     {{- $registryStatus := "" -}}
     {{- $cloudStatus := "" -}}
-    {{- $isDraft := or .Draft (eq (printf "%v" .Params.draft | lower) "true") -}}
+    {{- /* A page only carries a Hugo draft flag inside $site.Pages when the build
+           itself included drafts (hugo --buildDrafts). Treat that as "draft mode on"
+           for this content: it is being rendered, so validate it softly below. */ -}}
+    {{- $draftBuilt := or .Draft (eq (printf "%v" .Params.draft | lower) "true") -}}
+    {{- $isDraft := $draftBuilt -}}
     {{- if not $isDraft -}}
       {{- $sourcePath := printf "content/%s" $filePath -}}
       {{- $source := try (os.ReadFile $sourcePath) -}}
@@ -85,7 +89,14 @@
       {{- $draft = add $draft 1 -}}
     {{- end -}}
 
-    {{- if not (partial "academy-validation/validate-academy-org-id.html" $orgID) -}}
+    {{- if and $isDraft (not $draftBuilt) -}}
+      {{- /* Content is marked draft but the build's draft mode is off (Hugo is not
+             rendering it). Respect the build mode and skip validation entirely so we
+             never check or warn on draft modules that are not part of this build. */ -}}
+      {{- $status = "draft" -}}
+      {{- $issue = "Draft content is not validated while the build's draft mode is off." -}}
+      {{- $fix = "Build with drafts enabled (--buildDrafts) to validate this draft, or publish it." -}}
+    {{- else if not (partial "academy-validation/validate-academy-org-id.html" $orgID) -}}
       {{- $status = "broken" -}}
       {{- $issue = "Content is outside a valid organization directory." -}}
       {{- $fix = "Move this root content under content/<type>/<org-id>/<slug>/." -}}
@@ -117,7 +128,7 @@
       {{- end -}}
     {{- end -}}
 
-    {{- if and $isDraft (ne $status "good") -}}
+    {{- if and $draftBuilt (ne $status "good") -}}
       {{- $status = "draft_warning" -}}
       {{- if eq $issue "" -}}
         {{- $issue = "Draft content could not be fully validated." -}}

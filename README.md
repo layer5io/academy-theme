@@ -173,9 +173,14 @@ Supported `validationMode` values:
 - `off` suppresses content health warnings and skips registry lookups.
 
 Registry lookups are scoped to root learning paths, challenges, and
-certifications. Draft root content is not warning-producing and is hidden from
-the Instructor Toolkit report. Nested course/module/page/test IDs are not
-checked against the Cloud curriculum registry.
+certifications. Nested course/module/page/test IDs are not checked against the
+Cloud curriculum registry.
+
+Validation respects the build's draft mode. Draft content is only validated
+when the build actually renders it (`hugo --buildDrafts`); those drafts are
+checked softly and never block publishing. When draft mode is off, draft
+modules are not part of the build and are skipped entirely — they are neither
+checked against the registry nor reported as warnings.
 
 If `params.academy.registryURL` is not configured, the build prints one
 configuration warning and does not report existing IDs as invalid because they
