@@ -21,14 +21,14 @@ jobs:
           - meshery-extensions/tcslabs-academy
     steps:
       - name: Checkout dependent repo
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           repository: ${{ matrix.dependent-repo }}
           token: ${{ secrets.GH_ACCESS_TOKEN }}
           ref: master
 
       - name: Setup Node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: '22'
 
