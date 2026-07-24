@@ -1,33 +1,67 @@
-{{ $data := "" }} 
-{{ $p := "static/data/csv/keys-backup.csv" }} 
-{{ $excludedColumns := slice 0 10 11 12 13 14 15 16 17 18 }} 
+{{/*
+  Renders a permissions CSV as one table per role, listing the permissions
+  that role has access to.
+  Usage:
+  {{< role-tables src="keys-backup.csv" >}}
+  {{< role-tables src="static/data/csv/keys-backup.csv" >}}
 
-{{ if os.FileExists $p }} 
-  {{ $opts := dict "delimiter" "," }} 
-  {{ $data = (os.ReadFile $p | transform.Unmarshal $opts) }} 
-{{ else }} 
-  {{ errorf "Unable to get resource %q" $p }} 
-{{ end }} 
+  Params:
+  src - path to the CSV. Resolved against the page bundle first, then
+        assets/, then the project root.
 
-{{ if $data }} 
-  {{ $uniqueCategories := slice }} 
-  {{ $stopAddingCategories := false }} 
+  Expected CSV shape: row 1 is the header, columns 2 and 3 are Function and
+  Feature, role columns run from column 5 up to "Keychain ID". A row is
+  listed under a role when that role's cell is X or X*.
+*/}}
+{{- $src := .Get "src" -}}
+{{- $opts := dict "delimiter" "," -}}
+{{- $data := "" -}}
 
-  {{ range $i, $header := index $data 1 }} 
-    {{ if gt $i 3 }} 
-      {{ if eq $header "Keychain ID" }} 
-        {{ $stopAddingCategories = true }} 
-      {{ end }} 
+{{- if not $src -}}
+  {{- errorf "role-tables: src required. See %s" .Position -}}
+{{- else -}}
+  {{- with or (.Page.Resources.Get $src) (resources.Get $src) -}}
+    {{- $data = transform.Unmarshal $opts . -}}
+  {{- else -}}
+    {{- if os.FileExists $src -}}
+      {{- $data = transform.Unmarshal $opts (os.ReadFile $src) -}}
+    {{- else -}}
+      {{- errorf "role-tables: %q not found in page bundle, assets, or project root. See %s" $src .Position -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 
-      {{ if not $stopAddingCategories }} 
-        {{ if and (ne (trim $header "") "") (not (in $uniqueCategories $header)) }} 
-          {{ $uniqueCategories = $uniqueCategories | append $header }} 
-        {{ end }} 
-      {{ end }} 
-    {{ end }} 
-  {{ end }} 
+{{ if $data }}
+  {{ $header := index $data 1 }}
 
-  {{ range $index, $category := $uniqueCategories }}
+  {{/* Column positions, resolved once */}}
+  {{ $functionIndex := -1 }}
+  {{ $featureIndex := -1 }}
+  {{ range $j, $col := $header }}
+    {{ if eq $col "Function" }}{{ $functionIndex = $j }}{{ end }}
+    {{ if eq $col "Feature" }}{{ $featureIndex = $j }}{{ end }}
+  {{ end }}
+  {{ if or (lt $functionIndex 0) (lt $featureIndex 0) }}
+    {{ errorf "role-tables: %q is missing a Function or Feature column. See %s" $src $.Position }}
+  {{ end }}
+
+  {{/* Role columns: index 4 up to "Keychain ID" */}}
+  {{ $roles := slice }}
+  {{ range $i, $col := $header }}
+    {{ if gt $i 3 }}
+      {{ if eq $col "Keychain ID" }}{{ break }}{{ end }}
+      {{ if and (ne (trim $col " ") "") (not (in $roles $col)) }}
+        {{ $roles = $roles | append $col }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  {{ range $category := $roles }}
+    {{ $categoryIndex := -1 }}
+    {{ range $j, $col := $header }}
+      {{ if eq $col $category }}{{ $categoryIndex = $j }}{{ end }}
+    {{ end }}
+
     <div class="csvtable-div">
       {{ $sectionName := $category | lower }}
       {{ $urlPath := "roles" }}
@@ -40,77 +74,30 @@
       {{ else if hasPrefix $sectionName "provider" }}
         {{ $urlPath = "roles/#provider-admin-role" }}
       {{ else }}
-        {{ $urlPath = print "roles/" $sectionName | urlize }}
+        {{ $urlPath = print "roles/" (urlize $sectionName) }}
       {{ end }}
       <h2><a href="/cloud/security/{{ $urlPath }}">{{ $category }} Role</a></h2>
       <table class="csvtable td-initial">
         <thead>
           <tr>
-            {{ range $i, $col := index $data 1 }} 
-              {{ if and (not (in $excludedColumns $i)) (or (eq $i 0) (ne $i 1) (ne $i 2)) }} 
-                {{ if and (eq $i 1) }}
-                  <th>Permission</th>
-                {{ else }} 
-                  {{ if and (eq $i 2) }}
-                    <th>Description</th>
-                  {{ end }}
-                {{ end }} 
-              {{ end }} 
-            {{ end }}
+            <th>Permission</th>
+            <th>Description</th>
           </tr>
         </thead>
         <tbody>
-          {{ range $i, $row := $data }} 
-            {{ if gt $i 0 }} 
-              {{/* Skip the header row */}}
-              {{ $hasAccess := false }} 
-              {{/* Flag to track if the row has access for the category */}}
-              {{ $functionValue := "" }} 
-              {{/* Variable to hold the Function value */}}
-              {{ $featureValue := "" }} 
-              {{/* Variable to hold the Feature value */}}
-
-              {{/* Find the column indices for Category, Function, and Feature */}}
-              {{ $categoryIndex := -1 }}
-              {{ $functionIndex := -1 }}
-              {{ $featureIndex := -1 }}
-              {{ range $j, $header := index $data 1 }} 
-                {{/* Assuming the first row contains headers */}}
-                {{ if eq $header $category }} 
-                  {{/* Check if the header matches the current category */}}
-                  {{ $categoryIndex = $j }}
-                {{ end }}
-                {{ if eq $header "Function" }}
-                  {{ $functionIndex = $j }}
-                {{ end }}
-                {{ if eq $header "Feature" }}
-                  {{ $featureIndex = $j }}
-                {{ end }}
+          {{ range $i, $row := $data }}
+            {{ if gt $i 1 }}
+              {{ $cell := index $row $categoryIndex }}
+              {{ if or (eq $cell "X") (eq $cell "X*") }}
+                <tr>
+                  <td>{{ index $row $functionIndex }}</td>
+                  <td>{{ index $row $featureIndex }}</td>
+                </tr>
               {{ end }}
-              
-              {{/* Check if the row has access for the category */}}
-              {{ if and (ge $categoryIndex 0) (or (eq (index $row $categoryIndex) "X") (eq (index $row $categoryIndex) "X*")) }}
-                {{ $hasAccess = true }}
-              {{ end }}
-              {{/* Get the Function and Feature values if the row has access */}}
-              {{ if $hasAccess }}
-                {{ $functionValue = index $row $functionIndex }}
-                {{ $featureValue = index $row $featureIndex }}
-              {{ end }}
-
-              {{/* Print the row if it has access */}}
-              {{ if $hasAccess }}
-              <tr>
-                <td>{{ $functionValue }} </td>
-                <td>{{ $featureValue }}</td>
-              </tr>
-              {{ end }}
-            {{ end }} 
+            {{ end }}
           {{ end }}
         </tbody>
       </table>
     </div>
-  {{ end }} 
-{{ else }}
-  <p>No data available.</p>
+  {{ end }}
 {{ end }}

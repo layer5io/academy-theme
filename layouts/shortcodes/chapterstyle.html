@@ -1,4 +1,16 @@
-{{ $style := .Get "style" | default "" }}
-<div class="chapter-content"{{ with $style }} style="{{ . }}"{{ end }}>
-  {{ .Inner | .Page.RenderString }}
+{{/*
+  Shortcode to wrap markdown content in a styled chapter container.
+  Usage:
+  {{< chapter >}}
+    Your markdown content goes here.
+  {{< /chapter >}}
+
+  {{< chapter style="columns: 2; text-align: justify;" >}}...{{< /chapter >}}
+
+  Params:
+  style - optional inline CSS declarations applied to the wrapper.
+*/}}
+{{- $style := .Get "style" -}}
+<div class="chapter-content"{{ with $style }} style="{{ . | safeCSS }}"{{ end }}>
+  {{ .Page.RenderString (dict "display" "block") .Inner }}
 </div>

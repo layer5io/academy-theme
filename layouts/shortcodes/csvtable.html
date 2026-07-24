@@ -1,23 +1,39 @@
-{{ $data := "" }}
+{{/*
+  Renders a permissions CSV as one table per category.
+  Usage:
+  {{< permissions-table src="keys-backup.csv" >}}
+  {{< permissions-table src="static/data/csv/keys-backup.csv" >}}
 
-{{ $p := "static/data/csv/keys-backup.csv" }}
-{{ $excludedColumns := slice "Category" "Keychain ID" "Key ID" "Inserted" "Local Provider" }} <!-- Add the names of the columns to exclude -->
+  Params:
+  src - path to the CSV. Resolved against the page bundle first, then
+        assets/, then the project root.
 
-{{ if os.FileExists $p }}
-  {{ $opts := dict "delimiter" "," }}
-  {{ $data = (os.ReadFile $p | transform.Unmarshal $opts) }}
-{{ else }}
-  {{ errorf "Unable to get resource %q" $p }}
-{{ end }}
+  Expected CSV shape: row 1 is a title row (skipped), row 2 is the header,
+  column 1 is the category. Columns 4-10 render X / X* as ✅ / ✅ *,
+  anything else as ❌.
+*/}}
+{{- $src := .Get "src" -}}
+{{- $excludedColumns := slice "Category" "Keychain ID" "Key ID" "Inserted" "Local Provider" -}}
+{{- $opts := dict "delimiter" "," -}}
+{{- $data := "" -}}
+
+{{- if not $src -}}
+  {{- errorf "permissions-table: src required. See %s" .Position -}}
+{{- else -}}
+  {{- with or (.Page.Resources.Get $src) (resources.Get $src) -}}
+    {{- $data = transform.Unmarshal $opts . -}}
+  {{- else -}}
+    {{- if os.FileExists $src -}}
+      {{- $data = transform.Unmarshal $opts (os.ReadFile $src) -}}
+    {{- else -}}
+      {{- errorf "permissions-table: %q not found in page bundle, assets, or project root. See %s" $src .Position -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
 
 {{ if $data }}
-  {{ $uniqueCategories := slice }}
   {{ $header := index $data 1 }}
-  {{ $headerMap := dict }}
-
-  {{ range $i, $col := $header }}
-    {{ $headerMap = merge $headerMap (dict $col $i) }}
-  {{ end }}
+  {{ $uniqueCategories := slice }}
 
   {{ range $i, $row := $data }}
     {{ if gt $i 1 }}
@@ -28,12 +44,12 @@
     {{ end }}
   {{ end }}
 
-  {{ range $index, $category := $uniqueCategories }}
+  {{ range $category := $uniqueCategories }}
     <h2>{{ $category }} Permissions</h2>
     <table class="csvtable td-initial">
       <thead>
         <tr>
-          {{ range $i, $col := $header }}
+          {{ range $col := $header }}
             {{ if not (in $excludedColumns $col) }}
               {{ if eq $col "Function" }}
                 <th>Permission</th>
@@ -52,8 +68,6 @@
                   {{ $urlPath = "roles/#provider-admin-role" }}
                 {{ else if hasPrefix $sectionName "user" }}
                   {{ $urlPath = "roles/user-role" }}
-                {{ else }}
-                  {{ $urlPath = print "roles/" }}
                 {{ end }}
                 <th><a href="/cloud/security/{{ $urlPath }}">{{ $col }}</a></th>
               {{ end }}
@@ -89,7 +103,4 @@
       </tbody>
     </table>
   {{ end }}
-
-{{ else }}
-  <p>No data available.</p>
 {{ end }}

@@ -1,1 +1,11 @@
-{{ .Page.Scratch.Set "lab_intro" .Inner }}
+{{/*
+  Captures content for later output without rendering it in place.
+  Usage:
+  {{< lab-intro >}}
+    Your markdown content goes here.
+  {{< /lab-intro >}}
+
+  Output is emitted by {{< lab-outro >}}, which must appear later in the
+  same file.
+*/}}
+{{- .Page.Store.Set "lab_intro" .Inner -}}
