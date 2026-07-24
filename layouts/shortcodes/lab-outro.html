@@ -1,0 +1,10 @@
+{{/*
+  Renders the content captured by {{< lab-intro >}} earlier in the page.
+  Usage:
+  {{< lab-outro >}}
+*/}}
+{{- with .Page.Store.Get "lab_intro" -}}
+  {{- $.Page.RenderString (dict "display" "block") . -}}
+{{- else -}}
+  {{- warnf "lab-outro: no lab-intro found on this page. See %s" $.Position -}}
+{{- end -}}

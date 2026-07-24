@@ -1,0 +1,50 @@
+{{/*
+  Renders a Swagger UI viewer for an OpenAPI spec, loading its own assets.
+  No front matter type is required.
+  Usage:
+  {{< swaggerui src="example.json" >}}
+  {{< swaggerui src="/data/openapi.json" >}}
+  {{< swaggerui src="https://petstore3.swagger.io/api/v3/openapi.json" >}}
+
+  Params:
+  src         - path to the spec. Absolute URLs and root-relative paths (files
+                under static/) are used as-is; anything else is resolved against
+                the page bundle, then assets/.
+  version     - optional swagger-ui-dist version, defaults to the pin below.
+  deepLinking - optional "true" to write the expanded operation into the URL
+                fragment. Off by default; only safe with one viewer per page.
+*/}}
+{{- $src := .Get "src" -}}
+{{- $version := .Get "version" | default "5.17.14" -}}
+{{- $deepLinking := eq (.Get "deepLinking" | default "false") "true" -}}
+{{- $base := printf "https://cdn.jsdelivr.net/npm/swagger-ui-dist@%s" $version -}}
+{{- $id := printf "swagger-ui-%d" .Ordinal -}}
+{{- $url := "" -}}
+
+{{- if not $src -}}
+  {{- errorf "swaggerui: src required. See %s" .Position -}}
+{{- else if or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "/") -}}
+  {{- $url = $src -}}
+{{- else -}}
+  {{- with or (.Page.Resources.Get $src) (resources.Get $src) -}}
+    {{- $url = .RelPermalink -}}
+  {{- else -}}
+    {{- errorf "swaggerui: %q not found in page bundle or assets. See %s" $src .Position -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with $url -}}
+  {{- if not ($.Page.Store.Get "swaggerui_loaded") -}}
+    {{- $.Page.Store.Set "swaggerui_loaded" true -}}
+    <link rel="stylesheet" href="{{ $base }}/swagger-ui.css">
+    <script src="{{ $base }}/swagger-ui-bundle.js"></script>
+  {{- end -}}
+  <div id="{{ $id }}"></div>
+  <script>
+    SwaggerUIBundle({
+      url: {{ . }},
+      dom_id: "#{{ $id }}",
+      deepLinking: {{ $deepLinking }}
+    });
+  </script>
+{{- end -}}
