@@ -15,52 +15,118 @@
 include .github/build/Makefile.core.mk
 include .github/build/Makefile.show-help.mk
 
-#----------------------------------------------------------------------------
-# Academy Theme Development Targets
-#----------------------------------------------------------------------------
-## ------------------------------------------------------------
----LOCAL_BUILDS: Show help for available targets
+# ---------------------------------------------------------------------------
+# SHARED TEMPLATE — PROPAGATE CHANGES
+#
+# This Makefile is a shared template. Any change to a main recipe below must be
+# mirrored in the corresponding Makefile of each repository listed here:
+#
+#   - https://github.com/layer5io/docs
+#   - https://github.com/meshery/meshery/tree/master/docs
+#   - https://github.com/topics/meshery-academy
+#
+# Target names, prerequisites, and the npm scripts they call form the shared
+# contract; keep them identical across repositories. The Docker section,
+# theme-update, the check-go implementation, and any extra check-deps guards are
+# per-repository adaptations and are expected to differ. This repository is the
+# theme itself and therefore has no theme-update target.
+#
+# MAIN TARGETS
+#
+#   setup              Install site dependencies (npm install).
+#   build              Build locally with draft, future, and expired content.
+#   build-preview      Build for a deploy preview (uses DEPLOY_PRIME_URL).
+#   build-production   Build for production. Pass BASE_URL=... to set the base URL.
+#   site               Serve locally with live reload.
+#   serve              Serve locally once, file watcher off (no live reload).
+#   clean              Empty the build cache, reinstall dependencies, run 'site'.
+#   lint / lint-fix    Check or auto-fix Markdown linting issues.
+#   check-links        Check internal links in the built site.
+#   check-deps         Verify required commands and local dependencies.
+#   check-go           Verify Go is installed (required by Hugo Modules).
+#
+# ---------------------------------------------------------------------------
 
-## Install dependencies on your local machine.
+# ---------------------------------------------------------------------------
+# MAINTENANCE
+# ---------------------------------------------------------------------------
+
+## Verify required commands and local dependencies are present.
+check-deps:
+	@echo "Checking if 'npm' and local 'hugo' binary are present..."
+	@command -v npm > /dev/null || { echo "Error: 'npm' not found. Please install Node.js and npm."; exit 1; }
+	@test -x node_modules/.bin/hugo || { echo "Error: Hugo binary not found in node_modules. Please run 'make setup' first."; exit 1; }
+	@echo "Dependencies check passed."
+
+## Validate Go is installed
+check-go:
+	@echo "Checking if Go is installed..."
+	@command -v go > /dev/null || { echo "Go is not installed. Please install it before proceeding."; exit 1; }
+	@echo "Go is installed."
+
+## Check internal links in the built site.
+check-links: check-go check-deps
+	npm run check:links
+
+## Check Markdown for linting issues.
+lint: check-deps
+	npm run lint
+
+## Fix Markdown linting issues.
+lint-fix: check-deps
+	npm run lint:fix
+
+# ---------------------------------------------------------------------------
+# LOCAL BUILDS
+# ---------------------------------------------------------------------------
+
+## Install site dependencies
 setup:
 	npm install
 
-## Run site on your local machine with draft and future content enabled.
-site: check-go
-	hugo server -D -F
+## Build the site locally with draft and future content enabled.
+build: check-go check-deps
+	npm run build
 
-## Build site on your local machine.
-build:
-	hugo
+## Build the site for a deploy preview.
+build-preview: check-go check-deps
+	npm run build:preview
 
-## Build site for local consumption
-build-preview:
-	hugo --baseURL=$(BASEURL)
+## Build the site for production.
+build-production: check-go check-deps
+	set -e; \
+	if [ -n "$(BASE_URL)" ]; then \
+		base_url="$(BASE_URL)"; \
+		base_url="$${base_url%/}/"; \
+		npm run build:production -- --baseURL "$$base_url"; \
+	else \
+		npm run build:production; \
+	fi
 
-## Empty build cache and run site on your local machine.
-clean: 
-	hugo --cleanDestinationDir
-	make setup
-	make site
+## Build and run the site locally with live reload (draft and future content enabled).
+site: check-go check-deps
+	npm run site
 
-## Fix Markdown linting issues
-lint-fix:
-	@echo "Checking for markdownlint-cli2..."
-	@command -v markdownlint-cli2 > /dev/null || { \
-		echo "markdownlint-cli2 not found. Attempting to install globally..."; \
-		command -v npm > /dev/null || { echo "npm is not installed. Please install Node.js/npm and re-run 'make lint-fix'."; exit 1; }; \
-		npm install -g markdownlint-cli2; \
-	}
-	@echo "Running markdownlint-cli2 --fix..."
-	@markdownlint-cli2 --fix "**/*.md" "#node_modules" "#public" "#resources"
+## Build and serve the site once with the file-watcher off (no live reload).
+serve: check-go check-deps
+	npm run serve
 
-## ------------------------------------------------------------
----MAINTENANCE: Show help for available targets
+## Empty the build cache, reinstall dependencies, and run the site locally.
+clean:
+	npm run clean
+	$(MAKE) setup
+	$(MAKE) site
 
-## Verify Go is installed locally.
-check-go:
-	@echo "Checking if Go is installed..."
-	@command -v go > /dev/null || (echo "Go is not installed. Please install it before proceeding."; exit 1)
-	@echo "Go is installed."
-
-.PHONY: setup site build build-preview clean lint-fix check-go
+.PHONY: \
+	setup \
+	build \
+	build-preview \
+	build-production \
+	site \
+	serve \
+	clean \
+	check-links \
+	lint \
+	lint-fix \
+	check-deps \
+	check-go

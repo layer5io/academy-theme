@@ -1,6 +1,28 @@
-{{ $name := .Get "name" }}
-{{ with resources.Get (printf "icons/%s.svg" $name) }}
-  {{ .Content | safeHTML }}
-{{ else }}
-  <!-- SVG not found: {{ $name }} -->
-{{ end }}
+{{/*
+  Shortcode to inline an SVG file, resolved from the page bundle first,
+  then the assets directory.
+  Usage:
+  {{< svg name="banana" >}}
+  {{< svg src="path/to/file.svg" >}}
+
+  Params:
+  name - filename without extension. Looks for "<name>.svg" in the page
+         bundle, falling back to "assets/icons/<name>.svg".
+  src  - explicit path including extension, relative to the page bundle
+         or to assets/. Takes precedence over name, so a copied file path
+         can be pasted as-is without stripping the filename.
+*/}}
+{{- $name := .Get "name" -}}
+{{- $src  := .Get "src" -}}
+
+{{- if not (or $name $src) -}}
+  {{- errorf "svg: name or src required. See %s" .Position -}}
+{{- else -}}
+  {{- $local  := or $src (printf "%s.svg" $name) -}}
+  {{- $global := or $src (printf "icons/%s.svg" $name) -}}
+  {{- with or (.Page.Resources.Get $local) (resources.Get $global) -}}
+    {{- .Content | safeHTML -}}
+  {{- else -}}
+    {{- warnf "svg: %q not found in page bundle, %q not in assets. See %s" $local $global .Position -}}
+  {{- end -}}
+{{- end -}}

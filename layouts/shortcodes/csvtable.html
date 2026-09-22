@@ -1,95 +1,118 @@
-{{ $data := "" }}
+{{/*
+  Renders a permissions CSV as one table per category.
+  Usage:
+  {{< csvtable >}}
+  {{< csvtable src="keys-backup.csv" >}}
+  {{< csvtable src="static/data/csv/keys-backup.csv" >}}
 
-{{ $p := "static/data/csv/keys-backup.csv" }}
-{{ $excludedColumns := slice "Category" "Keychain ID" "Key ID" "Inserted" "Local Provider" }} <!-- Add the names of the columns to exclude -->
+  Params:
+  src       - path to the CSV. Resolved against the page bundle first, then
+              assets/, then the project root. Defaults to
+              static/data/csv/keys-backup.csv.
+  headerRow - 0-based index of the header row. Default 0. Set to 1 for a CSV
+              with a title row above the header.
 
-{{ if os.FileExists $p }}
-  {{ $opts := dict "delimiter" "," }}
-  {{ $data = (os.ReadFile $p | transform.Unmarshal $opts) }}
-{{ else }}
-  {{ errorf "Unable to get resource %q" $p }}
-{{ end }}
+  Expected CSV shape: column 0 is the category; columns Function and Feature
+  render as raw text; every other non-metadata column is a role, rendering
+  X / X* as ✅ / ✅ *, anything else as ❌. Metadata columns
+  (Keychain ID, Key ID, Inserted, Local Provider) are hidden.
+*/}}
+{{- $src := .Get "src" | default "static/data/csv/keys-backup.csv" -}}
+{{- $headerRow := int (.Get "headerRow" | default 0) -}}
+{{- $excludedColumns := slice "Category" "Keychain ID" "Key ID" "Inserted" "Local Provider" -}}
+{{- $opts := dict "delimiter" "," -}}
+{{- $data := "" -}}
+
+{{- with or (.Page.Resources.Get $src) (resources.Get $src) -}}
+  {{- $data = transform.Unmarshal $opts . -}}
+{{- else -}}
+  {{- if os.FileExists $src -}}
+    {{- $data = transform.Unmarshal $opts (os.ReadFile $src) -}}
+  {{- else -}}
+    {{- errorf "csvtable: %q not found in page bundle, assets, or project root. See %s" $src .Position -}}
+  {{- end -}}
+{{- end -}}
 
 {{ if $data }}
-  {{ $uniqueCategories := slice }}
-  {{ $header := index $data 1 }}
-  {{ $headerMap := dict }}
+  {{ if ge $headerRow (len $data) }}
+    {{ errorf "csvtable: headerRow %d is past the end of %q. See %s" $headerRow $src $.Position }}
+  {{ else }}
 
-  {{ range $i, $col := $header }}
-    {{ $headerMap = merge $headerMap (dict $col $i) }}
-  {{ end }}
+    {{ $header := slice }}
+    {{ range $col := index $data $headerRow }}
+      {{ $header = $header | append (trim $col " ") }}
+    {{ end }}
 
-  {{ range $i, $row := $data }}
-    {{ if gt $i 1 }}
-      {{ $category := trim (index $row 0) " " }}
-      {{ if not (in $uniqueCategories $category) }}
-        {{ $uniqueCategories = $uniqueCategories | append $category }}
+    {{ $uniqueCategories := slice }}
+    {{ range $i, $row := $data }}
+      {{ if gt $i $headerRow }}
+        {{ $category := trim (index $row 0) " " }}
+        {{ if not (in $uniqueCategories $category) }}
+          {{ $uniqueCategories = $uniqueCategories | append $category }}
+        {{ end }}
       {{ end }}
     {{ end }}
-  {{ end }}
 
-  {{ range $index, $category := $uniqueCategories }}
-    <h2>{{ $category }} Permissions</h2>
-    <table class="csvtable td-initial">
-      <thead>
-        <tr>
-          {{ range $i, $col := $header }}
-            {{ if not (in $excludedColumns $col) }}
-              {{ if eq $col "Function" }}
-                <th>Permission</th>
-              {{ else if eq $col "Feature" }}
-                <th>Description</th>
-              {{ else }}
-                {{ $sectionName := $col | lower }}
-                {{ $urlPath := "roles" }}
-                {{ if hasPrefix $sectionName "workspace" }}
-                  {{ $urlPath = "roles/workspace-roles" }}
-                {{ else if hasPrefix $sectionName "team" }}
-                  {{ $urlPath = "roles/team-roles" }}
-                {{ else if hasPrefix $sectionName "org" }}
-                  {{ $urlPath = "roles/organization-roles" }}
-                {{ else if hasPrefix $sectionName "provider" }}
-                  {{ $urlPath = "roles/#provider-admin-role" }}
-                {{ else if hasPrefix $sectionName "user" }}
-                  {{ $urlPath = "roles/user-role" }}
+    {{ range $category := $uniqueCategories }}
+      <h2>{{ $category }} Permissions</h2>
+      <table class="csvtable td-initial">
+        <thead>
+          <tr>
+            {{ range $col := $header }}
+              {{ if not (in $excludedColumns $col) }}
+                {{ if eq $col "Function" }}
+                  <th>Permission</th>
+                {{ else if eq $col "Feature" }}
+                  <th>Description</th>
                 {{ else }}
-                  {{ $urlPath = print "roles/" }}
+                  {{ $sectionName := $col | lower }}
+                  {{ $urlPath := "roles" }}
+                  {{ if hasPrefix $sectionName "workspace" }}
+                    {{ $urlPath = "roles/workspace-roles" }}
+                  {{ else if hasPrefix $sectionName "team" }}
+                    {{ $urlPath = "roles/team-roles" }}
+                  {{ else if hasPrefix $sectionName "org" }}
+                    {{ $urlPath = "roles/organization-roles" }}
+                  {{ else if hasPrefix $sectionName "provider" }}
+                    {{ $urlPath = "roles/#provider-admin-role" }}
+                  {{ else if hasPrefix $sectionName "user" }}
+                    {{ $urlPath = "roles/user-role" }}
+                  {{ end }}
+                  <th><a href="/cloud/security/{{ $urlPath }}">{{ $col }}</a></th>
                 {{ end }}
-                <th><a href="/cloud/security/{{ $urlPath }}">{{ $col }}</a></th>
               {{ end }}
             {{ end }}
-          {{ end }}
-        </tr>
-      </thead>
-      <tbody>
-        {{ range $i, $row := $data }}
-          {{ if and (gt $i 1) (eq (trim (index $row 0) " ") $category) }}
-            <tr>
-              {{ range $j, $cell := $row }}
-                {{ $col := index $header $j }}
-                {{ if not (in $excludedColumns $col) }}
-                  <td>
-                    {{ if and (gt $j 2) (lt $j 10) }}
-                      {{ if eq $cell "X" }}
-                        ✅
-                      {{ else if eq $cell "X*" }}
-                        ✅ *
+          </tr>
+        </thead>
+        <tbody>
+          {{ range $i, $row := $data }}
+            {{ if and (gt $i $headerRow) (eq (trim (index $row 0) " ") $category) }}
+              <tr>
+                {{ range $j, $cell := $row }}
+                  {{ $cell = trim $cell " " }}
+                  {{ $col := index $header $j }}
+                  {{ if not (in $excludedColumns $col) }}
+                    <td>
+                      {{ if or (eq $col "Function") (eq $col "Feature") }}
+                        {{ $cell }}
                       {{ else }}
-                        ❌
+                        {{ if eq $cell "X" }}
+                          ✅
+                        {{ else if eq $cell "X*" }}
+                          ✅ *
+                        {{ else }}
+                          ❌
+                        {{ end }}
                       {{ end }}
-                    {{ else }}
-                      {{ $cell }}
-                    {{ end }}
-                  </td>
+                    </td>
+                  {{ end }}
                 {{ end }}
-              {{ end }}
-            </tr>
+              </tr>
+            {{ end }}
           {{ end }}
-        {{ end }}
-      </tbody>
-    </table>
-  {{ end }}
+        </tbody>
+      </table>
+    {{ end }}
 
-{{ else }}
-  <p>No data available.</p>
+  {{ end }}
 {{ end }}

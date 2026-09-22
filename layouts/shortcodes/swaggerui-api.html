@@ -1,0 +1,59 @@
+{{/*
+  Renders a Swagger UI viewer for an OpenAPI spec, loading its own assets.
+  No front matter type is required.
+  Usage:
+  {{< swaggerui-api src="example.json" >}}
+  {{< swaggerui-api src="/data/openapi.json" >}}
+
+  Params:
+  src         - path to the spec, which must be part of this site. Root-relative
+                paths (files under static/) are resolved against baseURL;
+                anything else is resolved against the page bundle, then
+                assets/. Remote URLs are not accepted.
+  deepLinking - optional "true" to write the expanded operation into the URL
+                fragment. Off by default; only safe with one viewer per page.
+
+  swagger-ui-dist is pinned with SRI hashes below. To bump it, update $version
+  and both hashes together:
+    curl -sL https://cdn.jsdelivr.net/npm/swagger-ui-dist@<ver>/swagger-ui.css \
+      | openssl dgst -sha384 -binary | openssl base64 -A
+*/}}
+{{- $version := "5.32.11" -}}
+{{- $cssIntegrity := "sha384-9Q2fpS+xeS4ffJy6CagnwoUl+4ldAYhOs9pgZuEKxypVModhmZFzeMlvVsAjf7uT" -}}
+{{- $jsIntegrity := "sha384-vfl/klfTFrIz5urj0HnhcXLAbzPdRHezizfy+XgFB6GqcKkhlk0lS3bIbyB39NLA" -}}
+{{- $base := printf "https://cdn.jsdelivr.net/npm/swagger-ui-dist@%s" $version -}}
+
+{{- $src := .Get "src" -}}
+{{- $deepLinking := eq (.Get "deepLinking" | default "false") "true" -}}
+{{- $id := printf "swagger-ui-%d" .Ordinal -}}
+{{- $url := "" -}}
+
+{{- if not $src -}}
+  {{- errorf "swaggerui-api: src required. See %s" .Position -}}
+{{- else if or (hasPrefix $src "http://") (hasPrefix $src "https://") (hasPrefix $src "//") -}}
+  {{- errorf "swaggerui-api: remote specs are not supported, %q must be a file in this site. See %s" $src .Position -}}
+{{- else if hasPrefix $src "/" -}}
+  {{- $url = relURL (strings.TrimPrefix "/" $src) -}}
+{{- else -}}
+  {{- with or (.Page.Resources.Get $src) (resources.Get $src) -}}
+    {{- $url = .RelPermalink -}}
+  {{- else -}}
+    {{- errorf "swaggerui-api: %q not found in page bundle or assets. See %s" $src .Position -}}
+  {{- end -}}
+{{- end -}}
+
+{{- with $url -}}
+  {{- if not ($.Page.Store.Get "swaggerui_loaded") -}}
+    {{- $.Page.Store.Set "swaggerui_loaded" true -}}
+    <link rel="stylesheet" href="{{ $base }}/swagger-ui.css" integrity="{{ $cssIntegrity }}" crossorigin="anonymous">
+    <script src="{{ $base }}/swagger-ui-bundle.js" integrity="{{ $jsIntegrity }}" crossorigin="anonymous"></script>
+  {{- end -}}
+  <div id="{{ $id }}"></div>
+  <script>
+    SwaggerUIBundle({
+      url: {{ . }},
+      dom_id: "#{{ $id }}",
+      deepLinking: {{ $deepLinking }}
+    });
+  </script>
+{{- end -}}

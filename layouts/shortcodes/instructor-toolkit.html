@@ -106,6 +106,8 @@
                 ✅
               {{- else if eq .status "unchecked" -}}
                 Not checked
+              {{- else if eq .status "draft" -}}
+                Draft
               {{- else -}}
                 {{- if ne $consoleURL "" -}}<a href="{{ $consoleURL }}" target="_blank" rel="noopener" aria-label="Open Instructor Console">❌</a>{{- else -}}❌{{- end -}}
               {{- end -}}
