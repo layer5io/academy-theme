@@ -214,6 +214,40 @@ lookups.
 
 The Instructor Toolkit surfaces the same build-generated report.
 
+## Markdown Images
+
+PNG and JPEG images written as Markdown (`![alt](image.png)`) are encoded to
+WebP at build time and served as a `<picture>`, with the original image kept as
+the fallback for browsers without WebP support. No content or site
+configuration changes are needed: the theme finds images in the page's own
+folder (next to `index.md`/`_index.md`, or in a subfolder of it), then under
+`assets/contentimg` for sites that mount their content there, then in
+`assets/`.
+
+WebP is encoded at quality 85. Hugo's WebP encoder is lossy only: at quality
+100 the output is larger than the source PNG, so 85 is deliberate.
+
+To skip encoding, for example to speed up cold builds, set:
+
+```yaml
+params:
+  academy:
+    webp:
+      enable: false
+```
+
+Encoding requires Hugo extended. Builds without it, and images that cannot be
+found as resources, fall back to a plain `<img>`. Encoded files are stored in
+`resources/_gen`; cache that directory in CI to avoid re-encoding on every
+build.
+
+Not covered by this pipeline:
+
+- the `image` shortcode and raw `<img>` tags in content;
+- images referenced with `../` from a child page (they belong to the parent
+  page's folder) or by a root-relative path into `static/`;
+- GIF and SVG images.
+
 ## Important Notes
 
 ⚠️ **Deprecated Features**

@@ -1,0 +1,42 @@
+{{/*
+  Resolve a Markdown image destination to an image resource that Hugo can process.
+  @param {dict} . - A dictionary containing:
+  - "page" {page}: The page the image appears on.
+  - "src" {string}: The image destination as written in Markdown.
+  @returns {resource|string} The image resource, or "" for remote URLs, formats
+  other than PNG/JPEG, and files that are not resources.
+
+  Lookup order:
+  1. The page's own resources (files next to its index.md/_index.md, or in a
+     subfolder of it). This covers Academy content without any site config.
+  2. "contentimg", for sites that mount their content directory there to share
+     images between pages.
+  3. The site's assets directory.
+*/}}
+{{- $page := .page -}}
+{{- $src := .src -}}
+{{- $img := "" -}}
+
+{{- $url := urls.Parse $src -}}
+{{- $isLocal := not (or $url.Scheme $url.Host) -}}
+{{- $ext := lower (path.Ext $url.Path) -}}
+
+{{- if and $page $url.Path $isLocal (in (slice ".png" ".jpg" ".jpeg") $ext) -}}
+  {{- $isAbsolute := hasPrefix $url.Path "/" -}}
+
+  {{- if not $isAbsolute -}}
+    {{- $img = $page.Resources.Get (path.Clean $url.Path) -}}
+  {{- end -}}
+
+  {{- if not $img -}}
+    {{- $rel := strings.TrimPrefix "/" $url.Path -}}
+    {{- if not $isAbsolute -}}
+      {{- with $page.File -}}
+        {{- $rel = path.Join (replace .Dir "\\" "/") $url.Path -}}
+      {{- end -}}
+    {{- end -}}
+    {{- $img = or (resources.Get (path.Join "contentimg" $rel)) (resources.Get $rel) -}}
+  {{- end -}}
+{{- end -}}
+
+{{- return (or $img "") -}}
