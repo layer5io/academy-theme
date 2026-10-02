@@ -29,23 +29,22 @@
   {{- end -}}
 {{- end -}}
 
-{{- $img := "" -}}
+{{- /* Resolving does not need Hugo extended, so it runs even when WebP is off. */ -}}
+{{- $img := partial "resolve-content-image.html" (dict "page" $page "src" $src) -}}
 {{- $webp := "" -}}
-{{- if and $enabled hugo.IsExtended -}}
-  {{- $img = partial "resolve-content-image.html" (dict "page" $page "src" $src) -}}
-  {{- with $img -}}
-    {{- with try (.Process "webp q85") -}}
-      {{- if .Err -}}
-        {{- warnf "content-image: could not encode %q to WebP on %q, serving the original: %s" $src $page.RelPermalink .Err -}}
-      {{- else -}}
-        {{- $webp = .Value -}}
-      {{- end -}}
+{{- if and $img $enabled hugo.IsExtended -}}
+  {{- with try ($img.Process "webp q85") -}}
+    {{- if .Err -}}
+      {{- warnf "content-image: could not encode %q to WebP on %q, serving the original: %s" $src $page.RelPermalink .Err -}}
+    {{- else -}}
+      {{- $webp = .Value -}}
     {{- end -}}
   {{- end -}}
 {{- end -}}
 
 {{- /* A resolved image is served from its RelPermalink, which also publishes it:
-  files found in assets/ are not published otherwise, so $src would be missing. */ -}}
+  files found in assets/ are not published otherwise, so $src would be missing,
+  whether or not WebP is enabled. */ -}}
 {{- $fallback := $src -}}
 {{- with $img -}}
   {{- $fallback = .RelPermalink -}}
