@@ -44,11 +44,18 @@
   {{- end -}}
 {{- end -}}
 
+{{- /* A resolved image is served from its RelPermalink, which also publishes it:
+  files found in assets/ are not published otherwise, so $src would be missing. */ -}}
+{{- $fallback := $src -}}
+{{- with $img -}}
+  {{- $fallback = .RelPermalink -}}
+{{- end -}}
+
 {{- if $webp -}}
 <picture>
   <source srcset="{{ $webp.RelPermalink }}" type="image/webp" width="{{ $img.Width }}" height="{{ $img.Height }}">
-  <img src="{{ $src | safeURL }}" alt="{{ $alt }}" width="{{ $img.Width }}" height="{{ $img.Height }}" class="{{ $class }}" />
+  <img src="{{ $fallback | safeURL }}" alt="{{ $alt }}" width="{{ $img.Width }}" height="{{ $img.Height }}" class="{{ $class }}" />
 </picture>
 {{- else -}}
-<img src="{{ $src | safeURL }}" alt="{{ $alt }}" class="{{ $class }}" />
+<img src="{{ $fallback | safeURL }}" alt="{{ $alt }}" class="{{ $class }}" />
 {{- end -}}
