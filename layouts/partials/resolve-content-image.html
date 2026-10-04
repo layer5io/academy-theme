@@ -17,11 +17,21 @@
 {{- $src := .src -}}
 {{- $img := "" -}}
 
-{{- $url := urls.Parse $src -}}
-{{- $isLocal := not (or $url.Scheme $url.Host) -}}
-{{- $ext := lower (path.Ext $url.Path) -}}
+{{- /* A malformed destination (e.g. a bad %-escape) is left to the plain <img>
+  instead of failing the build. */ -}}
+{{- $url := "" -}}
+{{- with try (urls.Parse $src) -}}
+  {{- if not .Err -}}
+    {{- $url = .Value -}}
+  {{- end -}}
+{{- end -}}
+{{- $isLocal := and $url (not (or $url.Scheme $url.Host)) -}}
+{{- $ext := "" -}}
+{{- if $url -}}
+  {{- $ext = lower (path.Ext $url.Path) -}}
+{{- end -}}
 
-{{- if and $page $url.Path $isLocal (in (slice ".png" ".jpg" ".jpeg") $ext) -}}
+{{- if and $page $isLocal $url.Path (in (slice ".png" ".jpg" ".jpeg") $ext) -}}
   {{- $isAbsolute := hasPrefix $url.Path "/" -}}
 
   {{- if not $isAbsolute -}}

@@ -20,8 +20,11 @@ function openModal(imageIdOrElement) {
   // currentSrc is the file the browser actually loaded (the WebP inside a
   // <picture>); src is always the fallback, so reading it would re-download it.
   var src = img ? (img.currentSrc || img.src) : undefined;
+  if (!src) {
+    return;
+  }
 
-  if (src && src.includes("#")) {
+  if (src.includes("#")) {
     src = src.substring(0, src.indexOf("#"));
   }
 
