@@ -124,8 +124,8 @@ components, colors, typography, and behaviors across all Layer5 projects.
     existing project variable should be used.
 - **Verify Sistent-Derived Tokens**:
   - When adding or updating Sistent-derived brand/theme variables in SCSS,
-    cross-reference them against the current Sistent design contract in
-    `sistent/DESIGN.md`.
+    cross-reference them against the canonical Sistent design contract at
+    [layer5io/sistent DESIGN.md](https://github.com/layer5io/sistent/blob/master/DESIGN.md).
   - Use Sistent as the external reference for the applicable shared
     brand/design tokens.
   - Do not create or maintain a duplicate `DESIGN.md` in `academy-theme`.
