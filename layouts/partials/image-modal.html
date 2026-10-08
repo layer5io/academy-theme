@@ -8,17 +8,23 @@
 <script>
 // Open the Modal
 function openModal(imageIdOrElement) {
-  var src;
+  var img;
 
   if (typeof imageIdOrElement === 'string') {
-    // If it's a string (image ID), get the source using the ID
-    src = document.getElementById(imageIdOrElement).src;
+    // If it's a string (image ID), get the image using the ID
+    img = document.getElementById(imageIdOrElement);
   } else if (imageIdOrElement instanceof HTMLImageElement) {
-    // If <img>, get the source directly
-    src = imageIdOrElement.src;
+    img = imageIdOrElement;
   }
 
-  if (src && src.includes("#")) {
+  // currentSrc is the file the browser actually loaded (the WebP inside a
+  // <picture>); src is always the fallback, so reading it would re-download it.
+  var src = img ? (img.currentSrc || img.src) : undefined;
+  if (!src) {
+    return;
+  }
+
+  if (src.includes("#")) {
     src = src.substring(0, src.indexOf("#"));
   }
 
