@@ -116,10 +116,19 @@ This theme adheres to the [Layer5 Sistent Design
 System](https://github.com/layer5io/sistent), which provides consistent UI
 components, colors, typography, and behaviors across all Layer5 projects.
 
-- **Color Palette**: Use colors defined in `assets/scss/_variables_project.scss`
-  - Primary: `#00b39f` (teal/green)
-  - Secondary: `#3C494F` (dark gray)
-  - Refer to the Sistent design system for the complete color palette
+- **Color Palette & Brand Tokens**:
+  - For brand and theme colors, use the existing SCSS variables from
+    `assets/scss/_variables_project.scss` (e.g., `$primary`, `$secondary`)
+    rather than hardcoding hex values in layouts, partials, or shortcodes.
+  - Do not introduce new hardcoded Sistent-derived color values when an
+    existing project variable should be used.
+- **Verify Sistent-Derived Tokens**:
+  - When adding or updating Sistent-derived brand/theme variables in SCSS,
+    cross-reference them against the canonical Sistent design contract at
+    [layer5io/sistent DESIGN.md](https://github.com/layer5io/sistent/blob/master/DESIGN.md).
+  - Use Sistent as the external reference for the applicable shared
+    brand/design tokens.
+  - Do not create or maintain a duplicate `DESIGN.md` in `academy-theme`.
 - **Typography**: Follow Qanelas Soft font family and typography scale
 - **Components**: Ensure UI components match Sistent design patterns
 - **Behaviors**: Interactive elements should follow Sistent interaction patterns
