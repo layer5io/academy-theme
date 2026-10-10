@@ -161,7 +161,7 @@ system to maintain consistency across Layer5 properties.
 
 ### Security Considerations
 
-- Report security vulnerabilities to <security-vulns-reports@layer5.io>
+- Report security vulnerabilities to <security@layer5.io>
 - Never commit secrets or credentials
 - Review the [SECURITY.md](./SECURITY.md) file for full security policy
 
