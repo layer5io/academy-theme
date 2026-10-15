@@ -1,0 +1,60 @@
+{{/*
+  Render a content image. PNG and JPEG images that resolve to a resource are
+  served as <picture> with a WebP derivative, keeping the original as the
+  fallback <img>. Anything else is rendered as a plain <img>.
+  @param {dict} . - A dictionary containing:
+  - "page" {page}: The page the image appears on.
+  - "src" {string}: The image destination as written in Markdown.
+  - "alt" {string}: The alternative text.
+  - "class" {string}: The CSS classes for the <img>.
+
+  Set params.academy.webp.enable to false to skip WebP encoding. A missing
+  param means enabled. (Not params.images: Hugo reads that as the list of
+  default social card images.)
+
+  WebP is encoded at q85 because Hugo's WebP encoder is lossy only: at q100 the
+  output is larger than the source PNG, and q85 keeps screenshot text sharp.
+*/}}
+{{- $page := .page -}}
+{{- $src := .src -}}
+{{- $alt := .alt -}}
+{{- $class := .class -}}
+
+{{- $enabled := true -}}
+{{- with site.Params.academy -}}
+  {{- with .webp -}}
+    {{- if or (eq .enable false) (eq .enable "false") -}}
+      {{- $enabled = false -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* Resolving does not need Hugo extended, so it runs even when WebP is off. */ -}}
+{{- $img := partial "resolve-content-image.html" (dict "page" $page "src" $src) -}}
+{{- $webp := "" -}}
+{{- if and $img $enabled hugo.IsExtended -}}
+  {{- with try ($img.Process "webp q85") -}}
+    {{- if .Err -}}
+      {{- warnf "content-image: could not encode %q to WebP on %q, serving the original: %s" $src $page.RelPermalink .Err -}}
+    {{- else -}}
+      {{- $webp = .Value -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+{{- /* A resolved image is served from its RelPermalink, which also publishes it:
+  files found in assets/ are not published otherwise, so $src would be missing,
+  whether or not WebP is enabled. */ -}}
+{{- $fallback := $src -}}
+{{- with $img -}}
+  {{- $fallback = .RelPermalink -}}
+{{- end -}}
+
+{{- if $webp -}}
+<picture>
+  <source srcset="{{ $webp.RelPermalink }}" type="image/webp" width="{{ $img.Width }}" height="{{ $img.Height }}">
+  <img src="{{ $fallback | safeURL }}" alt="{{ $alt }}" width="{{ $img.Width }}" height="{{ $img.Height }}" class="{{ $class }}" />
+</picture>
+{{- else -}}
+<img src="{{ $fallback | safeURL }}" alt="{{ $alt }}" class="{{ $class }}" />
+{{- end -}}

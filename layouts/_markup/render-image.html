@@ -1,13 +1,10 @@
-<!-- Images that use the standard image format for markdown will be displayed in a 
-  magnific modal popup. Use format ![alt text](/path/to/image.img) -->
-<!-- Place this file in layouts > _default > _markup > render-image.html -->
-<!-- Also place the image-modal.css and partial/image-modal.html appropriately. -->
-<!-- Id for the image on the page is set to a random 6 numbers, chosen from 1 to 500 -->
-<!-- Onclick opens the modal, and displays/overlays the the image that has the id for the 
-  clicked image. -->
+<!-- Images that use the standard image format for markdown will be displayed in a
+  magnific modal popup. Use format ![alt text](image.png), with the image in the page's folder -->
+<!-- PNG and JPEG images are also served as WebP; see partials/content-image.html. -->
+<!-- Clicking an image opens the modal (partials/image-modal.html attaches the handler to every <img>). -->
+<!-- The Markdown title is not used: in Academy content it is a caption, not a CSS class. -->
 <!-- attribution appreciated. github: zjeaton web: https://froglegs.co -->
 
 <div class="md__image">
-  <img id="{{ first 6 (shuffle (seq 1 500)) }}" src="{{ .Destination | safeURL }}" onclick="openModal(this.id)" alt="{{ .Text }}" 
-  class="md-image-responsive{{ with .Title }} {{ . }}{{ end }}" />
+  {{- partial "content-image.html" (dict "page" .Page "src" .Destination "alt" .Text "class" "md-image-responsive") }}
 </div>

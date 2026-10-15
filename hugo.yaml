@@ -87,6 +87,10 @@ params:
   academy:
     domain: cloud.meshery.io
     registryURL: https://cloud.meshery.io/api/academy/curricula
+    # Serve Markdown PNG/JPEG images as WebP, keeping the original as the
+    # fallback. Set to false to skip encoding, e.g. to speed up cold builds.
+    webp:
+      enable: true
 
   privacy_policy: https://policies.google.com/privacy
 
