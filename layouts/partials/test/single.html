@@ -53,14 +53,22 @@
   {{- end -}}
   {{- if eq $setIdx 0 -}}
     {{- $firstSetMarks = $currentSetMarks -}}
-  {{- else if ne $currentSetMarks $firstSetMarks -}}
+  {{- else if ne (printf "%.4f" (float $currentSetMarks)) (printf "%.4f" (float $firstSetMarks)) -}}
     {{- errorf "Question Set %d total marks (%v) does not match Set 1 total marks (%v) in [ %s ]. All randomized question sets must have identical total marks to ensure consistent exam grading." (add $setIdx 1) $currentSetMarks $firstSetMarks $.File.Path -}}
   {{- end -}}
 {{- end -}}
 {{- $total := $firstSetMarks -}}
 
-{{- $configuredTotal := or $p.totalmarks $p.total_marks -}}
-{{- if and $configuredTotal (ne $configuredTotal $total) -}}
+{{- $hasConfiguredTotal := false -}}
+{{- $configuredTotal := 0 -}}
+{{- if isset $p "totalmarks" -}}
+  {{- $hasConfiguredTotal = true -}}
+  {{- $configuredTotal = $p.totalmarks -}}
+{{- else if isset $p "total_marks" -}}
+  {{- $hasConfiguredTotal = true -}}
+  {{- $configuredTotal = $p.total_marks -}}
+{{- end -}}
+{{- if and $hasConfiguredTotal (ne (printf "%.4f" (float $configuredTotal)) (printf "%.4f" (float $total))) -}}
   {{- errorf "Configured total marks (%v) does not match calculated total marks per set (%v) in [ %s ]" $configuredTotal $total $.File.Path -}}
 {{- end -}}
 
