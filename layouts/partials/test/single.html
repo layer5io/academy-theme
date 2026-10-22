@@ -43,10 +43,34 @@
 
 {{- $numberOfQuestionSets := div (len $rawQuestions) $totalQuestionsPerSet -}}
 
-{{- $total := 0 -}}
-{{- range first $totalQuestionsPerSet $rawQuestions -}}
-  {{- $total = add $total (or .marks 0) }}
-{{- end }}
+{{- $firstSetMarks := 0 -}}
+{{- range $setIdx := seq 0 (sub $numberOfQuestionSets 1) -}}
+  {{- $setStart := mul $setIdx $totalQuestionsPerSet -}}
+  {{- $setQuestions := first $totalQuestionsPerSet (after $setStart $rawQuestions) -}}
+  {{- $currentSetMarks := 0 -}}
+  {{- range $setQuestions -}}
+    {{- $currentSetMarks = add $currentSetMarks (or .marks 0) -}}
+  {{- end -}}
+  {{- if eq $setIdx 0 -}}
+    {{- $firstSetMarks = $currentSetMarks -}}
+  {{- else if ne (printf "%.4f" (float $currentSetMarks)) (printf "%.4f" (float $firstSetMarks)) -}}
+    {{- errorf "Question Set %d total marks (%v) does not match Set 1 total marks (%v) in [ %s ]. All randomized question sets must have identical total marks to ensure consistent exam grading." (add $setIdx 1) $currentSetMarks $firstSetMarks $.File.Path -}}
+  {{- end -}}
+{{- end -}}
+{{- $total := $firstSetMarks -}}
+
+{{- $hasConfiguredTotal := false -}}
+{{- $configuredTotal := 0 -}}
+{{- if isset $p "totalmarks" -}}
+  {{- $hasConfiguredTotal = true -}}
+  {{- $configuredTotal = $p.totalmarks -}}
+{{- else if isset $p "total_marks" -}}
+  {{- $hasConfiguredTotal = true -}}
+  {{- $configuredTotal = $p.total_marks -}}
+{{- end -}}
+{{- if and $hasConfiguredTotal (ne (printf "%.4f" (float $configuredTotal)) (printf "%.4f" (float $total))) -}}
+  {{- errorf "Configured total marks (%v) does not match calculated total marks per set (%v) in [ %s ]" $configuredTotal $total $.File.Path -}}
+{{- end -}}
 
 {{- $maxAttempts := int (or $p.maxAttempts $p.max_attempts 0) -}}
 {{- if and (eq $maxAttempts 0) (gt $numberOfQuestionSets 1) -}}
