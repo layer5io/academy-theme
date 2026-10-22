@@ -58,7 +58,7 @@
   "id" (partial "academy/normalize-id.html" (dict "value" $questionKey "scope" $questionScope))
   "text" (printf "%v" (or $question.text ""))
   "type" $questionType
-  "marks" (int (or $question.marks 0))
+  "marks" (or $question.marks 0)
   "explanation" (printf "%v" (or $question.explanation ""))
   "caseSensitive" (or $question.caseSensitive $question.case_sensitive false)
   "options" $options
