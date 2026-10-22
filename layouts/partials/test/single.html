@@ -43,10 +43,28 @@
 
 {{- $numberOfQuestionSets := div (len $rawQuestions) $totalQuestionsPerSet -}}
 
-{{- $total := 0 -}}
-{{- range first $totalQuestionsPerSet $rawQuestions -}}
-  {{- $total = add $total (or .marks 0) }}
-{{- end }}
+<!-- Validate: each question set must sum to the same total marks -->
+{{- $firstSetMarks := 0 -}}
+{{- range $setIdx := seq 0 (sub $numberOfQuestionSets 1) -}}
+  {{- $setStart := mul $setIdx $totalQuestionsPerSet -}}
+  {{- $setQuestions := first $totalQuestionsPerSet (after $setStart $rawQuestions) -}}
+  {{- $currentSetMarks := 0 -}}
+  {{- range $setQuestions -}}
+    {{- $currentSetMarks = add $currentSetMarks (int (or .marks 0)) -}}
+  {{- end -}}
+  {{- if eq $setIdx 0 -}}
+    {{- $firstSetMarks = $currentSetMarks -}}
+  {{- else if ne $currentSetMarks $firstSetMarks -}}
+    {{- errorf "Question Set %d total marks (%d) does not match Set 1 total marks (%d) in [ %s ]. All randomized question sets must have identical total marks to ensure consistent exam grading." (add $setIdx 1) $currentSetMarks $firstSetMarks $.File.Path -}}
+  {{- end -}}
+{{- end -}}
+{{- $total := $firstSetMarks -}}
+
+{{- if and (isset $p "totalMarks") (ne (int $p.totalMarks) $total) -}}
+  {{- errorf "Frontmatter totalMarks (%d) does not match calculated total marks per set (%d) in [ %s ]" (int $p.totalMarks) $total $.File.Path -}}
+{{- else if and (isset $p "total_marks") (ne (int $p.total_marks) $total) -}}
+  {{- errorf "Frontmatter total_marks (%d) does not match calculated total marks per set (%d) in [ %s ]" (int $p.total_marks) $total $.File.Path -}}
+{{- end -}}
 
 {{- $maxAttempts := int (or $p.maxAttempts $p.max_attempts 0) -}}
 {{- if and (eq $maxAttempts 0) (gt $numberOfQuestionSets 1) -}}

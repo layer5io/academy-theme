@@ -4,6 +4,10 @@
 {{- $questionKey := trim (printf "%v" (or $question.id (printf "question-%d" (add $index 1)))) " \n\r\t" -}}
 {{- $questionScope := printf "%s#question:%s" $quizFilePath $questionKey -}}
 {{- $questionType := lower (replace (printf "%v" (or $question.type "single-answer")) "_" "-") -}}
+{{- $validQuestionTypes := slice "single-answer" "multiple-answers" "short-answer" -}}
+{{- if not (in $validQuestionTypes $questionType) -}}
+  {{- errorf "Question %d (id: '%s') in [ %s ] has invalid question type '%s'. Supported question types are: 'single-answer', 'multiple-answers', 'short-answer'." (add $index 1) $questionKey $quizFilePath $questionType -}}
+{{- end -}}
 {{- $options := slice -}}
 {{- $correctOptionIds := slice -}}
 {{- $optionIdMap := dict -}}
