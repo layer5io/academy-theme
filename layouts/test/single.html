@@ -271,26 +271,52 @@
                 <div class="question-instructions">Select all that apply</div>
                 {{ else if eq $question.type "single-answer" }}
                 <div class="question-instructions">Select one answer</div>
+                {{ else if eq $question.type "true-false" }}
+                <div class="question-instructions">Select True or False</div>
                 {{ else if eq $question.type "short-answer" }}
                 <div class="question-instructions">Type your answer below</div>
                 {{ end }}
                 {{ end }}
 
-                {{ if or ( eq $question.type "single-answer") ( eq $question.type "multiple-answers" ) }}
+                {{ if eq $question.type "single-answer" }}
                 {{ range $optIndex, $option := $question.options }}
                 <div class="option">
                     <label>
-                        {{ if eq $question.type "multiple-answers" }}
-                        <input type="checkbox" name="selected_option_ids_{{ $question.id }}" value="{{ $option.id }}">
-                        {{ else }}
                         <input type="radio" name="selected_option_ids_{{ $question.id }}" value="{{ $option.id }}">
-                        {{ end }}
                         <span>{{ $option.text }}</span>
                     </label>
                 </div>
                 {{ end }}
+                {{ end }}
 
-                {{ else if (eq $question.type "short-answer") }}
+                {{ if eq $question.type "multiple-answers" }}
+                {{ range $optIndex, $option := $question.options }}
+                <div class="option">
+                    <label>
+                        <input type="checkbox" name="selected_option_ids_{{ $question.id }}" value="{{ $option.id }}">
+                        <span>{{ $option.text }}</span>
+                    </label>
+                </div>
+                {{ end }}
+                {{ end }}
+
+                {{ if eq $question.type "true-false" }}
+
+                <div class="option">
+                    <label>
+                        <input type="radio" name="selected_option_ids_{{ $question.id }}" value="true">
+                        <span>True</span>
+                    </label>
+                </div>
+                <div class="option">
+                    <label>
+                        <input type="radio" name="selected_option_ids_{{ $question.id }}" value="false">
+                        <span>False</span>
+                    </label>
+                </div>
+                {{ end }}
+
+                {{ if eq $question.type "short-answer" }}
                 <input type="text" name="answer_text_{{ $question.id }}" class="text-input"
                     placeholder="Type your answer here">
                 {{ end }}
@@ -349,9 +375,9 @@
 {{ $tesAbsPath := .RelPermalink }}
 
 <script>
-    const testId = {{$test.id}};
+    const testId = {{ $test.id }};
     const testAbsPath = "{{$tesAbsPath}}";
-    const build = {{$build}};
+    const build = {{ $build }};
 
 
     // Event Listeners
